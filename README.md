@@ -26,6 +26,22 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Docker
+
+Pour l'environnement de développement, créer un Dockerfile.dev et un docker-compose.dev.yml avec le container de la database pointant vers .env.local (à créer aussi)
+
+Même opération pour l'environnement de production, réer un Dockerfile.prod et un docker-compose.prod.yml avec le container de la database pointant vers .env.prod (à créer aussi)
+
+```bash
+$ docker compose -f docker-compose.dev.yml up --build 
+```
+
+ou
+
+```bash
+$ docker compose -f docker-compose.prod.yml up --build
+```
+
 ## Installation
 
 ```bash
