@@ -41,7 +41,7 @@ async function bootstrap (): Promise<void> {
   const { httpAdapter } = app.get(HttpAdapterHost)
   app.useGlobalFilters(new SentryFilter(httpAdapter))
 
-  await app.listen(3000)
+  await app.listen(3001)
 }
 
 void bootstrap()
