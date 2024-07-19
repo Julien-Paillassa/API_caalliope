@@ -5,6 +5,7 @@ import * as Sentry from '@sentry/node'
 import { ProfilingIntegration } from '@sentry/profiling-node'
 import { SentryFilter } from './sentry.filter'
 import * as dotenv from 'dotenv'
+import { ValidationPipe } from '@nestjs/common'
 
 async function bootstrap (): Promise<void> {
   dotenv.config({ path: '.env.local' })
@@ -15,6 +16,8 @@ async function bootstrap (): Promise<void> {
       credentials: true
     }
   })
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
 
   const config = new DocumentBuilder()
     .setTitle('Calliope API')
