@@ -20,7 +20,14 @@
     "inlineSources": true,
     "sourceRoot": "/"
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*", 
+    "src/utils/filters/http-exception.filter.ts",
+    "src/utils/guards/auth.guard.ts",
+    "src/modules/auth/auth.service.ts",
+    "src/modules/auth/dto/sign-in.dto.ts"
+  ],
+  "ignorePatterns": ["src/modules/auth/constantes.ts"],
   "exclude": ["node_modules", "dist"],
   "watchOptions": {
     "watchFile": "priorityPollingInterval",

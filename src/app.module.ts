@@ -1,15 +1,17 @@
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { UserController } from './user/user.controller'
-import { UserModule } from './user/user.module'
-import { UserService } from './user/user.service'
+import { UserController } from './modules/user/user.controller'
+import { UserModule } from './modules/user/user.module'
+import { UserService } from './modules/user/user.service'
 import { TypeOrmModule } from '@nestjs/typeorm' // Add this import
-import { User } from './user/entities/user.entity'
+import { User } from './modules/user/entities/user.entity'
+import { AuthModule } from './modules/auth/auth.module'
 
 @Module({
   imports: [
     UserModule,
+    AuthModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'db',
