@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException, Logger, InternalServerErrorException } from '@nestjs/common'
 import { UserService } from '../user/user.service'
 import { JwtService } from '@nestjs/jwt'
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     try {
       const user = await this.userService.findOneByLastName(lastName)
 
-      if ((user == null) || user.password !== pass) {
+      if ((user == null) || !(await bcrypt.compare(pass, user.password))) {
         this.logger.warn(`Invalid credentials for user: ${lastName}`)
         throw new UnauthorizedException('Invalid credentials')
       }

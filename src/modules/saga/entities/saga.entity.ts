@@ -1,24 +1,18 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
-export class User {
+export class Saga {
   @PrimaryGeneratedColumn()
     id: number
 
   @Column()
-    firstName: string
+    title: string
 
   @Column()
-    lastName: string
+    description: string
 
   @Column()
-    password: string
-
-  @Column()
-    email: string
-
-  @Column()
-    username: string
+    nbVolumes: number
 
   @Column()
     createdAt: Date

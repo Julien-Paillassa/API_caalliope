@@ -7,6 +7,12 @@ import { UserService } from './modules/user/user.service'
 import { TypeOrmModule } from '@nestjs/typeorm' // Add this import
 import { User } from './modules/user/entities/user.entity'
 import { AuthModule } from './modules/auth/auth.module'
+import { Saga } from './modules/saga/entities/saga.entity'
+import { Format } from './modules/format/entities/format.entity'
+import { Comment } from './modules/comment/entities/comment.entity'
+import { Book } from './modules/book/entities/book.entity'
+import { Author } from './modules/author/entities/author.entity'
+import { Publisher } from './modules/publisher/entities/publisher.entity'
 
 @Module({
   imports: [
@@ -19,7 +25,7 @@ import { AuthModule } from './modules/auth/auth.module'
       username: 'caaliope',
       password: 'caaliope_dev*2024!',
       database: 'database_caaliope_dev',
-      entities: [User],
+      entities: [User, Saga, Format, Comment, Book, Author, Publisher],
       synchronize: true,
       autoLoadEntities: true
     })

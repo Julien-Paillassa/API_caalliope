@@ -1,23 +1,27 @@
 import { IsNotEmpty, IsString } from 'class-validator'
 
-export class CreateUserDto {
+export class CreateBookDto {
   @IsNotEmpty()
   @IsString()
-    firstName: string
+    title: string
 
   @IsNotEmpty()
   @IsString()
-    lastName: string
+    ibsn: string
 
   @IsNotEmpty()
   @IsString()
-    password: string
+    cover: string
 
   @IsNotEmpty()
   @IsString()
-    email: string
+    status: string
 
   @IsNotEmpty()
   @IsString()
-    username: string
+    publisher: string
+
+  @IsNotEmpty()
+  @IsString()
+    sagaId: number
 }

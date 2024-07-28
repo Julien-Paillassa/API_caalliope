@@ -1,24 +1,30 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
-export class User {
+export class Book {
   @PrimaryGeneratedColumn()
     id: number
 
   @Column()
-    firstName: string
+    title: string
 
   @Column()
-    lastName: string
+    ibsn: string
 
   @Column()
-    password: string
+    cover: string
 
   @Column()
-    email: string
+    status: string
 
   @Column()
-    username: string
+    publisher: string
+
+  @Column()
+    sagaId: number
+
+  @Column()
+    publishedAt: Date
 
   @Column()
     createdAt: Date

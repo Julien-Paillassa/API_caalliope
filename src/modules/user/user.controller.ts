@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
+import * as bcrypt from 'bcrypt'
 
 @Controller('user')
 export class UserController {
@@ -10,9 +11,10 @@ export class UserController {
   @Post()
   async create (@Body() createUserDto: CreateUserDto): Promise<any> {
     try {
-      await this.userService.create(
-        createUserDto
-      )
+      const salt = await bcrypt.genSalt(10)
+      createUserDto.password = await bcrypt.hash(createUserDto.password, salt)
+
+      await this.userService.create(createUserDto)
 
       return {
         success: true,

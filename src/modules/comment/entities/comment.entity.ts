@@ -1,24 +1,18 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
-export class User {
+export class Comment {
   @PrimaryGeneratedColumn()
     id: number
 
   @Column()
-    firstName: string
+    content: string
 
   @Column()
-    lastName: string
+    userId: number
 
   @Column()
-    password: string
-
-  @Column()
-    email: string
-
-  @Column()
-    username: string
+    author: string
 
   @Column()
     createdAt: Date
