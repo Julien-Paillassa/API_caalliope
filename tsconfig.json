@@ -21,12 +21,15 @@
     "sourceRoot": "/"
   },
   "include": [
-    "src/**/*", 
-    "src/utils/filters/http-exception.filter.ts",
-    "src/utils/guards/auth.guard.ts",
-    "src/modules/auth/auth.service.ts",
-    "src/modules/auth/dto/sign-in.dto.ts",
-    "src/modules/saga/entities/saga.entity.ts"
+    //"src/**/*", 
+    //"src/utils/filters/http-exception.filter.ts",
+    //"src/utils/guards/auth.guard.ts",
+    //"src/modules/auth/auth.service.ts",
+    //"src/modules/auth/dto/sign-in.dto.ts",
+    //"src/modules/saga/entities/saga.entity.ts",
+    //"src/utils/middlewares/authenticate.middleware.ts",
+    //"src/modules/auth/dto/sign-up.dto.ts"
+    "src/*"
   ],
   "ignorePatterns": ["src/modules/auth/constantes.ts"],
   "exclude": ["node_modules", "dist"],

@@ -42,9 +42,9 @@ export class UserService {
     }
   }
 
-  async findOneByLastName (lastName: string): Promise<User | null> {
+  async findOneByEmail (email: string): Promise<User | null> {
     try {
-      const user = await this.userRepository.findOneByOrFail({ lastName })
+      const user = await this.userRepository.findOneBy({ email })
       return user
     } catch (error) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND)

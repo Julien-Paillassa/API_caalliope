@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { type MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { UserController } from './modules/user/user.controller'
@@ -13,6 +13,9 @@ import { Comment } from './modules/comment/entities/comment.entity'
 import { Book } from './modules/book/entities/book.entity'
 import { Author } from './modules/author/entities/author.entity'
 import { Publisher } from './modules/publisher/entities/publisher.entity'
+import { JwtModule } from '@nestjs/jwt'
+import { jwtConstants } from './modules/auth/constantes'
+import { AuthenticateMiddleware } from './utils/middlewares/authenticate.middleware'
 
 @Module({
   imports: [
@@ -28,9 +31,24 @@ import { Publisher } from './modules/publisher/entities/publisher.entity'
       entities: [User, Saga, Format, Comment, Book, Author, Publisher],
       synchronize: true,
       autoLoadEntities: true
+    }),
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '30m' }
     })
   ],
   controllers: [AppController, UserController],
   providers: [AppService, UserService]
 })
-export class AppModule {}
+export class AppModule {
+  configure (consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(AuthenticateMiddleware)
+      .exclude(
+        { path: 'auth/login', method: RequestMethod.POST },
+        { path: 'auth/register', method: RequestMethod.POST }
+      )
+      .forRoutes({ path: '*', method: RequestMethod.ALL })
+  }
+}
