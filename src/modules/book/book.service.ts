@@ -1,26 +1,78 @@
-import { Injectable } from '@nestjs/common';
-import { CreateBookDto } from './dto/create-book.dto';
-import { UpdateBookDto } from './dto/update-book.dto';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
+import { type CreateBookDto } from './dto/create-book.dto'
+import { type UpdateBookDto } from './dto/update-book.dto'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Book } from './entities/book.entity'
+import { Repository } from 'typeorm'
 
 @Injectable()
 export class BookService {
-  create(createBookDto: CreateBookDto) {
-    return 'This action adds a new book';
+  private readonly logger = new Logger(BookService.name)
+
+  constructor (
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>
+  ) {}
+
+  async create (createBookDto: CreateBookDto): Promise<Book> {
+    try {
+      const book = this.bookRepository.create(createBookDto)
+      return await this.bookRepository.save(book)
+    } catch (error) {
+      this.logger.error('Error creating book', error.stack)
+      throw new HttpException('Failed to create book', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
-  findAll() {
-    return `This action returns all book`;
+  async findAll (): Promise<Book[]> {
+    try {
+      return await this.bookRepository.find()
+    } catch (error) {
+      this.logger.error('Error finding all books', error.stack)
+      throw new HttpException('Failed to retrieve books', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} book`;
+  async findOne (id: number): Promise<Book | null> {
+    try {
+      const book = await this.bookRepository.findOneByOrFail({ id })
+      return book
+    } catch (error) {
+      throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
+    }
   }
 
-  update(id: number, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
+  async update (id: number, updateBookDto: UpdateBookDto): Promise<Book> {
+    try {
+      const existingBook = await this.bookRepository.findOneBy({ id })
+
+      if (existingBook == null) {
+        throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
+      }
+
+      this.bookRepository.merge(existingBook, updateBookDto)
+      return await this.bookRepository.save(existingBook)
+    } catch (error) {
+      this.logger.error(`Error updating book with id ${id}`, error.stack)
+      if (error.status === HttpStatus.NOT_FOUND) {
+        throw error
+      }
+    }
+    throw new HttpException('Failed to update book', HttpStatus.INTERNAL_SERVER_ERROR)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} book`;
+  async remove (id: number): Promise<Book> {
+    try {
+      const existingBook = await this.bookRepository.findOneBy({ id })
+
+      if (existingBook == null) {
+        throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
+      }
+
+      return await this.bookRepository.remove(existingBook)
+    } catch (error) {
+      this.logger.error('Error deleting book', error.stack)
+      throw new HttpException('Failed to delete book', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 }

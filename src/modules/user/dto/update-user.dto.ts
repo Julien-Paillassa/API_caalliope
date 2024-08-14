@@ -1,5 +1,7 @@
 import { PartialType, ApiProperty } from '@nestjs/swagger'
 import { CreateUserDto } from './create-user.dto'
+import { UserRole } from '../entities/user-role.enum'
+import { IsEmail, IsEnum, IsString } from 'class-validator'
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({
@@ -7,6 +9,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     example: 'Johnny',
     required: false
   })
+  @IsString()
     firstName?: string
 
   @ApiProperty({
@@ -14,6 +17,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     example: 'Doeson',
     required: false
   })
+  @IsString()
     lastName?: string
 
   @ApiProperty({
@@ -21,6 +25,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     example: 'strongPassword987',
     required: false
   })
+  @IsString()
     password?: string
 
   @ApiProperty({
@@ -28,6 +33,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     example: 'johnny.doeson@example.com',
     required: false
   })
+  @IsEmail()
     email?: string
 
   @ApiProperty({
@@ -36,4 +42,13 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     required: false
   })
     username?: string
+
+  @ApiProperty({
+    description: 'Role of the user account',
+    example: UserRole.MODERATOR,
+    enum: UserRole,
+    required: false
+  })
+  @IsEnum(UserRole)
+    role: UserRole
 }

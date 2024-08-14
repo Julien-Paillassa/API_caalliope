@@ -3,10 +3,11 @@ import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import * as bcrypt from 'bcrypt'
-import { ApiOperation, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiForbiddenResponse, ApiUnauthorizedResponse, ApiBearerAuth } from '@nestjs/swagger'
+import { ApiOperation, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiForbiddenResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { User } from './entities/user.entity'
 
 @ApiBearerAuth()
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor (private readonly userService: UserService) {}

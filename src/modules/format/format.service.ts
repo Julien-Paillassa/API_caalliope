@@ -1,26 +1,90 @@
-import { Injectable } from '@nestjs/common';
-import { CreateFormatDto } from './dto/create-format.dto';
-import { UpdateFormatDto } from './dto/update-format.dto';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
+import { type CreateFormatDto } from './dto/create-format.dto'
+import { type UpdateFormatDto } from './dto/update-format.dto'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Format } from './entities/format.entity'
+import { Repository } from 'typeorm'
 
 @Injectable()
 export class FormatService {
-  create(createFormatDto: CreateFormatDto) {
-    return 'This action adds a new format';
+  private readonly logger = new Logger(FormatService.name)
+
+  constructor (
+    @InjectRepository(Format)
+    private readonly formatRepository: Repository<Format>
+  ) {}
+
+  async create (createFormatDto: CreateFormatDto): Promise<Format> {
+    try {
+      const format = this.formatRepository.create(createFormatDto)
+      return await this.formatRepository.save(format)
+    } catch (error) {
+      this.logger.error('Error creating format', error.stack)
+      throw new HttpException('Failed to create format', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
-  findAll() {
-    return `This action returns all format`;
+  async findAll (): Promise<Format[]> {
+    try {
+      const allFormats = await this.formatRepository.find()
+
+      if (allFormats.length === 0) {
+        throw new HttpException('No formats found', HttpStatus.NOT_FOUND)
+      }
+
+      return allFormats
+    } catch (error) {
+      this.logger.error('Error finding all formats', error.stack)
+      if (error.status === HttpStatus.NOT_FOUND) {
+        throw new HttpException('No formats found', HttpStatus.NOT_FOUND)
+      }
+      throw new HttpException('Failed to retrieve formats', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} format`;
+  async findOne (id: number): Promise<Format | null> {
+    try {
+      const format = await this.formatRepository.findOneByOrFail({ id })
+      return format
+    } catch (error) {
+      throw new HttpException('Format not found', HttpStatus.NOT_FOUND)
+    }
   }
 
-  update(id: number, updateFormatDto: UpdateFormatDto) {
-    return `This action updates a #${id} format`;
+  async update (id: number, updateFormatDto: UpdateFormatDto): Promise<Format> {
+    try {
+      const existingFormat = await this.formatRepository.findOneBy({ id })
+
+      if (existingFormat == null) {
+        throw new HttpException('Format not found', HttpStatus.NOT_FOUND)
+      }
+
+      this.formatRepository.merge(existingFormat, updateFormatDto)
+      return await this.formatRepository.save(existingFormat)
+    } catch (error) {
+      this.logger.error('Error updating format', error.stack)
+      if (error.status === HttpStatus.NOT_FOUND) {
+        throw error
+      }
+      throw new HttpException('Failed to update format', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} format`;
+  async remove (id: number): Promise<Format> {
+    try {
+      const format = await this.formatRepository.findOneBy({ id })
+
+      if (format == null) {
+        throw new HttpException('Format not found', HttpStatus.NOT_FOUND)
+      }
+
+      return await this.formatRepository.remove(format)
+    } catch (error) {
+      this.logger.error('Error removing format', error.stack)
+      if (error.status === HttpStatus.NOT_FOUND) {
+        throw error
+      }
+      throw new HttpException('Failed to remove format', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 }

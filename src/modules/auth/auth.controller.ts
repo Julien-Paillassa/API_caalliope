@@ -4,8 +4,10 @@ import { AuthGuard } from 'src/utils/guards/auth.guard'
 import { SignInDto } from './dto/sign-in.dto'
 import * as bcrypt from 'bcrypt'
 import { SignUpDto } from './dto/sign-up.dto'
+import { ApiTags } from '@nestjs/swagger'
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
   constructor (private readonly authService: AuthService) {}
 
