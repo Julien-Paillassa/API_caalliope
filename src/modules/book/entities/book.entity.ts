@@ -4,10 +4,8 @@ import { Comment } from 'src/modules/comment/entities/comment.entity'
 import { Cover } from 'src/modules/cover/entities/cover.entity'
 import { Genre } from 'src/modules/genre/entities/genre.entity'
 import { Possess } from 'src/modules/possess/entities/possess.entity'
-import { Publish } from 'src/modules/publish/entities/publish.entity'
-import { Publisher } from 'src/modules/publisher/entities/publisher.entity'
-import { Status } from 'src/modules/status/entities/status.entity'
-import { ToMakeGo } from 'src/modules/to-make-go/entities/to-make-go.entity'
+import { Publishing } from 'src/modules/publishing/entities/publishing.entity'
+import { UserBook } from 'src/modules/user-book/entities/user-book.entity'
 import {
   Entity,
   Column,
@@ -50,11 +48,6 @@ export class Book {
   @JoinColumn()
     author: Author
 
-  @ApiProperty({ type: () => Status })
-  @ManyToMany(() => Status, status => status.book)
-  @JoinTable()
-    status: Status[]
-
   @ApiProperty({ type: () => Comment })
   @OneToMany(() => Comment, comment => comment.book)
     comment: Comment[]
@@ -64,22 +57,17 @@ export class Book {
   @JoinTable()
     genre: Genre[]
 
-  @ApiProperty({ type: () => Publisher })
-  @ManyToOne(() => Publisher, publisher => publisher.book)
-  @JoinColumn()
-    publisher: Publisher
+  @ApiProperty({ type: () => UserBook })
+  @OneToMany(() => UserBook, userBook => userBook.user)
+    userBook: UserBook[]
+
+  @ApiProperty({ type: () => Publishing })
+  @OneToMany(() => Publishing, publishing => publishing.book)
+    publishing: Publishing[]
 
   @ApiProperty({ type: () => Possess })
   @ManyToMany(() => Possess, possess => possess.book)
     possess: Possess[]
-
-  @ApiProperty({ type: () => Publish })
-  @OneToOne(() => Publish, publish => publish.book)
-    publish: Publish
-
-  @ApiProperty({ type: () => ToMakeGo })
-  @ManyToMany(() => ToMakeGo, toMakeGo => toMakeGo.book)
-    toMakeGo: ToMakeGo[]
 
   @ApiProperty()
   @CreateDateColumn()

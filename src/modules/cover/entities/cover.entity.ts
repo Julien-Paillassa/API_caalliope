@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { BookPropose } from 'src/modules/book-propose/entities/book-propose.entity'
 import { Book } from 'src/modules/book/entities/book.entity'
 import {
   Entity,
@@ -23,10 +22,6 @@ export class Cover {
   @ApiProperty({ type: () => Book })
   @OneToOne(() => Book, book => book.cover)
     book: Book
-
-  @ApiProperty({ type: () => BookPropose })
-  @OneToOne(() => BookPropose, bookPropose => bookPropose.cover)
-    bookPropose: BookPropose
 
   @ApiProperty()
   @CreateDateColumn()

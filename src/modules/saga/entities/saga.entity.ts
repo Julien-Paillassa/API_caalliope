@@ -1,12 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { ToMakeGo } from 'src/modules/to-make-go/entities/to-make-go.entity'
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToMany
+  UpdateDateColumn
 } from 'typeorm'
 
 @Entity()
@@ -26,10 +24,6 @@ export class Saga {
   @ApiProperty()
   @Column()
     nbVolumes: number
-
-  @ApiProperty({ type: () => ToMakeGo })
-  @ManyToMany(() => ToMakeGo, toMakeGo => toMakeGo.saga)
-    toMakeGo: ToMakeGo[]
 
   @ApiProperty()
   @CreateDateColumn()

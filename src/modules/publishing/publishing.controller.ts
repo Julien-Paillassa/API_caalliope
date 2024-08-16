@@ -1,33 +1,32 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
-import { SagaService } from './saga.service'
-import { CreateSagaDto } from './dto/create-saga.dto'
-import { UpdateSagaDto } from './dto/update-saga.dto'
-import { Saga } from './entities/saga.entity'
-import { ApiBearerAuth, ApiTags, ApiOperation, ApiCreatedResponse, ApiUnauthorizedResponse, ApiBadRequestResponse, ApiForbiddenResponse, ApiNotFoundResponse } from '@nestjs/swagger'
+import { PublishingService } from './publishing.service'
+import { CreatePublishingDto } from './dto/create-publishing.dto'
+import { UpdatePublishingDto } from './dto/update-publishing.dto'
+import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { Publishing } from './entities/publishing.entity'
 
 @ApiBearerAuth()
-@ApiTags('saga')
-@Controller('')
-export class SagaController {
-  constructor (private readonly sagaService: SagaService) {}
+@ApiTags('publishing')
+@Controller('publishing')
+export class PublishingController {
+  constructor (private readonly publishingService: PublishingService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create saga' })
+  @ApiOperation({ summary: 'Create publishing' })
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
-    type: Saga
+    type: Publishing
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async create (@Body() createSagaDto: CreateSagaDto): Promise<any> {
+  async create (@Body() createPublishingDto: CreatePublishingDto): Promise<any> {
     try {
-      const saga = await this.sagaService.create(createSagaDto)
-
+      const publishing = await this.publishingService.create(createPublishingDto)
       return {
         success: true,
-        message: 'Saga Created Successfully',
-        data: saga
+        message: 'Publishing Created Successfully',
+        data: publishing
       }
     } catch (error) {
       return {
@@ -38,21 +37,21 @@ export class SagaController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all sagas' })
+  @ApiOperation({ summary: 'Get all publishing' })
   @ApiCreatedResponse({
-    description: 'Sagas Fetched Successfully',
-    type: [Saga]
+    description: 'Publishing Fetched Successfully',
+    type: [Publishing]
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async findAll (): Promise<any> {
     try {
-      const data = await this.sagaService.findAll()
+      const data = await this.publishingService.findAll()
       return {
         success: true,
         data,
-        message: 'Sagas Fetched Successfully'
+        message: 'Publishing Fetched Successfully'
       }
     } catch (error) {
       return {
@@ -63,21 +62,21 @@ export class SagaController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get saga by id' })
+  @ApiOperation({ summary: 'Get publishing by id' })
   @ApiCreatedResponse({
-    description: 'Saga Fetched Successfully',
-    type: Saga
+    description: 'Publishing Fetched Successfully',
+    type: Publishing
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async findOne (@Param('id') id: string): Promise<any> {
     try {
-      const data = await this.sagaService.findOne(+id)
+      const data = await this.publishingService.findOne(+id)
       return {
         success: true,
         data,
-        message: 'Saga Fetched Successfully'
+        message: 'Publishing Fetched Successfully'
       }
     } catch (error) {
       return {
@@ -88,23 +87,22 @@ export class SagaController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update saga by id' })
+  @ApiOperation({ summary: 'Update publishing' })
   @ApiCreatedResponse({
-    description: 'Saga Updated Successfully',
-    type: Saga
+    description: 'The record has been successfully updated.',
+    type: Publishing
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Author Not Found' })
-  async update (@Param('id') id: string, @Body() updateSagaDto: UpdateSagaDto): Promise<any> {
+  async update (@Param('id') id: string, @Body() updatePublishingDto: UpdatePublishingDto): Promise<any> {
     try {
-      const saga = await this.sagaService.update(+id, updateSagaDto)
-
+      const publishing = await this.publishingService.update(+id, updatePublishingDto)
       return {
         success: true,
-        message: 'Saga Updated Successfully',
-        data: saga
+        message: 'Publishing Updated Successfully',
+        data: publishing
       }
     } catch (error) {
       return {
@@ -115,10 +113,10 @@ export class SagaController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete saga by id' })
+  @ApiOperation({ summary: 'Delete publishing' })
   @ApiCreatedResponse({
-    description: 'Saga Removed Successfully',
-    type: Saga
+    description: 'The record has been successfully removed.',
+    type: Publishing
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
@@ -126,12 +124,11 @@ export class SagaController {
   @ApiNotFoundResponse({ description: 'Author Not Found' })
   async remove (@Param('id') id: string): Promise<any> {
     try {
-      const saga = await this.sagaService.remove(+id)
-
+      const publishing = await this.publishingService.remove(+id)
       return {
         success: true,
-        message: 'Saga Removed Successfully',
-        data: saga
+        message: 'Publishing Removed Successfully',
+        data: publishing
       }
     } catch (error) {
       return {

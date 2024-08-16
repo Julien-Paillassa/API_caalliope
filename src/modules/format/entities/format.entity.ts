@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Publish } from 'src/modules/publish/entities/publish.entity'
+import { Publishing } from 'src/modules/publishing/entities/publishing.entity'
 import {
   Entity,
   Column,
@@ -23,9 +23,9 @@ export class Format {
   @Column()
     language: string
 
-  @ApiProperty({ type: () => Publish })
-  @OneToMany(() => Publish, publish => publish.format)
-    publish: Publish[]
+  @ApiProperty({ type: () => Publishing })
+  @OneToMany(() => Publishing, publishing => publishing.format)
+    publishing: Publishing[]
 
   @ApiProperty()
   @CreateDateColumn()

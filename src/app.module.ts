@@ -8,22 +8,15 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { User } from './modules/user/entities/user.entity'
 import { AuthModule } from './modules/auth/auth.module'
 import { Saga } from './modules/saga/entities/saga.entity'
-import { Format } from './modules/format/entities/format.entity'
 import { Comment } from './modules/comment/entities/comment.entity'
 import { Book } from './modules/book/entities/book.entity'
 import { Author } from './modules/author/entities/author.entity'
-import { Publisher } from './modules/publisher/entities/publisher.entity'
 import { JwtModule } from '@nestjs/jwt'
 import { jwtConstants } from './modules/auth/constantes'
 import { AuthenticateMiddleware } from './utils/middlewares/authenticate.middleware'
 import { Avatar } from './modules/avatar/entities/avatar.entity'
-import { UserType } from './modules/user-type/entities/user-type.entity'
 import { Subscription } from './modules/subscription/entities/subscription.entity'
-import { BookPropose } from './modules/book-propose/entities/book-propose.entity'
 import { Possess } from './modules/possess/entities/possess.entity'
-import { Publish } from './modules/publish/entities/publish.entity'
-import { Status } from './modules/status/entities/status.entity'
-import { ToMakeGo } from './modules/to-make-go/entities/to-make-go.entity'
 import { Cover } from './modules/cover/entities/cover.entity'
 import { Genre } from './modules/genre/entities/genre.entity'
 import { AuthorModule } from './modules/author/author.module'
@@ -38,9 +31,18 @@ import { FormatService } from './modules/format/format.service'
 import { GenreModule } from './modules/genre/genre.module'
 import { GenreService } from './modules/genre/genre.service'
 import { GenreController } from './modules/genre/genre.controller'
-import { PublisherModule } from './modules/publisher/publisher.module'
-import { PublisherController } from './modules/publisher/publisher.controller'
-import { PublisherService } from './modules/publisher/publisher.service'
+import { SagaModule } from './modules/saga/saga.module'
+import { SagaController } from './modules/saga/saga.controller'
+import { SagaService } from './modules/saga/saga.service'
+import { Format } from './modules/format/entities/format.entity'
+import { Publishing } from './modules/publishing/entities/publishing.entity'
+import { PublishingController } from './modules/publishing/publishing.controller'
+import { PublishingService } from './modules/publishing/publishing.service'
+import { PublishingModule } from './modules/publishing/publishing.module'
+import { UserBook } from './modules/user-book/entities/user-book.entity'
+import { UserBookService } from './modules/user-book/user-book.service'
+import { UserBookController } from './modules/user-book/user-book.controller'
+import { UserBookModule } from './modules/user-book/user-book.module'
 
 @Module({
   imports: [
@@ -50,7 +52,9 @@ import { PublisherService } from './modules/publisher/publisher.service'
     BookModule,
     FormatModule,
     GenreModule,
-    PublisherModule,
+    PublishingModule,
+    SagaModule,
+    UserBookModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'db',
@@ -65,17 +69,13 @@ import { PublisherService } from './modules/publisher/publisher.service'
         Comment,
         Book,
         Author,
-        Publisher,
-        UserType,
         Avatar,
         Subscription,
-        BookPropose,
         Possess,
-        Publish,
-        Status,
-        ToMakeGo,
         Cover,
-        Genre
+        Genre,
+        Publishing,
+        UserBook
       ],
       synchronize: true,
       autoLoadEntities: true
@@ -93,7 +93,9 @@ import { PublisherService } from './modules/publisher/publisher.service'
     BookController,
     FormatController,
     GenreController,
-    PublisherController
+    PublishingController,
+    SagaController,
+    UserBookController
   ],
   providers: [
     AppService,
@@ -102,7 +104,9 @@ import { PublisherService } from './modules/publisher/publisher.service'
     BookService,
     FormatService,
     GenreService,
-    PublisherService
+    PublishingService,
+    SagaService,
+    UserBookService
   ]
 })
 export class AppModule {
