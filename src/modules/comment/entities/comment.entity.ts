@@ -21,6 +21,10 @@ export class Comment {
   @Column()
     content: string
 
+  @ApiProperty()
+  @Column()
+    rating: number
+
   @ApiProperty({ type: () => User })
   @ManyToOne(() => User, user => user.comment)
   @JoinColumn()

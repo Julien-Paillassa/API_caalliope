@@ -43,6 +43,13 @@ import { UserBook } from './modules/user-book/entities/user-book.entity'
 import { UserBookService } from './modules/user-book/user-book.service'
 import { UserBookController } from './modules/user-book/user-book.controller'
 import { UserBookModule } from './modules/user-book/user-book.module'
+import { CommentModule } from './modules/comment/comment.module'
+import { CommentController } from './modules/comment/comment.controller'
+import { CommentService } from './modules/comment/comment.service'
+import { AvatarModule } from './modules/avatar/avatar.module'
+import { AvatarController } from './modules/avatar/avatar.controller'
+import { AvatarService } from './modules/avatar/avatar.service'
+import { MulterModule } from '@nestjs/platform-express'
 
 @Module({
   imports: [
@@ -55,6 +62,8 @@ import { UserBookModule } from './modules/user-book/user-book.module'
     PublishingModule,
     SagaModule,
     UserBookModule,
+    CommentModule,
+    AvatarModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'db',
@@ -84,6 +93,9 @@ import { UserBookModule } from './modules/user-book/user-book.module'
       global: true,
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '30m' }
+    }),
+    MulterModule.register({
+      dest: './uploads/avatars'
     })
   ],
   controllers: [
@@ -95,7 +107,9 @@ import { UserBookModule } from './modules/user-book/user-book.module'
     GenreController,
     PublishingController,
     SagaController,
-    UserBookController
+    UserBookController,
+    CommentController,
+    AvatarController
   ],
   providers: [
     AppService,
@@ -106,7 +120,9 @@ import { UserBookModule } from './modules/user-book/user-book.module'
     GenreService,
     PublishingService,
     SagaService,
-    UserBookService
+    UserBookService,
+    CommentService,
+    AvatarService
   ]
 })
 export class AppModule {

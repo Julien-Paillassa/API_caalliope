@@ -27,7 +27,7 @@ export class Author {
     lastName: string
 
   @ApiProperty({ type: () => Avatar })
-  @OneToOne(() => Avatar, avatar => avatar.author, { onDelete: 'CASCADE' })
+  @OneToOne(() => Avatar, avatar => avatar.author)
   @JoinColumn()
     avatar: Avatar
 

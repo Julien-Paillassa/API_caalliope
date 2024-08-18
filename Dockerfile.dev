@@ -1,6 +1,10 @@
 # Utilisez une image Node officielle comme image de base
 FROM node:18
 
+# Créez un répertoire pour les uplaods
+RUN mkdir -p /usr/src/app/uploads/avatars
+
+# Créez un répertoire pour l'application
 RUN mkdir -p /usr/src/app
 
 # Créez un répertoire de travail

@@ -58,7 +58,7 @@ export class Book {
     genre: Genre[]
 
   @ApiProperty({ type: () => UserBook })
-  @OneToMany(() => UserBook, userBook => userBook.user)
+  @OneToMany(() => UserBook, userBook => userBook.book)
     userBook: UserBook[]
 
   @ApiProperty({ type: () => Publishing })

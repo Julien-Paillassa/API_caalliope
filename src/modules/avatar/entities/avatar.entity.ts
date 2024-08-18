@@ -7,7 +7,8 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm'
 
 @Entity()
@@ -18,14 +19,16 @@ export class Avatar {
 
   @ApiProperty()
   @Column()
-    name: string
+    filename: string
 
   @ApiProperty({ type: () => User })
-  @OneToOne(() => User, user => user.avatar)
+  @OneToOne(() => User, user => user.avatar, { onDelete: 'SET NULL', cascade: false })
+  @JoinColumn()
     user: User
 
   @ApiProperty({ type: () => Author })
-  @OneToOne(() => Author, author => author.avatar)
+  @OneToOne(() => Author, author => author.avatar, { onDelete: 'SET NULL', cascade: false })
+  @JoinColumn()
     author: Author
 
   @ApiProperty()

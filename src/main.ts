@@ -7,6 +7,8 @@ import { SentryFilter } from './sentry.filter'
 import * as dotenv from 'dotenv'
 import { ValidationPipe } from '@nestjs/common'
 import { HttpExceptionFilter } from './utils/filters/http-exception.filter'
+import * as express from 'express'
+import { join } from 'path'
 
 async function bootstrap (): Promise<void> {
   dotenv.config({ path: '.env.local' })
@@ -33,6 +35,8 @@ async function bootstrap (): Promise<void> {
   const document = SwaggerModule.createDocument(app, config)
 
   SwaggerModule.setup('', app, document)
+
+  app.use('/uploads/avatars', express.static(join(__dirname, '..', 'uploads/avatars')))
 
   Sentry.init({
     dsn: process.env.SENTRY_DNS,
