@@ -54,7 +54,5 @@ data/
 .sentryclirc
 
 # Docker
-docker-compose.prod.yml
-configs/docker/Dockerfile.prod
-docker-compose.dev.yml
-configs/docker/Dockerfile.dev
+docker-compose.*
+configs/docker/Dockerfile.*

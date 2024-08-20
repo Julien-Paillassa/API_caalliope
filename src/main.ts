@@ -1,31 +1,42 @@
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core'
+import { AppModule } from './app.module'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as Sentry from '@sentry/node'
 import { ProfilingIntegration } from '@sentry/profiling-node'
 import { SentryFilter } from './sentry.filter'
-import * as dotenv from 'dotenv';
+import * as dotenv from 'dotenv'
+import { ValidationPipe } from '@nestjs/common'
+import { HttpExceptionFilter } from './utils/filters/http-exception.filter'
+import * as express from 'express'
+import { join } from 'path'
 
-async function bootstrap() {
-  dotenv.config({ path: '.env.local'});
-  
+async function bootstrap (): Promise<void> {
+  dotenv.config({ path: '.env.local' })
+
   const app = await NestFactory.create(AppModule, {
     cors: {
       origin: '*',
       credentials: true
     }
-  });
+  })
+
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
+
+  app.useGlobalFilters(new HttpExceptionFilter())
 
   const config = new DocumentBuilder()
     .setTitle('Calliope API')
     .setDescription('API for Calliope')
     .setVersion('1.0')
     .addTag('calliope')
-    .build();
-  
-  const document = SwaggerModule.createDocument(app, config);
+    .addBearerAuth()
+    .build()
 
-  SwaggerModule.setup('api', app, document);
+  const document = SwaggerModule.createDocument(app, config)
+
+  SwaggerModule.setup('', app, document)
+
+  app.use('/uploads/avatars', express.static(join(__dirname, '..', 'uploads/avatars')))
 
   Sentry.init({
     dsn: process.env.SENTRY_DNS,
@@ -41,6 +52,7 @@ async function bootstrap() {
   const { httpAdapter } = app.get(HttpAdapterHost)
   app.useGlobalFilters(new SentryFilter(httpAdapter))
 
-  await app.listen(3000);
+  await app.listen(3001)
 }
-bootstrap();
+
+void bootstrap()

@@ -1,0 +1,12 @@
+{
+    "editor.formatOnSave": true,
+    "eslint.options": {
+      "overrideConfigFile": "./configs/linter/.eslintrc.json"
+    },
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "files.autoGuessEncoding": true,
+    "eslint.format.enable": false
+  }
+   

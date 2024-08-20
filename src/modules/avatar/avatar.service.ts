@@ -1,0 +1,99 @@
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { Avatar } from './entities/avatar.entity'
+import { Author } from 'src/modules/author/entities/author.entity'
+import { User } from '../user/entities/user.entity'
+
+@Injectable()
+export class AvatarService {
+  private readonly logger = new Logger(AvatarService.name)
+
+  constructor (
+    @InjectRepository(Avatar)
+    private readonly avatarRepository: Repository<Avatar>,
+    @InjectRepository(Author)
+    private readonly authorRepository: Repository<Author>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
+  ) {}
+
+  async saveAvatar (filename: string, user?: User, author?: Author): Promise<any> {
+    try {
+      if (user !== undefined) {
+        const avatar = this.avatarRepository.create({
+          filename,
+          user
+        })
+
+        return await this.avatarRepository.save(avatar)
+      } else if (author !== undefined) {
+        const avatar = this.avatarRepository.create({
+          filename,
+          author
+        })
+
+        return await this.avatarRepository.save(avatar)
+      }
+    } catch (error) {
+      this.logger.error('Error creating avatar', error.stack)
+      throw new HttpException('Failed to save avatar', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async findByAuthorId (id: number): Promise<any> {
+    try {
+      const avatar = await this.avatarRepository.findOne({
+        where: { author: { id } },
+        relations: ['author']
+      })
+      if (avatar === null) {
+        throw new HttpException('Avatar not found', HttpStatus.NOT_FOUND)
+      }
+
+      return avatar
+    } catch (error) {
+      this.logger.error('Error finding avatar by author ID', error.stack)
+      throw new HttpException('Failed to find author avatar', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async findByUserId (id: number): Promise<any> {
+    try {
+      const avatar = await this.avatarRepository.findOne({
+        where: { user: { id } },
+        relations: ['user']
+      })
+      if (avatar === null) {
+        throw new HttpException('Avatar not found', HttpStatus.NOT_FOUND)
+      }
+
+      return avatar
+    } catch (error) {
+      this.logger.error('Error finding avatar by user ID', error.stack)
+      throw new HttpException('Failed to find user avatar', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async updateAvatar (avatar: any): Promise<any> {
+    try {
+      return await this.avatarRepository.save(avatar)
+    } catch (error) {
+      this.logger.error('Error updating avatar', error.stack)
+      throw new HttpException('Failed to update avatar', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async deleteAvatar (id: number): Promise<Avatar> {
+    try {
+      const avatar = await this.avatarRepository.findOneBy({ id })
+      if (avatar === null) {
+        throw new HttpException('Avatar not found', HttpStatus.NOT_FOUND)
+      }
+      return await this.avatarRepository.remove(avatar)
+    } catch (error) {
+      this.logger.error('Error deleting avatar', error.stack)
+      throw new HttpException('Failed to delete avatar', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+}
