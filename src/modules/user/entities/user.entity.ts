@@ -12,7 +12,6 @@ import {
   OneToOne,
   ManyToMany,
   OneToMany,
-  JoinColumn,
   JoinTable
 } from 'typeorm'
 import { UserRole } from './user-role.enum'
@@ -53,8 +52,7 @@ export class User {
     role: UserRole
 
   @ApiProperty({ type: () => Avatar })
-  @OneToOne(() => Avatar, avatar => avatar.user, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @OneToOne(() => Avatar, avatar => avatar.user, { cascade: false, onDelete: 'SET NULL' })
     avatar: Avatar
 
   @ApiProperty({ type: () => UserBook })

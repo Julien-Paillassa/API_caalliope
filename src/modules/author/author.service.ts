@@ -26,7 +26,9 @@ export class AuthorService {
 
   async findAll (): Promise<Author[]> {
     try {
-      return await this.authorRepository.find()
+      return await this.authorRepository.find({
+        relations: ['avatar']
+      })
     } catch (error) {
       this.logger.error('Error finding all authors', error.stack)
       throw new HttpException('Failed to retrieve authors', HttpStatus.INTERNAL_SERVER_ERROR)
@@ -35,7 +37,13 @@ export class AuthorService {
 
   async findOne (id: number): Promise<Author | null> {
     try {
-      const author = await this.authorRepository.findOneByOrFail({ id })
+      // const author = await this.authorRepository.findOneByOrFail({ id })
+      const author = await this.authorRepository.findOneOrFail(
+        {
+          where: { id },
+          relations: ['avatar']
+        }
+      )
       return author
     } catch (error) {
       throw new HttpException('Author not found', HttpStatus.NOT_FOUND)

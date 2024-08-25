@@ -33,6 +33,16 @@ export class AvatarService {
           author
         })
 
+        const authorToUpdate = await this.authorRepository.findOne({
+          where: { id: author.id },
+          relations: ['avatar']
+        })
+
+        if (authorToUpdate != null) {
+          authorToUpdate.avatar = avatar
+          await this.authorRepository.save(authorToUpdate)
+        }
+
         return await this.avatarRepository.save(avatar)
       }
     } catch (error) {
@@ -90,6 +100,7 @@ export class AvatarService {
       if (avatar === null) {
         throw new HttpException('Avatar not found', HttpStatus.NOT_FOUND)
       }
+
       return await this.avatarRepository.remove(avatar)
     } catch (error) {
       this.logger.error('Error deleting avatar', error.stack)
