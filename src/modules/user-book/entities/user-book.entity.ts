@@ -9,7 +9,7 @@ import {
   ManyToOne,
   JoinColumn
 } from 'typeorm'
-import { BookStatus } from './book-status.enum'
+import { UserBookStatus } from './user-book-status.enum'
 
 @Entity()
 export class UserBook {
@@ -20,11 +20,11 @@ export class UserBook {
   @ApiProperty()
   @Column({
     type: 'enum',
-    enum: BookStatus,
-    default: BookStatus.TO_READ
+    enum: UserBookStatus,
+    default: UserBookStatus.TO_READ
   })
-  @IsEnum(BookStatus)
-    status: BookStatus
+  @IsEnum(UserBookStatus)
+    status: UserBookStatus
 
   @ApiProperty({ type: () => Book })
   @ManyToOne(() => Book, book => book.userBook)
