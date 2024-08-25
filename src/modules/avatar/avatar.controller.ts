@@ -20,9 +20,9 @@ export class AvatarController {
     private readonly avatarService: AvatarService,
     @InjectRepository(Author)
     private readonly authorRepository: Repository<Author>,
+    private readonly authorService: AuthorService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly authorService: AuthorService,
     private readonly userService: UserService
   ) {}
 

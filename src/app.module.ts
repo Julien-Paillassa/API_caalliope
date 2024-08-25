@@ -50,6 +50,9 @@ import { AvatarModule } from './modules/avatar/avatar.module'
 import { AvatarController } from './modules/avatar/avatar.controller'
 import { AvatarService } from './modules/avatar/avatar.service'
 import { MulterModule } from '@nestjs/platform-express'
+import { CoverModule } from './modules/cover/cover.module'
+import { CoverController } from './modules/cover/cover.controller'
+import { CoverService } from './modules/cover/cover.service'
 
 @Module({
   imports: [
@@ -64,6 +67,7 @@ import { MulterModule } from '@nestjs/platform-express'
     UserBookModule,
     CommentModule,
     AvatarModule,
+    CoverModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'db',
@@ -95,7 +99,7 @@ import { MulterModule } from '@nestjs/platform-express'
       signOptions: { expiresIn: '30m' }
     }),
     MulterModule.register({
-      dest: './uploads/avatars'
+      dest: './uploads'
     })
   ],
   controllers: [
@@ -109,7 +113,8 @@ import { MulterModule } from '@nestjs/platform-express'
     SagaController,
     UserBookController,
     CommentController,
-    AvatarController
+    AvatarController,
+    CoverController
   ],
   providers: [
     AppService,
@@ -122,7 +127,8 @@ import { MulterModule } from '@nestjs/platform-express'
     SagaService,
     UserBookService,
     CommentService,
-    AvatarService
+    AvatarService,
+    CoverService
   ]
 })
 export class AppModule {

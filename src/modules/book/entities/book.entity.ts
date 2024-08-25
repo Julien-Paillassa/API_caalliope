@@ -39,8 +39,7 @@ export class Book {
     publicationDate: string
 
   @ApiProperty({ type: () => Cover })
-  @OneToOne(() => Cover, cover => cover.book, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @OneToOne(() => Cover, cover => cover.book, { cascade: false, onDelete: 'SET NULL' })
     cover: Cover
 
   @ApiProperty({ type: () => Author })

@@ -64,7 +64,9 @@
     "src/modules/avatar/avatar.controller.ts",
     "src/modules/avatar/avatar.service.ts",
     "src/modules/avatar/avatar.module.ts",
-    "src/utils/pipes/ParseIntPipe.ts"
+    "src/modules/cover/cover.controller.ts",
+    "src/modules/cover/cover.service.ts",
+    "src/modules/cover/cover.module.ts"
   ],
   "ignorePatterns": ["src/modules/auth/constantes.ts"],
   "exclude": ["node_modules", "dist"],
