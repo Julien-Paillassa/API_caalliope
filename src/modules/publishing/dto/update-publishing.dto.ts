@@ -47,7 +47,7 @@ export class UpdatePublishingDto extends PartialType(CreatePublishingDto) {
 
   @ApiProperty({
     description: 'Status of the book',
-    example: 'reading',
+    example: 'accepted',
     enum: Status,
     required: false
   })

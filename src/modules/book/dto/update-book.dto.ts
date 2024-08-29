@@ -31,7 +31,7 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
 
   @ApiProperty({
     description: 'Status of the book',
-    example: 'reading',
+    example: 'accepted',
     enum: Status,
     required: false
   })

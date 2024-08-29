@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nestjs/common'
 import { BookService } from './book.service'
 import { CreateBookDto } from './dto/create-book.dto'
 import { UpdateBookDto } from './dto/update-book.dto'
@@ -9,6 +9,7 @@ import { Book } from './entities/book.entity'
 @ApiTags('book')
 @Controller('book')
 export class BookController {
+  private readonly logger = new Logger(BookService.name)
   constructor (private readonly bookService: BookService) {}
 
   @Post()
@@ -46,6 +47,7 @@ export class BookController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async findAll (): Promise<any> {
     try {
+      this.logger.error('FRFZFFF')
       const data = await this.bookService.findAll()
       return {
         success: true,

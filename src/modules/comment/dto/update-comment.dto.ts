@@ -23,7 +23,7 @@ export class UpdateCommentDto extends PartialType(CreateCommentDto) {
 
   @ApiProperty({
     description: 'Status of the book',
-    example: 'reading',
+    example: 'accepted',
     enum: Status,
     required: false
   })

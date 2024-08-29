@@ -35,6 +35,10 @@ export class CommentService {
         where: { user: { id: userId }, book: { id: bookId } }
       })
 
+      if (comment != null) {
+        comment.status = updateCommentDto.status
+      }
+
       if (comment != null && updateCommentDto.content != null) {
         comment.content = updateCommentDto.content
       }

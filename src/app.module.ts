@@ -137,7 +137,17 @@ export class AppModule {
       .apply(AuthenticateMiddleware)
       .exclude(
         { path: 'auth/login', method: RequestMethod.POST },
-        { path: 'auth/register', method: RequestMethod.POST }
+        { path: 'auth/register', method: RequestMethod.POST },
+        { path: 'saga', method: RequestMethod.GET },
+        { path: 'saga/:id', method: RequestMethod.GET },
+        { path: 'book', method: RequestMethod.GET },
+        { path: 'book/:id', method: RequestMethod.GET },
+        { path: 'author', method: RequestMethod.GET },
+        { path: 'author/:id', method: RequestMethod.GET },
+        { path: 'genre', method: RequestMethod.GET },
+        { path: 'genre/:id', method: RequestMethod.GET },
+        { path: 'publishing', method: RequestMethod.GET },
+        { path: 'publishing/:id', method: RequestMethod.GET }
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL })
   }
