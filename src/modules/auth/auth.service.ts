@@ -7,6 +7,8 @@ import { User } from '../user/entities/user.entity'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { type SignUpDto } from './dto/sign-up.dto'
+import { type RefreshTokenDto } from './dto/refresh-token.dto'
+import { type JwtPayload } from './interface/jwt-payload.interface'
 
 @Injectable()
 export class AuthService {
@@ -60,6 +62,32 @@ export class AuthService {
     } catch (error) {
       this.logger.error('Error registering user', error.stack)
       throw new HttpException('Failed to register user', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async refreshAccessToken (refreshTokenDto: RefreshTokenDto): Promise<{ access_token: string }> {
+    try {
+      const payload = await this.jwtService.verifyAsync(refreshTokenDto.refreshToken)
+      const user = await this.userService.findOne(payload.sub as number)
+
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      if (!user) {
+        throw new UnauthorizedException('User not found')
+      }
+
+      const newPayload: JwtPayload = {
+        sub: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      }
+
+      const accessToken = await this.jwtService.signAsync(newPayload)
+
+      return { access_token: accessToken }
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token')
     }
   }
 }

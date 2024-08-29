@@ -4,8 +4,10 @@ import { AuthGuard } from 'src/utils/guards/auth.guard'
 import { SignInDto } from './dto/sign-in.dto'
 import * as bcrypt from 'bcrypt'
 import { SignUpDto } from './dto/sign-up.dto'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import { RefreshTokenDto } from './dto/refresh-token.dto'
 
+@ApiBearerAuth()
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
@@ -14,7 +16,19 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async signIn (@Body() signInDto: SignInDto): Promise<any> {
-    return await this.authService.signIn(signInDto)
+    try {
+      const token = await this.authService.signIn(signInDto)
+      return {
+        success: true,
+        message: 'User Login Successfully',
+        data: token
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -43,5 +57,23 @@ export class AuthController {
   @Get('profile')
   getProfile (@Request() req): any {
     return req.user
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh')
+  async refreshAccessToken (@Body() refreshTokenDto: RefreshTokenDto): Promise<any> {
+    try {
+      const token = await this.authService.refreshAccessToken(refreshTokenDto)
+      return {
+        success: true,
+        message: 'Token Refreshed Successfully',
+        data: token
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
   }
 }
