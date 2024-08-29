@@ -8,8 +8,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  OneToMany,
-  JoinColumn
+  OneToMany
 } from 'typeorm'
 
 @Entity()
@@ -27,8 +26,7 @@ export class Author {
     lastName: string
 
   @ApiProperty({ type: () => Avatar })
-  @OneToOne(() => Avatar, avatar => avatar.author)
-  @JoinColumn()
+  @OneToOne(() => Avatar, avatar => avatar.author, { cascade: false, onDelete: 'SET NULL' })
     avatar: Avatar
 
   @ApiProperty()

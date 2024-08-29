@@ -1,16 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator'
-import { BookStatus } from '../entities/book-status.enum'
+import { UserBookStatus } from '../entities/user-book-status.enum'
 
 export class CreateUserBookDto {
   @ApiProperty({
     description: 'Status of the user book',
     example: 'reading',
-    enum: BookStatus
+    enum: UserBookStatus
   })
   @IsNotEmpty()
-  @IsEnum(BookStatus)
-    status: BookStatus
+  @IsEnum(UserBookStatus)
+    status: UserBookStatus
 
   @ApiProperty({
     description: 'Id of the book',

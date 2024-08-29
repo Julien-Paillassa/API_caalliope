@@ -54,5 +54,5 @@ data/
 .sentryclirc
 
 # Docker
-docker-compose.*
+#docker-compose.*
 configs/docker/Dockerfile.*

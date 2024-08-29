@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Status } from 'src/modules/admin/entities/status.enum'
 import { Book } from 'src/modules/book/entities/book.entity'
 import { User } from 'src/modules/user/entities/user.entity'
 import {
@@ -24,6 +25,14 @@ export class Comment {
   @ApiProperty()
   @Column()
     rating: number
+
+  @ApiProperty({ enum: Status, description: 'The status of the comment' })
+  @Column({
+    type: 'enum',
+    enum: Status,
+    default: Status.WAITING
+  })
+    status: Status
 
   @ApiProperty({ type: () => User })
   @ManyToOne(() => User, user => user.comment)

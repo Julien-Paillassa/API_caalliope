@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, Body, UseInterceptors, HttpException, HttpStatus, Logger, Param, Put, Delete } from '@nestjs/common'
+import { Controller, Post, UploadedFile, Body, UseInterceptors, HttpException, HttpStatus, Logger, Put, Delete } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { AvatarService } from './avatar.service'
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
@@ -20,9 +20,9 @@ export class AvatarController {
     private readonly avatarService: AvatarService,
     @InjectRepository(Author)
     private readonly authorRepository: Repository<Author>,
+    private readonly authorService: AuthorService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly authorService: AuthorService,
     private readonly userService: UserService
   ) {}
 
@@ -127,18 +127,6 @@ export class AvatarController {
     }
   }
 
-  private generateFilename (originalName: string, entity: any, entityType: 'author' | 'user'): string {
-    const lastDotIndex = originalName.lastIndexOf('.')
-    const fileExtension = originalName.substring(lastDotIndex)
-    return `${entity.firstName}-${entity.lastName}-id${entity.id}_avatar${fileExtension}`
-  }
-
-  private async saveFile (file: Express.Multer.File, directoryPath: string, filePath: string): Promise<void> {
-    await fsPromises.mkdir(directoryPath, { recursive: true })
-    await fsPromises.copyFile(file.path, filePath)
-    await fsPromises.unlink(file.path)
-  }
-
   @Put('update')
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
@@ -197,7 +185,7 @@ export class AvatarController {
           throw new HttpException('Avatar not found for this author', HttpStatus.NOT_FOUND)
         }
 
-        directoryPath += 'author/'
+        directoryPath += 'authors/'
         filename = `${author.firstName}-${author.lastName}-id${author.id}_avatar${file.originalname.slice(file.originalname.lastIndexOf('.'))}`
       } else if (Number(userId) !== 0) {
         const user = await this.userService.findOne(userId)
@@ -211,7 +199,7 @@ export class AvatarController {
           throw new HttpException('Avatar not found for this user', HttpStatus.NOT_FOUND)
         }
 
-        directoryPath += 'user/'
+        directoryPath += 'users/'
         filename = `${user.firstName}-${user.lastName}-id${user.id}_avatar${file.originalname.slice(file.originalname.lastIndexOf('.'))}`
       } else {
         throw new HttpException('Invalid authorId or userId', HttpStatus.BAD_REQUEST)
@@ -282,26 +270,8 @@ export class AvatarController {
 
       if (authorId !== 0) {
         avatar = await this.avatarService.findByAuthorId(authorId)
-
-        // Supprimer le fichier de l'avatar
-        const filePath = `./uploads/avatars/authors/${avatar.filename}`
-        try {
-          await fsPromises.unlink(filePath)
-        } catch (err) {
-          console.error('Error deleting file:', err)
-          throw new HttpException('Failed to delete file', HttpStatus.INTERNAL_SERVER_ERROR)
-        }
       } else if (userId !== 0) {
         avatar = await this.avatarService.findByUserId(userId)
-
-        // Supprimer le fichier de l'avatar
-        const filePath = `./uploads/avatars/users/${avatar.filename}`
-        try {
-          await fsPromises.unlink(filePath)
-        } catch (err) {
-          console.error('Error deleting file:', err)
-          throw new HttpException('Failed to delete file', HttpStatus.INTERNAL_SERVER_ERROR)
-        }
       }
 
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
@@ -312,6 +282,18 @@ export class AvatarController {
       // Supprimer l'avatar de la base de données
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await this.avatarService.deleteAvatar(avatar.id)
+
+      // Supprimer le fichier de l'avatar
+      const filePath = authorId !== 0
+        ? `./uploads/avatars/authors/${avatar.filename}`
+        : `./uploads/avatars/users/${avatar.filename}`
+
+      try {
+        await fsPromises.unlink(filePath)
+      } catch (err) {
+        console.error('Error deleting file:', err)
+        throw new HttpException('Failed to delete file', HttpStatus.INTERNAL_SERVER_ERROR)
+      }
 
       return {
         success: true,

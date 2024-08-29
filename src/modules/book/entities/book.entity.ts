@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Status } from 'src/modules/admin/entities/status.enum'
 import { Author } from 'src/modules/author/entities/author.entity'
 import { Comment } from 'src/modules/comment/entities/comment.entity'
 import { Cover } from 'src/modules/cover/entities/cover.entity'
@@ -38,9 +39,16 @@ export class Book {
   @Column()
     publicationDate: string
 
+  @ApiProperty({ enum: Status, description: 'The status of the book' })
+  @Column({
+    type: 'enum',
+    enum: Status,
+    default: Status.WAITING
+  })
+    status: Status
+
   @ApiProperty({ type: () => Cover })
-  @OneToOne(() => Cover, cover => cover.book, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @OneToOne(() => Cover, cover => cover.book, { cascade: false, onDelete: 'SET NULL' })
     cover: Cover
 
   @ApiProperty({ type: () => Author })

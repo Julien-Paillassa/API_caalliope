@@ -7,7 +7,7 @@ import { ApiBearerAuth, ApiTags, ApiOperation, ApiCreatedResponse, ApiUnauthoriz
 
 @ApiBearerAuth()
 @ApiTags('saga')
-@Controller('')
+@Controller('saga')
 export class SagaController {
   constructor (private readonly sagaService: SagaService) {}
 
@@ -43,9 +43,7 @@ export class SagaController {
     description: 'Sagas Fetched Successfully',
     type: [Saga]
   })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiForbiddenResponse({ description: 'Forbidden' })
   async findAll (): Promise<any> {
     try {
       const data = await this.sagaService.findAll()

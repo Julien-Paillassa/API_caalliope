@@ -6,7 +6,8 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  JoinColumn
 } from 'typeorm'
 
 @Entity()
@@ -17,10 +18,11 @@ export class Cover {
 
   @ApiProperty()
   @Column()
-    name: string
+    filename: string
 
   @ApiProperty({ type: () => Book })
-  @OneToOne(() => Book, book => book.cover)
+  @OneToOne(() => Book, book => book.cover, { onDelete: 'SET NULL', cascade: false })
+  @JoinColumn()
     book: Book
 
   @ApiProperty()

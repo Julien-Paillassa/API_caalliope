@@ -5,8 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Saga } from './entities/saga.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Saga])
-  ],
+  imports: [TypeOrmModule.forFeature([Saga])],
   controllers: [SagaController],
   providers: [SagaService],
   exports: [TypeOrmModule, SagaService]

@@ -1,7 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types'
 import { CreatePublishingDto } from './create-publishing.dto'
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNumber, IsString } from 'class-validator'
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { Status } from 'src/modules/admin/entities/status.enum'
 
 export class UpdatePublishingDto extends PartialType(CreatePublishingDto) {
   @ApiProperty({
@@ -43,4 +44,14 @@ export class UpdatePublishingDto extends PartialType(CreatePublishingDto) {
   })
   @IsString()
     publicationDate?: string
+
+  @ApiProperty({
+    description: 'Status of the book',
+    example: 'accepted',
+    enum: Status,
+    required: false
+  })
+  @IsNotEmpty()
+  @IsEnum(Status)
+    status: Status
 }

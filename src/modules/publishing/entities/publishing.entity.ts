@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsDate, IsNumber, IsString } from 'class-validator'
+import { Status } from 'src/modules/admin/entities/status.enum'
 import { Book } from 'src/modules/book/entities/book.entity'
 import { Format } from 'src/modules/format/entities/format.entity'
 import {
@@ -42,6 +43,14 @@ export class Publishing {
   @Column()
   @IsString()
     publicationDate: string
+
+  @ApiProperty({ enum: Status, description: 'The status of the publishing' })
+  @Column({
+    type: 'enum',
+    enum: Status,
+    default: Status.WAITING
+  })
+    status: Status
 
   @ApiProperty({ type: () => Book })
   @ManyToOne(() => Book, book => book.publishing)

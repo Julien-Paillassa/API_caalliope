@@ -26,7 +26,9 @@ export class UserService {
 
   async findAll (): Promise<User[]> {
     try {
-      return await this.userRepository.find()
+      return await this.userRepository.find({
+        relations: ['avatar']
+      })
     } catch (error) {
       this.logger.error('Error finding all users', error.stack)
       throw new HttpException('Failed to retrieve users', HttpStatus.INTERNAL_SERVER_ERROR)
@@ -35,7 +37,11 @@ export class UserService {
 
   async findOne (id: number): Promise<User | null> {
     try {
-      const user = await this.userRepository.findOneByOrFail({ id })
+      const user = await this.userRepository.findOneOrFail(
+        {
+          where: { id },
+          relations: ['avatar']
+        })
       return user
     } catch (error) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND)
