@@ -138,6 +138,7 @@ export class AppModule {
       .exclude(
         { path: 'auth/login', method: RequestMethod.POST },
         { path: 'auth/register', method: RequestMethod.POST },
+        { path: 'auth/refresh', method: RequestMethod.POST },
         { path: 'saga', method: RequestMethod.GET },
         { path: 'saga/:id', method: RequestMethod.GET },
         { path: 'book', method: RequestMethod.GET },

@@ -67,12 +67,16 @@ export class AuthService {
 
   async refreshAccessToken (refreshTokenDto: RefreshTokenDto): Promise<{ access_token: string }> {
     try {
-      const payload = await this.jwtService.verifyAsync(refreshTokenDto.refreshToken)
+      const payload = await this.jwtService.decode(refreshTokenDto.refreshToken)
       const user = await this.userService.findOne(payload.sub as number)
 
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (!user) {
         throw new UnauthorizedException('User not found')
+      }
+
+      if (payload.email !== user.email) {
+        throw new UnauthorizedException('Invalid refresh token')
       }
 
       const newPayload: JwtPayload = {
