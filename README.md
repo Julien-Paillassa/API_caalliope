@@ -23,7 +23,7 @@ cd projet-caaliope
 # Démarrer les services
 Pour démarrer les services, suivez ces étapes :
 
-Lancer les services avec Docker Compose
+## Lancer les services avec Docker Compose
 
 Utilisez Docker Compose pour construire et démarrer les services. Exécutez la commande suivante dans le répertoire racine du projet :
 
@@ -37,8 +37,8 @@ Construire l'image Docker pour l'API Node.js (api_caaliope).
 Démarrer les conteneurs pour l'API, la base de données PostgreSQL (database_caaliope_dev), et PgAdmin (interface_db_caaliope_dev).
 Accéder aux services
 
-API Node.js : http://localhost:3001
-PgAdmin : http://localhost:5050
+- API Node.js : http://localhost:3001
+- PgAdmin : http://localhost:5050
 Utilisez les identifiants suivants pour vous connecter à PgAdmin :
 
 Email : caaliope.dev@gmail.com
@@ -54,12 +54,12 @@ Une fois connecté, faites un clic droit sur "Servers" dans le panneau de gauche
 Dans la fenêtre "Create - Server",<vscode_annotation details='%5B%7B%22title%22%3A%22hardcoded-credentials%22%2C%22description%22%3A%22Embedding%20credentials%20in%20source%20code%20risks%20unauthorized%20access%22%7D%5D'> allez</vscode_annotation> à l'onglet "General" et donnez un nom à votre serveur, par exemple "CaaliopeDB".
 
 Allez à l'onglet "Connection" et remplissez les champs comme suit :
-Host name/address : db
-Port : 5432
-Maintenance database : database_caaliope_dev
-Username : caaliope
-Password : caaliope_dev*2024!
-Cliquez sur "Save" pour créer le serveur.
+- Host name/address : db
+- Port : 5432
+- Maintenance database : database_caaliope_dev
+- Username : caaliope
+- Password : caaliope_dev*2024!
+- Cliquez sur "Save" pour créer le serveur.
 Vous devriez maintenant voir votre base de données PostgreSQL apparaître sous "Servers" dans PgAdmin.
 
 ### Exécution des Fixtures
@@ -82,7 +82,7 @@ npm run fixtures
 
 Cette commande exécutera le script de fixtures et remplira la base de données avec des données de test.
 
-#### Quitter le conteneur
+### Quitter le conteneur
 
 Pour sortir du conteneur, utilisez :
 
@@ -90,7 +90,7 @@ Pour sortir du conteneur, utilisez :
 exit
 ```
 
-#### Arrêter les Services
+### Arrêter les Services
 Pour arrêter tous les services, exécutez :
 
 ``` bash
