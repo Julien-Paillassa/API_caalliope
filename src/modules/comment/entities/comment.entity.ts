@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Status } from 'src/modules/admin/entities/status.enum'
-import { Book } from 'src/modules/book/entities/book.entity'
-import { User } from 'src/modules/user/entities/user.entity'
+import { Status } from './../../admin/entities/status.enum'
+import { Book } from './../../book/entities/book.entity'
+import { User } from './../../user/entities/user.entity'
 import {
   Entity,
   Column,

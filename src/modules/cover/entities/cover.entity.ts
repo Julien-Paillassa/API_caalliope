@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Book } from 'src/modules/book/entities/book.entity'
+import { Book } from './../../book/entities/book.entity'
 import {
   Entity,
   Column,

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Avatar } from '../../avatar/entities/avatar.entity'
-import { Subscription } from 'src/modules/subscription/entities/subscription.entity'
-import { Possess } from 'src/modules/possess/entities/possess.entity'
-import { Comment } from 'src/modules/comment/entities/comment.entity'
+import { Subscription } from './../../subscription/entities/subscription.entity'
+import { Possess } from './../../possess/entities/possess.entity'
+import { Comment } from './../../comment/entities/comment.entity'
 import {
   Entity,
   Column,
@@ -15,7 +15,7 @@ import {
   JoinTable
 } from 'typeorm'
 import { UserRole } from './user-role.enum'
-import { UserBook } from 'src/modules/user-book/entities/user-book.entity'
+import { UserBook } from './../../user-book/entities/user-book.entity'
 
 @Entity()
 export class User {

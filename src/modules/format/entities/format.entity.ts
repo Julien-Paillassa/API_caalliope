@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Publishing } from 'src/modules/publishing/entities/publishing.entity'
+import { Publishing } from './../../publishing/entities/publishing.entity'
 import {
   Entity,
   Column,

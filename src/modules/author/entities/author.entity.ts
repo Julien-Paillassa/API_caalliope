@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Avatar } from 'src/modules/avatar/entities/avatar.entity'
-import { Book } from 'src/modules/book/entities/book.entity'
+import { Avatar } from './../../avatar/entities/avatar.entity'
+import { Book } from './../../book/entities/book.entity'
 import {
   Entity,
   Column,

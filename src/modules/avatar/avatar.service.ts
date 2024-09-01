@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { Avatar } from './entities/avatar.entity'
-import { Author } from 'src/modules/author/entities/author.entity'
+import { Author } from './../author/entities/author.entity'
 import { User } from '../user/entities/user.entity'
 
 @Injectable()

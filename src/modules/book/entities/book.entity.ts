@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Status } from 'src/modules/admin/entities/status.enum'
-import { Author } from 'src/modules/author/entities/author.entity'
-import { Comment } from 'src/modules/comment/entities/comment.entity'
-import { Cover } from 'src/modules/cover/entities/cover.entity'
-import { Genre } from 'src/modules/genre/entities/genre.entity'
-import { Possess } from 'src/modules/possess/entities/possess.entity'
-import { Publishing } from 'src/modules/publishing/entities/publishing.entity'
-import { UserBook } from 'src/modules/user-book/entities/user-book.entity'
+import { Status } from './../../admin/entities/status.enum'
+import { Author } from './../../author/entities/author.entity'
+import { Comment } from './../../comment/entities/comment.entity'
+import { Cover } from './../../cover/entities/cover.entity'
+import { Genre } from './../../genre/entities/genre.entity'
+import { Possess } from './../../possess/entities/possess.entity'
+import { Publishing } from './../../publishing/entities/publishing.entity'
+import { UserBook } from './../../user-book/entities/user-book.entity'
 import {
   Entity,
   Column,

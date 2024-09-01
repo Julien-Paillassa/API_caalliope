@@ -62,7 +62,7 @@ export class CommentService {
     try {
       return await this.commentRepository.find({
         where: { book: { id: bookId } },
-        relations: ['user']
+        relations: ['user', 'user.avatar']
       })
     } catch (error) {
       this.logger.error('Error getting book comments', error.stack)

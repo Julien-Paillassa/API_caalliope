@@ -38,6 +38,7 @@
     "src/modules/admin/entities/status.enum.ts",
     "src/modules/book/book.controller.ts",
     "src/modules/book/book.module.ts",
+    "src/modules/book/book.service.ts",
     "src/modules/format/format.controller.ts",
     "src/modules/format/format.module.ts",
     "src/modules/genre/genre.controller.ts",
