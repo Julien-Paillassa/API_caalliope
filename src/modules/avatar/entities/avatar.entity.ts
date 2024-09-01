@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Author } from 'src/modules/author/entities/author.entity'
+import { Author } from './../../author/entities/author.entity'
 import { User } from '../../user/entities/user.entity'
 import {
   Entity,

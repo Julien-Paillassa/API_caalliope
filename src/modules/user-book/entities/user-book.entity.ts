@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsEnum } from 'class-validator'
-import { Book } from 'src/modules/book/entities/book.entity'
-import { User } from 'src/modules/user/entities/user.entity'
+import { Book } from './../../book/entities/book.entity'
+import { User } from './../../user/entities/user.entity'
 import {
   Entity,
   PrimaryGeneratedColumn,

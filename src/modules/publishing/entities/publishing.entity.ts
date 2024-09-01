@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { IsDate, IsNumber, IsString } from 'class-validator'
-import { Status } from 'src/modules/admin/entities/status.enum'
-import { Book } from 'src/modules/book/entities/book.entity'
-import { Format } from 'src/modules/format/entities/format.entity'
+import { Status } from './../../admin/entities/status.enum'
+import { Book } from './../../book/entities/book.entity'
+import { Format } from './../../format/entities/format.entity'
 import {
   Entity,
   Column,

@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types'
 import { CreateBookDto } from './create-book.dto'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator'
-import { Status } from 'src/modules/admin/entities/status.enum'
+import { Status } from './../../admin/entities/status.enum'
 
 export class UpdateBookDto extends PartialType(CreateBookDto) {
   @ApiProperty({

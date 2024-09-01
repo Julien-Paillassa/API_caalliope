@@ -2,7 +2,7 @@ import { PartialType } from '@nestjs/mapped-types'
 import { CreateCommentDto } from './create-comment.dto'
 import { ApiProperty } from '@nestjs/swagger'
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
-import { Status } from 'src/modules/admin/entities/status.enum'
+import { Status } from './../../admin/entities/status.enum'
 
 export class UpdateCommentDto extends PartialType(CreateCommentDto) {
   @ApiProperty({
