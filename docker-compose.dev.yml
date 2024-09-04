@@ -5,23 +5,21 @@ services:
     container_name: api_caaliope
     build:
       dockerfile: Dockerfile.dev
-    env_file: 
+    env_file:
       - ./.env.local
     ports:
       - '3001:3001'
     volumes:
       - .:/usr/src/app
       - node_modules:/usr/src/app/node_modules
-      - uploads:/usr/src/app/uploads
-      #- app:/usr/src/app
-      #- node_modules:/usr/src/app/node_modules  # Synchronise le répertoire de travail avec le conteneur
+      - ./src/uploads:/usr/src/app/uploads
     command: npm run dev
     depends_on:
       - db
 
   db:
     container_name: database_caaliope_dev
-    image: postgres:latest
+    image: postgres:15
     environment:
       POSTGRES_DB: database_caaliope_dev
       POSTGRES_USER: caaliope
@@ -47,4 +45,4 @@ services:
 volumes:
   postgres_data:
   node_modules:
-  uploads:
+  uploads: # Volume pour les uploads
