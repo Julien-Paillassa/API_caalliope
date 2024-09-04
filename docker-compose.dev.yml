@@ -5,12 +5,16 @@ services:
     container_name: api_caalliope
     build:
       dockerfile: Dockerfile.dev
+    env_file:
+      - ./.env.local
     ports:
       - '3001:3001'
     volumes:
       - .:/usr/src/app
       - node_modules:/usr/src/app/node_modules
-      - ./src/uploads:/usr/src/app/uploads
+      - uploads:/usr/src/app/uploads
+      #- app:/usr/src/app
+      #- node_modules:/usr/src/app/node_modules  # Synchronise le répertoire de travail avec le conteneur
     command: npm run dev
     depends_on:
       - db_dev
@@ -56,4 +60,4 @@ services:
 volumes:
   postgres_data:
   node_modules:
-  uploads: # Volume pour les uploads
+  uploads:
