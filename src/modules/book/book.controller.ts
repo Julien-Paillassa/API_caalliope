@@ -47,7 +47,6 @@ export class BookController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async findAll (): Promise<any> {
     try {
-      this.logger.error('FRFZFFF')
       const data = await this.bookService.findAll()
       return {
         success: true,
@@ -55,6 +54,7 @@ export class BookController {
         message: 'Books Fetched Successfully'
       }
     } catch (error) {
+      this.logger.error(error)
       return {
         success: false,
         message: error.message
