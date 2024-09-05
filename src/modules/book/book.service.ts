@@ -26,7 +26,9 @@ export class BookService {
 
   async findAll (): Promise<Book[]> {
     try {
-      return await this.bookRepository.find()
+      return await this.bookRepository.find({
+        relations: ['author', 'genre', 'publishing', 'comment', 'userBook']
+      })
     } catch (error) {
       this.logger.error('Error finding all books', error.stack)
       throw new HttpException('Failed to retrieve books', HttpStatus.INTERNAL_SERVER_ERROR)

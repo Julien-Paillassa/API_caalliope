@@ -53,6 +53,9 @@ import { MulterModule } from '@nestjs/platform-express'
 import { CoverModule } from './modules/cover/cover.module'
 import { CoverController } from './modules/cover/cover.controller'
 import { CoverService } from './modules/cover/cover.service'
+import { StripeModule } from './modules/stripe/stripe.module'
+import { StripeController } from './modules/stripe/stripe.controller'
+import { StripeService } from './modules/stripe/stripe.service'
 
 @Module({
   imports: [
@@ -68,6 +71,7 @@ import { CoverService } from './modules/cover/cover.service'
     CommentModule,
     AvatarModule,
     CoverModule,
+    StripeModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'db',
@@ -114,7 +118,8 @@ import { CoverService } from './modules/cover/cover.service'
     UserBookController,
     CommentController,
     AvatarController,
-    CoverController
+    CoverController,
+    StripeController
   ],
   providers: [
     AppService,
@@ -128,7 +133,8 @@ import { CoverService } from './modules/cover/cover.service'
     UserBookService,
     CommentService,
     AvatarService,
-    CoverService
+    CoverService,
+    StripeService
   ]
 })
 export class AppModule {
@@ -148,7 +154,9 @@ export class AppModule {
         { path: 'genre', method: RequestMethod.GET },
         { path: 'genre/:id', method: RequestMethod.GET },
         { path: 'publishing', method: RequestMethod.GET },
-        { path: 'publishing/:id', method: RequestMethod.GET }
+        { path: 'publishing/:id', method: RequestMethod.GET },
+        { path: 'stripe/payment-intent', method: RequestMethod.POST },
+        { path: 'stripe/create-checkout-session', method: RequestMethod.POST }
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL })
   }

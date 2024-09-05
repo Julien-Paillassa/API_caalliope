@@ -1,0 +1,5 @@
+export const stripeConfig = {
+  secretKey: 'sk_test_51MRtOJAGoQFo1sGmvMU0yGuJ2aX3Hz0yLhnSs3nXKB1x6f2kkjfPujGxyhseUtRjnNXYMqKIXVscR4Z0plXouWiV00YyVrY2U4',
+  publicKey: 'pk_test_51MRtOJAGoQFo1sGmJTl83iKv6B9S24CxTYE64SzeoahKifATctHmaBifnn0V9d057uKsV1uPZ3wLSAiVkqGtoZSi00ivQA2BSV',
+  endpointSecret: 'whsec_c400668053295ecd639d14e67f98c80fa8b29838be89a12ccac54ac1687d2438'
+}

@@ -7,7 +7,7 @@ import { Repository } from 'typeorm'
 
 @Injectable()
 export class AuthorService {
-  private readonly logger = new Logger(AbortController.name)
+  private readonly logger = new Logger(AuthorService.name)
 
   constructor (
     @InjectRepository(Author)
