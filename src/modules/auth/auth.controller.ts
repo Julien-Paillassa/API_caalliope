@@ -64,6 +64,7 @@ export class AuthController {
   async refreshAccessToken (@Body() refreshTokenDto: RefreshTokenDto): Promise<any> {
     try {
       const token = await this.authService.refreshAccessToken(refreshTokenDto)
+      console.log(token, 'tooooooooken');
       return {
         success: true,
         message: 'Token Refreshed Successfully',

@@ -1,18 +1,15 @@
-import { Module } from '@nestjs/common'
+import {forwardRef, Module} from '@nestjs/common'
 import { BookService } from './book.service'
 import { BookController } from './book.controller'
 import { Book } from './entities/book.entity'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import {OrchestratorService} from "./ochestrator.service";
-import {AuthorModule} from "../author/author.module";
-import {PublishingModule} from "../publishing/publishing.module";
-import {CoverModule} from "../cover/cover.module";
-import {FormatModule} from "../format/format.module";
+import {OrchestratorModule} from "../orchestrator/orchestrator.module";
+import {CoreModule} from "../../core.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Book]), AuthorModule, FormatModule, CoverModule, PublishingModule],
+  imports: [TypeOrmModule.forFeature([Book]), forwardRef(() => OrchestratorModule)],
   controllers: [BookController],
-  providers: [BookService, OrchestratorService],
+  providers: [BookService],
   exports: [TypeOrmModule, BookService]
 })
 export class BookModule {}

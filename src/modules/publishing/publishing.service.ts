@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Publishing } from './entities/publishing.entity'
 import { Repository } from 'typeorm'
 import {Status} from "../admin/entities/status.enum";
+import {PublishingFactory} from "./publishing.factory";
 
 @Injectable()
 export class PublishingService {
@@ -14,16 +15,6 @@ export class PublishingService {
     @InjectRepository(Publishing)
     private readonly publishingRepository: Repository<Publishing>
   ) {}
-
-  async create (createPublishingDto: CreatePublishingDto): Promise<Publishing> {
-    try {
-      const publishing = this.publishingRepository.create(createPublishingDto)
-      return await this.publishingRepository.save(publishing)
-    } catch (error) {
-      this.logger.error('Error creating publishing', error.stack)
-      throw new HttpException('Failed to create publishing', HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-  }
 
   async findAll (): Promise<Publishing[]> {
     try {
@@ -51,7 +42,13 @@ export class PublishingService {
         throw new HttpException('Publishing not found', HttpStatus.NOT_FOUND)
       }
 
-      this.publishingRepository.merge(existingPublishing, updatePublishingDto)
+      const formatedUpdateDto = PublishingFactory.createDefaultPublishing({
+        ...updatePublishingDto,
+        format: undefined,
+        nbPages: parseInt(updatePublishingDto.nbPages || '0')
+      })
+
+      this.publishingRepository.merge(existingPublishing, formatedUpdateDto)
       return await this.publishingRepository.save(existingPublishing)
     } catch (error) {
       this.logger.error('Error updating publishing', error.stack)

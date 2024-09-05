@@ -51,7 +51,6 @@ import { MulterModule } from '@nestjs/platform-express'
 import { CoverModule } from './modules/cover/cover.module'
 import { CoverController } from './modules/cover/cover.controller'
 import { CoverService } from './modules/cover/cover.service'
-import { OrchestratorService } from './modules/book/ochestrator.service'
 import { StripeModule } from './modules/stripe/stripe.module'
 import { StripeController } from './modules/stripe/stripe.controller'
 import { StripeService } from './modules/stripe/stripe.service'
@@ -60,6 +59,9 @@ import { GoogleBookService } from './modules/google-book/google-book.service'
 import { GoogleBookController } from './modules/google-book/google-book.controller'
 
 import * as dotenv from 'dotenv'
+import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
+import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
+import { CoreModule } from './core.module'
 
 dotenv.config()
 let dbConfig: { host?: any, username?: any, password?: any, database?: any } = {}
@@ -98,6 +100,7 @@ console.log(dbConfig)
 
 @Module({
   imports: [
+    CoreModule,
     UserModule,
     AuthModule,
     AuthorModule,
@@ -112,6 +115,7 @@ console.log(dbConfig)
     CoverModule,
     StripeModule,
     GoogleBookModule,
+    OrchestratorModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: dbConfig.host,
@@ -161,6 +165,7 @@ console.log(dbConfig)
     GoogleBookController
   ],
   providers: [
+    OrchestratorService,
     AppService,
     UserService,
     AuthorService,

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import {
   IsNotEmpty,
   IsString,
-  IsNumber
+  IsNumber, IsOptional, IsIn
 } from 'class-validator'
 
 export class CreatePublishingDto {
@@ -12,15 +12,15 @@ export class CreatePublishingDto {
   })
   @IsNotEmpty()
   @IsString()
-    label: string
+  editor: string
 
   @ApiProperty({
     description: 'Language of the publishing',
     example: 'French'
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-    language: string
+    language?: string
 
   @ApiProperty({
     description: 'ISBN of the publishing',
@@ -35,8 +35,8 @@ export class CreatePublishingDto {
     example: 200
   })
   @IsNotEmpty()
-  @IsNumber()
-    nbPages: number
+  @IsString()
+    nbPages: string
 
   @ApiProperty({
     description: 'Publication date of the publishing',
@@ -44,5 +44,14 @@ export class CreatePublishingDto {
   })
   @IsNotEmpty()
   @IsString()
-    publicationDate: string
+    date: string
+
+  @ApiProperty({
+    description: 'Format of the book',
+    example: 'paper',
+    enum: ['paper', 'ebook', 'audio'],
+  })
+  @IsNotEmpty()
+  @IsIn(['paper', 'ebook', 'audio'], { message: 'Invalid format' })
+  format: 'paper' | 'ebook' | 'audio';
 }

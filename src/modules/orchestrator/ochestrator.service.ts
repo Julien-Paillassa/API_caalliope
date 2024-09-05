@@ -1,22 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import { CreateBookDto } from './dto/create-book.dto';
-import { Book } from './entities/book.entity';
+import {forwardRef, Inject, Injectable} from "@nestjs/common";
 import {AuthorService} from "../author/author.service";
-import {BookService} from "./book.service";
+import {BookService} from "../book/book.service";
 import {CoverService} from "../cover/cover.service";
 import {PublishingService} from "../publishing/publishing.service";
 import {FormatService} from "../format/format.service";
-import {BookFactory} from "./book.factory";
+import {CreateBookDto} from "../book/dto/create-book.dto";
+import {Book} from "../book/entities/book.entity";
+import {BookFactory} from "../book/book.factory";
 import {FormatFactory} from "../format/format.factory";
 import {PublishingFactory} from "../publishing/publishing.factory";
+import {CreatePublishingDto} from "../publishing/dto/create-publishing.dto";
+import {Publishing} from "../publishing/entities/publishing.entity";
 
 @Injectable()
 export class OrchestratorService {
     constructor(
+        @Inject(forwardRef(() => AuthorService))
         private readonly authorService: AuthorService,
+        @Inject(forwardRef(() => BookService))
         private readonly bookService: BookService,
+        @Inject(forwardRef(() => CoverService))
         private readonly coverService: CoverService,
+        @Inject(forwardRef(() => PublishingService))
         private readonly publishingService: PublishingService,
+        @Inject(forwardRef(() => FormatService))
         private readonly formatService: FormatService
     ) {}
 
@@ -53,5 +60,21 @@ export class OrchestratorService {
         book = await this.bookService.save(book);
 
         return book;
+    }
+
+    async createPublishingEntities(createPublishingDto: CreatePublishingDto): Promise<Publishing> {
+        const format = await this.formatService.createOrFindFormat(FormatFactory.createDefaultFormat({
+            type: createPublishingDto.format,
+            language: createPublishingDto.language || 'No language provided yet'
+        }));
+
+        return await this.publishingService.createPublishing(PublishingFactory.createDefaultPublishing({
+            label: createPublishingDto.editor,
+            language: createPublishingDto.language || 'No language provided yet',
+            isbn: createPublishingDto.isbn,
+            nbPages: parseInt(createPublishingDto.nbPages),
+            publicationDate: createPublishingDto.date,
+            format: format,
+        }));
     }
 }

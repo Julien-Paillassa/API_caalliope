@@ -1,15 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import {Controller, Get, Post, Body, Patch, Param, Delete, Inject, forwardRef} from '@nestjs/common'
 import { PublishingService } from './publishing.service'
 import { CreatePublishingDto } from './dto/create-publishing.dto'
 import { UpdatePublishingDto } from './dto/update-publishing.dto'
 import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Publishing } from './entities/publishing.entity'
+import {OrchestratorService} from "../orchestrator/ochestrator.service";
 
 @ApiBearerAuth()
 @ApiTags('publishing')
 @Controller('publishing')
 export class PublishingController {
-  constructor (private readonly publishingService: PublishingService) {}
+  constructor (private readonly publishingService: PublishingService,
+               @Inject(forwardRef(() => OrchestratorService))
+               private readonly orchestratorService: OrchestratorService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create publishing' })
@@ -22,7 +25,7 @@ export class PublishingController {
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async create (@Body() createPublishingDto: CreatePublishingDto): Promise<any> {
     try {
-      const publishing = await this.publishingService.create(createPublishingDto)
+      const publishing = await this.orchestratorService.createPublishingEntities(createPublishingDto)
       return {
         success: true,
         message: 'Publishing Created Successfully',

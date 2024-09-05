@@ -34,8 +34,8 @@ export class UpdatePublishingDto extends PartialType(CreatePublishingDto) {
     example: 250,
     required: false
   })
-  @IsNumber()
-    nbPages?: number
+  @IsString()
+    nbPages?: string
 
   @ApiProperty({
     description: 'Publication date of the publishing',

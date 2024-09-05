@@ -1,4 +1,16 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, Logger, UseInterceptors, UploadedFile} from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Logger,
+  UseInterceptors,
+  UploadedFile,
+  forwardRef, Inject
+} from '@nestjs/common'
 import { BookService } from './book.service'
 import { CreateBookDto } from './dto/create-book.dto'
 import { UpdateBookDto } from './dto/update-book.dto'
@@ -15,17 +27,19 @@ import {
   ApiConsumes
 } from '@nestjs/swagger'
 import { Book } from './entities/book.entity'
-import {OrchestratorService} from "./ochestrator.service";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
 import { extname } from 'path'
+import {OrchestratorService} from "../orchestrator/ochestrator.service";
 
 @ApiBearerAuth()
 @ApiTags('book')
 @Controller('book')
 export class BookController {
   private readonly logger = new Logger(BookService.name)
-  constructor (private readonly bookService: BookService, private readonly orchestratorService: OrchestratorService) {}
+  constructor (private readonly bookService: BookService,
+               private readonly orchestratorService: OrchestratorService
+  ) {}
 
   @Post()
   @ApiConsumes('multipart/form-data')
