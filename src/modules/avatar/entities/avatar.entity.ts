@@ -13,6 +13,7 @@ import {
 
 @Entity()
 export class Avatar {
+
   @ApiProperty()
   @PrimaryGeneratedColumn()
     id: number

@@ -87,4 +87,15 @@ export class FormatService {
       throw new HttpException('Failed to remove format', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
+
+  async createOrFindFormat(createFormatDto: Partial<Format>): Promise<Format> {
+    let format = await this.formatRepository.findOne({ where: { type: createFormatDto?.type } });
+
+    if (!format) {
+      format = this.formatRepository.create({ type: createFormatDto.type, language: createFormatDto.language });
+      await this.formatRepository.save(format);
+    }
+
+    return format;
+  }
 }

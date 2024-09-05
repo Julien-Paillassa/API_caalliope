@@ -51,6 +51,7 @@ import { MulterModule } from '@nestjs/platform-express'
 import { CoverModule } from './modules/cover/cover.module'
 import { CoverController } from './modules/cover/cover.controller'
 import { CoverService } from './modules/cover/cover.service'
+import { OrchestratorService } from './modules/book/ochestrator.service'
 import { StripeModule } from './modules/stripe/stripe.module'
 import { StripeController } from './modules/stripe/stripe.controller'
 import { StripeService } from './modules/stripe/stripe.service'
@@ -164,6 +165,7 @@ console.log(dbConfig)
     UserService,
     AuthorService,
     BookService,
+    OrchestratorService,
     FormatService,
     GenreService,
     PublishingService,

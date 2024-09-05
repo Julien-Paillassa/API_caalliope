@@ -4,6 +4,7 @@ import { type UpdatePublishingDto } from './dto/update-publishing.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Publishing } from './entities/publishing.entity'
 import { Repository } from 'typeorm'
+import {Status} from "../admin/entities/status.enum";
 
 @Injectable()
 export class PublishingService {
@@ -77,5 +78,20 @@ export class PublishingService {
       }
       throw new HttpException('Failed to remove publishing', HttpStatus.INTERNAL_SERVER_ERROR)
     }
+  }
+
+  async createPublishing(createPublishingDto: Partial<Publishing>): Promise<Publishing> {
+    const publishing = this.publishingRepository.create({
+      label: createPublishingDto.label,
+      language: createPublishingDto.language || 'No language provided yet',
+      isbn: createPublishingDto.isbn,
+      nbPages: createPublishingDto.nbPages,
+      publicationDate: createPublishingDto.publicationDate,
+      book: createPublishingDto.book,
+      format: createPublishingDto.format,
+      status: Status.WAITING,
+    });
+
+    return this.publishingRepository.save(publishing);
   }
 }

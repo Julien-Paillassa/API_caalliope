@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import {
   IsNotEmpty,
   IsString,
-  IsEmail
+  IsEmail, IsDefined
 } from 'class-validator'
 
 export class CreateAuthorDto {
@@ -10,7 +10,7 @@ export class CreateAuthorDto {
     description: 'First name of the author',
     example: 'John'
   })
-  @IsNotEmpty()
+  @IsDefined()
   @IsString()
     firstName: string
 
@@ -18,15 +18,19 @@ export class CreateAuthorDto {
     description: 'Last name of the author',
     example: 'Smith'
   })
-  @IsNotEmpty()
+  @IsDefined()
   @IsString()
     lastName: string
+
+  @IsNotEmpty()
+  @IsString()
+  fullName: string
 
   @ApiProperty({
     description: 'Email address of the author',
     example: 'john.smith@exemple.com'
   })
-  @IsNotEmpty()
+  @IsDefined()
   @IsEmail()
     email: string
 
@@ -34,7 +38,7 @@ export class CreateAuthorDto {
     description: 'Birth date of the author',
     example: '1970-01-01'
   })
-  @IsNotEmpty()
+  @IsDefined()
   @IsString()
     birthDate: string
 }
