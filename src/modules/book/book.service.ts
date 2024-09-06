@@ -26,9 +26,13 @@ export class BookService {
 
   async findAll (): Promise<Book[]> {
     try {
-      return await this.bookRepository.find({
-        relations: ['author', 'genre', 'publishing', 'comment', 'userBook']
-      })
+      return await this.bookRepository.createQueryBuilder('book')
+        .leftJoinAndSelect('book.cover', 'cover')
+        .leftJoin('book.publishing', 'publishing')
+        .where('publishing.id IS NOT NULL')
+        .andWhere('cover.id IS NOT NULL')
+        .select(['book.id', 'cover'])
+        .getMany()
     } catch (error) {
       this.logger.error('Error finding all books', error.stack)
       throw new HttpException('Failed to retrieve books', HttpStatus.INTERNAL_SERVER_ERROR)
@@ -37,7 +41,17 @@ export class BookService {
 
   async findOne (id: number): Promise<Book | null> {
     try {
-      const book = await this.bookRepository.findOneByOrFail({ id })
+      const book = await this.bookRepository.findOne({
+        where: { id },
+        relations: [
+          'cover',
+          'author',
+          'comment',
+          'genre',
+          'userBook',
+          'publishing'
+        ]
+      })
       return book
     } catch (error) {
       throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
