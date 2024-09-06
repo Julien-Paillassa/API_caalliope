@@ -15,8 +15,6 @@ import { JwtModule } from '@nestjs/jwt'
 import { jwtConstants } from './modules/auth/constantes'
 import { AuthenticateMiddleware } from './utils/middlewares/authenticate.middleware'
 import { Avatar } from './modules/avatar/entities/avatar.entity'
-import { Subscription } from './modules/subscription/entities/subscription.entity'
-import { Possess } from './modules/possess/entities/possess.entity'
 import { Cover } from './modules/cover/entities/cover.entity'
 import { Genre } from './modules/genre/entities/genre.entity'
 import { AuthorModule } from './modules/author/author.module'
@@ -87,8 +85,6 @@ import { StripeService } from './modules/stripe/stripe.service'
         Book,
         Author,
         Avatar,
-        Subscription,
-        Possess,
         Cover,
         Genre,
         Publishing,
