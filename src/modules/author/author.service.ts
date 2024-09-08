@@ -4,7 +4,7 @@ import { type UpdateAuthorDto } from './dto/update-author.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Author } from './entities/author.entity'
 import { Repository } from 'typeorm'
-import {AuthorFactory} from "./author.factory";
+import { AuthorFactory } from './author.factory'
 
 @Injectable()
 export class AuthorService {
@@ -88,14 +88,14 @@ export class AuthorService {
     }
   }
 
-  async createOrFindAuthor(createAuthorDto: { fullName: string }): Promise<Author> {
-    let author = await this.authorRepository.findOne({ where: { fullName: createAuthorDto.fullName } });
+  async createOrFindAuthor (createAuthorDto: { fullName: string }): Promise<Author> {
+    let author = await this.authorRepository.findOne({ where: { fullName: createAuthorDto.fullName } })
 
-    if (!author) {
-      author = this.authorRepository.create(AuthorFactory.createDefaultAuthor({ fullName: createAuthorDto.fullName }));
-      await this.authorRepository.save(author);
+    if (author == null) {
+      author = this.authorRepository.create(AuthorFactory.createDefaultAuthor({ fullName: createAuthorDto.fullName }))
+      await this.authorRepository.save(author)
     }
 
-    return author;
+    return author
   }
 }
