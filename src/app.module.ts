@@ -54,6 +54,41 @@ import { CoverService } from './modules/cover/cover.service'
 import { StripeModule } from './modules/stripe/stripe.module'
 import { StripeController } from './modules/stripe/stripe.controller'
 import { StripeService } from './modules/stripe/stripe.service'
+
+dotenv.config()
+let dbConfig: { host?: any, username?: any, password?: any, database?: any } = {}
+
+const getDatabaseConfig = (): { host?: any, username?: any, password?: any, database?: any } => {
+  const env = process.env.NODE_ENV
+
+  if (env === 'dev') {
+    return {
+      host: process.env.DATABASE_HOST_DEV,
+      username: process.env.DATABASE_USERNAME_DEV,
+      password: process.env.DATABASE_PASSWORD_DEV,
+      database: process.env.DATABASE_NAME_DEV
+    }
+  } else if (env === 'test') {
+    return {
+      host: process.env.DATABASE_HOST_TEST,
+      username: process.env.DATABASE_USERNAME_TEST,
+      password: process.env.DATABASE_PASSWORD_TEST,
+      database: process.env.DATABASE_NAME_TEST
+    }
+  } else if (env === 'prod') {
+    return {
+      host: process.env.DATABASE_HOST_PROD,
+      username: process.env.DATABASE_USERNAME_PROD,
+      password: process.env.DATABASE_PASSWORD_PROD,
+      database: process.env.DATABASE_NAME_PROD
+    }
+  }
+
+  return {}
+}
+
+dbConfig = getDatabaseConfig()
+console.log(dbConfig)
 import { GoogleBookModule } from './modules/google-book/google-book.module'
 import { GoogleBookService } from './modules/google-book/google-book.service'
 import { GoogleBookController } from './modules/google-book/google-book.controller'
@@ -87,14 +122,11 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
     OrchestratorModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DATABASE_HOST,
+      host: dbConfig.host,
       port: 5432,
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-      ssl: {
-        rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
-      },
+      username: dbConfig.username,
+      password: dbConfig.password,
+      database: dbConfig.database,
       entities: [
         User,
         Saga,

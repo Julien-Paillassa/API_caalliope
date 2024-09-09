@@ -12,7 +12,7 @@ import { join } from 'path'
 import * as cookieParser from 'cookie-parser'
 
 async function bootstrap (): Promise<void> {
-  dotenv.config({ path: '.env.local' })
+  dotenv.config({ path: '.env' })
 
   const app = await NestFactory.create(AppModule, {
     cors: {

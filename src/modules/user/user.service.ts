@@ -6,6 +6,7 @@ import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
 import { BookService } from '../book/book.service'
 
+
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(AbortController.name)
@@ -37,7 +38,7 @@ export class UserService {
     }
   }
 
-  async findOne (id: number): Promise<any | null> {
+  async findOne (id: number): Promise<User | null> {
     try {
       this.logger.log(`Finding user with id ${id}`)
       const user = await this.userRepository.findOneOrFail(
