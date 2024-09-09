@@ -5,8 +5,6 @@ services:
     container_name: api_caaliope
     build:
       dockerfile: Dockerfile.dev
-    env_file:
-      - ./.env.local
     ports:
       - '3001:3001'
     volumes:
@@ -15,19 +13,32 @@ services:
       - ./src/uploads:/usr/src/app/uploads
     command: npm run dev
     depends_on:
-      - db
+      - db_dev
+      - db_test
 
-  db:
+  db_dev:
     container_name: database_caaliope_dev
     image: postgres:15
     environment:
       POSTGRES_DB: database_caaliope_dev
-      POSTGRES_USER: caaliope
+      POSTGRES_USER: caaliope_dev
       POSTGRES_PASSWORD: caaliope_dev*2024!
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - '5432:5432'
+
+  db_test:
+    container_name: database_caaliope_test
+    image: postgres:15
+    environment:
+      POSTGRES_DB: database_caaliope_test
+      POSTGRES_USER: caaliope_test
+      POSTGRES_PASSWORD: caaliope_test*2024!
+    ports:
+      - '5433:5432'
+    depends_on:
+      - db_dev
 
   interface_db:
     container_name: interface_db_caaliope_dev
@@ -40,7 +51,7 @@ services:
     ports:
       - '5050:80'
     depends_on:
-      - db
+      - db_dev
 
 volumes:
   postgres_data:

@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Avatar } from '../../avatar/entities/avatar.entity'
-import { Subscription } from './../../subscription/entities/subscription.entity'
-import { Possess } from './../../possess/entities/possess.entity'
 import { Comment } from './../../comment/entities/comment.entity'
 import {
   Entity,
@@ -10,9 +8,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  ManyToMany,
-  OneToMany,
-  JoinTable
+  OneToMany
 } from 'typeorm'
 import { UserRole } from './user-role.enum'
 import { UserBook } from './../../user-book/entities/user-book.entity'
@@ -58,16 +54,6 @@ export class User {
   @ApiProperty({ type: () => UserBook })
   @OneToMany(() => UserBook, userBook => userBook.user)
     userBook: UserBook[]
-
-  @ApiProperty({ type: () => Subscription })
-  @ManyToMany(() => Subscription, subscription => subscription.user)
-  @JoinTable()
-    subscription: Subscription[]
-
-  @ApiProperty({ type: () => Possess })
-  @ManyToMany(() => Possess, possess => possess.user)
-  @JoinTable()
-    possess: Possess[]
 
   @ApiProperty({ type: () => Comment })
   @OneToMany(() => Comment, comment => comment.user)

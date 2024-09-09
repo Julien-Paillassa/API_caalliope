@@ -4,6 +4,7 @@ import { type UpdateBookDto } from './dto/update-book.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Book } from './entities/book.entity'
 import { Repository } from 'typeorm'
+import { Status } from '../admin/entities/status.enum'
 
 @Injectable()
 export class BookService {
@@ -27,12 +28,12 @@ export class BookService {
   async findAll (): Promise<Book[]> {
     try {
       return await this.bookRepository.createQueryBuilder('book')
-          .leftJoinAndSelect('book.cover', 'cover')
-          .leftJoin('book.publishing', 'publishing')
-          .where('publishing.id IS NOT NULL')
-          .andWhere('cover.id IS NOT NULL')
-          .select(['book.id', 'cover'])
-          .getMany();
+        .leftJoinAndSelect('book.cover', 'cover')
+        .leftJoin('book.publishing', 'publishing')
+        .where('publishing.id IS NOT NULL')
+        .andWhere('cover.id IS NOT NULL')
+        .select(['book.id', 'cover'])
+        .getMany()
     } catch (error) {
       this.logger.error('Error finding all books', error.stack)
       throw new HttpException('Failed to retrieve books', HttpStatus.INTERNAL_SERVER_ERROR)
@@ -49,9 +50,9 @@ export class BookService {
           'comment',
           'genre',
           'userBook',
-          'publishing',
-        ],
-      });
+          'publishing'
+        ]
+      })
       return book
     } catch (error) {
       throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
@@ -89,6 +90,20 @@ export class BookService {
     } catch (error) {
       this.logger.error('Error deleting book', error.stack)
       throw new HttpException('Failed to delete book', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async findWaiting (): Promise<Book[]> {
+    try {
+      return await this.bookRepository.find({
+        relations: ['cover', 'publishing'],
+        where: {
+          status: Status.WAITING
+        }
+      })
+    } catch (error) {
+      this.logger.error('Error finding books waitings', error.stack)
+      throw new HttpException('Failed to retrieve books waitings', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }

@@ -11,7 +11,7 @@ import * as express from 'express'
 import { join } from 'path'
 
 async function bootstrap (): Promise<void> {
-  dotenv.config({ path: '.env.local' })
+  dotenv.config({ path: '.env' })
 
   const app = await NestFactory.create(AppModule, {
     cors: {
@@ -37,7 +37,7 @@ async function bootstrap (): Promise<void> {
   SwaggerModule.setup('', app, document)
 
   app.use('/uploads/avatars', express.static(join(__dirname, '..', 'uploads/avatars')))
-  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')))
 
   Sentry.init({
     dsn: process.env.SENTRY_DNS,

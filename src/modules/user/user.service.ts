@@ -4,6 +4,7 @@ import { type UpdateUserDto } from './dto/update-user.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
+import { BookService } from '../book/book.service'
 
 @Injectable()
 export class UserService {
@@ -11,7 +12,8 @@ export class UserService {
 
   constructor (
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly bookService: BookService
   ) {}
 
   async create (createUserDto: CreateUserDto): Promise<User> {
@@ -35,14 +37,20 @@ export class UserService {
     }
   }
 
-  async findOne (id: number): Promise<User | null> {
+  async findOne (id: number): Promise<any | null> {
     try {
       const user = await this.userRepository.findOneOrFail(
         {
           where: { id },
           relations: ['avatar']
         })
-      return user
+
+      if (user.role === 'admin') {
+        const bookWaiting = await this.bookService.findWaiting()
+        return { ...user, bookWaiting }
+      } else {
+        return user
+      }
     } catch (error) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND)
     }

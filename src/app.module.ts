@@ -15,8 +15,6 @@ import { JwtModule } from '@nestjs/jwt'
 import { jwtConstants } from './modules/auth/constantes'
 import { AuthenticateMiddleware } from './utils/middlewares/authenticate.middleware'
 import { Avatar } from './modules/avatar/entities/avatar.entity'
-import { Subscription } from './modules/subscription/entities/subscription.entity'
-import { Possess } from './modules/possess/entities/possess.entity'
 import { Cover } from './modules/cover/entities/cover.entity'
 import { Genre } from './modules/genre/entities/genre.entity'
 import { AuthorModule } from './modules/author/author.module'
@@ -53,6 +51,45 @@ import { MulterModule } from '@nestjs/platform-express'
 import { CoverModule } from './modules/cover/cover.module'
 import { CoverController } from './modules/cover/cover.controller'
 import { CoverService } from './modules/cover/cover.service'
+import { StripeModule } from './modules/stripe/stripe.module'
+import { StripeController } from './modules/stripe/stripe.controller'
+import { StripeService } from './modules/stripe/stripe.service'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+let dbConfig: { host?: any, username?: any, password?: any, database?: any } = {}
+
+const getDatabaseConfig = (): { host?: any, username?: any, password?: any, database?: any } => {
+  const env = process.env.NODE_ENV
+
+  if (env === 'dev') {
+    return {
+      host: process.env.DATABASE_HOST_DEV,
+      username: process.env.DATABASE_USERNAME_DEV,
+      password: process.env.DATABASE_PASSWORD_DEV,
+      database: process.env.DATABASE_NAME_DEV
+    }
+  } else if (env === 'test') {
+    return {
+      host: process.env.DATABASE_HOST_TEST,
+      username: process.env.DATABASE_USERNAME_TEST,
+      password: process.env.DATABASE_PASSWORD_TEST,
+      database: process.env.DATABASE_NAME_TEST
+    }
+  } else if (env === 'prod') {
+    return {
+      host: process.env.DATABASE_HOST_PROD,
+      username: process.env.DATABASE_USERNAME_PROD,
+      password: process.env.DATABASE_PASSWORD_PROD,
+      database: process.env.DATABASE_NAME_PROD
+    }
+  }
+
+  return {}
+}
+
+dbConfig = getDatabaseConfig()
+console.log(dbConfig)
 
 @Module({
   imports: [
@@ -68,13 +105,14 @@ import { CoverService } from './modules/cover/cover.service'
     CommentModule,
     AvatarModule,
     CoverModule,
+    StripeModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'db',
+      host: dbConfig.host,
       port: 5432,
-      username: 'caaliope',
-      password: 'caaliope_dev*2024!',
-      database: 'database_caaliope_dev',
+      username: dbConfig.username,
+      password: dbConfig.password,
+      database: dbConfig.database,
       entities: [
         User,
         Saga,
@@ -83,8 +121,6 @@ import { CoverService } from './modules/cover/cover.service'
         Book,
         Author,
         Avatar,
-        Subscription,
-        Possess,
         Cover,
         Genre,
         Publishing,
@@ -114,7 +150,8 @@ import { CoverService } from './modules/cover/cover.service'
     UserBookController,
     CommentController,
     AvatarController,
-    CoverController
+    CoverController,
+    StripeController
   ],
   providers: [
     AppService,
@@ -128,7 +165,8 @@ import { CoverService } from './modules/cover/cover.service'
     UserBookService,
     CommentService,
     AvatarService,
-    CoverService
+    CoverService,
+    StripeService
   ]
 })
 export class AppModule {
@@ -148,7 +186,9 @@ export class AppModule {
         { path: 'genre', method: RequestMethod.GET },
         { path: 'genre/:id', method: RequestMethod.GET },
         { path: 'publishing', method: RequestMethod.GET },
-        { path: 'publishing/:id', method: RequestMethod.GET }
+        { path: 'publishing/:id', method: RequestMethod.GET },
+        { path: 'stripe/payment-intent', method: RequestMethod.POST },
+        { path: 'stripe/create-checkout-session', method: RequestMethod.POST }
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL })
   }

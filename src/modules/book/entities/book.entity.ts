@@ -4,7 +4,6 @@ import { Author } from './../../author/entities/author.entity'
 import { Comment } from './../../comment/entities/comment.entity'
 import { Cover } from './../../cover/entities/cover.entity'
 import { Genre } from './../../genre/entities/genre.entity'
-import { Possess } from './../../possess/entities/possess.entity'
 import { Publishing } from './../../publishing/entities/publishing.entity'
 import { UserBook } from './../../user-book/entities/user-book.entity'
 import {
@@ -72,10 +71,6 @@ export class Book {
   @ApiProperty({ type: () => Publishing })
   @OneToMany(() => Publishing, publishing => publishing.book)
     publishing: Publishing[]
-
-  @ApiProperty({ type: () => Possess })
-  @ManyToMany(() => Possess, possess => possess.book)
-    possess: Possess[]
 
   @ApiProperty()
   @CreateDateColumn()
