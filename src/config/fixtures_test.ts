@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm'
 import { faker } from '@faker-js/faker'
-import axios from 'axios' // Importer axios pour télécharger des images
+import axios from 'axios'
 import { User } from './../modules/user/entities/user.entity'
 import { Author } from './../modules/author/entities/author.entity'
 import { Avatar } from './../modules/avatar/entities/avatar.entity'
@@ -38,11 +38,11 @@ async function fixtures (): Promise<void> {
   try {
     const dataSource = new DataSource({
       type: 'postgres',
-      host: 'db_dev',
+      host: 'db_test',
       port: 5432,
-      username: 'caaliope_dev',
-      password: 'caaliope_dev*2024!',
-      database: 'database_caaliope_dev',
+      username: 'caaliope_test',
+      password: 'caaliope_test*2024!',
+      database: 'database_caaliope_test',
       entities: [
         User,
         Saga,
@@ -93,8 +93,8 @@ async function fixtures (): Promise<void> {
       console.log(`Répertoire des couvertures créé: ${coversDir}`)
     }
 
-    // Créer 100 utilisateurs avec avatars
-    for (let i = 0; i < 100; i++) {
+    // Créer 10 utilisateurs avec avatars
+    for (let i = 0; i < 10; i++) {
       const user = userRepository.create({
         username: faker.internet.userName(),
         lastName: faker.person.lastName(),
@@ -128,8 +128,8 @@ async function fixtures (): Promise<void> {
       console.log(`Utilisateur ${i + 1} mis à jour avec l'avatar ID: ${user.avatar.id}.`)
     }
 
-    // Créer 50 auteurs
-    for (let i = 0; i < 50; i++) {
+    // Créer 10 auteurs
+    for (let i = 0; i < 10; i++) {
       const author = authorRepository.create({
         lastName: faker.person.lastName(),
         firstName: faker.person.firstName(),
@@ -141,8 +141,8 @@ async function fixtures (): Promise<void> {
       console.log(`Auteur ${i + 1} créé.`)
     }
 
-    // Créer 20 genres
-    for (let i = 0; i < 20; i++) {
+    // Créer 10 genres
+    for (let i = 0; i < 10; i++) {
       const genre = genreRepository.create({
         genre: faker.helpers.arrayElement(['fantastic', 'sf', 'polar', 'romance', 'adventure', 'history', 'comic', 'crime', 'horror', 'biography', 'developpement', 'fantasy', 'mystery', 'science'])
       })
@@ -151,8 +151,8 @@ async function fixtures (): Promise<void> {
       console.log(`Genre ${i + 1} créé.`)
     }
 
-    // Créer 200 livres avec images de couverture
-    for (let i = 0; i < 200; i++) {
+    // Créer 10 livres avec images de couverture
+    for (let i = 0; i < 10; i++) {
       const authors = await authorRepository.find()
       const genres = await genreRepository.find()
       const randomAuthor = authors[Math.floor(Math.random() * authors.length)]
@@ -176,7 +176,7 @@ async function fixtures (): Promise<void> {
       const coverPath = path.join(coversDir, coverFilename)
 
       // Télécharger une vraie image de couverture
-      const imageUrl = `https://picsum.photos/200/300?random=${i + 1}` // URL d'image aléatoire
+      const imageUrl = `https://picsum.photos/10/100?random=${i + 1}` // URL d'image aléatoire
       await downloadImage(imageUrl, coverPath)
       console.log(`Image téléchargée pour le livre ${i + 1}: ${coverFilename}`)
 
@@ -196,8 +196,8 @@ async function fixtures (): Promise<void> {
       console.log(`Livre ${i + 1} mis à jour avec la couverture ID: ${book.cover.id}.`)
     }
 
-    // Créer 30 formats
-    for (let i = 0; i < 30; i++) {
+    // Créer 10 formats
+    for (let i = 0; i < 10; i++) {
       const format = formatRepository.create({
         type: faker.lorem.word(),
         language: faker.lorem.word()
@@ -207,8 +207,8 @@ async function fixtures (): Promise<void> {
       console.log(`Format ${i + 1} créé.`)
     }
 
-    // Créer 50 publications
-    for (let i = 0; i < 50; i++) {
+    // Créer 10 publications
+    for (let i = 0; i < 10; i++) {
       const books = await bookRepository.find()
       const formats = await formatRepository.find()
 
@@ -218,8 +218,8 @@ async function fixtures (): Promise<void> {
       const publishing = publishingRepository.create({
         label: faker.company.buzzVerb(),
         language: faker.lorem.word(),
-        isbn: `978-${faker.number.int({ min: 1000000000000, max: 9999999999999 })}`,
-        nbPages: faker.number.int({ min: 100, max: 300 }),
+        isbn: `978-${faker.number.int({ min: 10000000000, max: 9999999999999 })}`,
+        nbPages: faker.number.int({ min: 100, max: 500 }),
         publicationDate: faker.date.past().toISOString(),
         status: faker.helpers.arrayElement(['waiting', 'accepted', 'refused']) as Status,
         book: randomBook,
@@ -230,8 +230,8 @@ async function fixtures (): Promise<void> {
       console.log(`Publishing ${i + 1} créé.`)
     }
 
-    // Créer 20 sagas
-    for (let i = 0; i < 20; i++) {
+    // Créer 10 sagas
+    for (let i = 0; i < 10; i++) {
       const saga = sagaRepository.create({
         title: faker.lorem.words(),
         description: faker.lorem.paragraph(),
@@ -242,8 +242,8 @@ async function fixtures (): Promise<void> {
       console.log(`Saga ${i + 1} créée.`)
     }
 
-    // Créer 100 associations utilisateur-livre
-    for (let i = 0; i < 100; i++) {
+    // Créer 10 associations utilisateur-livre
+    for (let i = 0; i < 10; i++) {
       const users = await userRepository.find()
       const books = await bookRepository.find()
       const randomUser = users[Math.floor(Math.random() * users.length)]
@@ -259,8 +259,8 @@ async function fixtures (): Promise<void> {
       console.log(`UserBook ${i + 1} créé.`)
     }
 
-    // Créer 200 commentaires
-    for (let i = 0; i < 200; i++) {
+    // Créer 10 commentaires
+    for (let i = 0; i < 10; i++) {
       const users = await userRepository.find()
       const books = await bookRepository.find()
 
