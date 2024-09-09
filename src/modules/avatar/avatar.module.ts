@@ -7,11 +7,13 @@ import { Author } from '../author/entities/author.entity'
 import { AuthorService } from '../author/author.service'
 import { UserService } from '../user/user.service'
 import { User } from '../user/entities/user.entity'
+import { Book } from '../book/entities/book.entity'
+import { BookService } from '../book/book.service'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Avatar, Author, User])],
+  imports: [TypeOrmModule.forFeature([Avatar, Author, User, Book])],
   controllers: [AvatarController],
-  providers: [AvatarService, AuthorService, UserService],
+  providers: [AvatarService, AuthorService, UserService, BookService],
   exports: [TypeOrmModule, AvatarService]
 })
 export class AvatarModule {}

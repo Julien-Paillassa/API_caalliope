@@ -6,6 +6,7 @@ import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
 import { Book } from '../book/entities/book.entity'
 import { Status } from '../admin/entities/status.enum'
+import { BookService } from '../book/book.service'
 
 @Injectable()
 export class UserService {
@@ -13,9 +14,10 @@ export class UserService {
 
   constructor (
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
-    /* @InjectRepository(Book)
-    private readonly bookRepository: Repository<Book> */
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>,
+    private readonly bookService: BookService
   ) {}
 
   async create (createUserDto: CreateUserDto): Promise<User> {
@@ -47,18 +49,12 @@ export class UserService {
           relations: ['avatar']
         })
 
-      /* if (user.role === 'admin') {
-        const bookWaiting = await this.bookRepository.findOne({
-          relations: ['cover', 'publishing'],
-          where: {
-            status: Status.WAITING
-          }
-        })
+      if (user.role === 'admin') {
+        const bookWaiting = await this.bookService.findWaiting()
         return { ...user, bookWaiting }
       } else {
         return user
-      } */
-      return user
+      }
     } catch (error) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND)
     }
