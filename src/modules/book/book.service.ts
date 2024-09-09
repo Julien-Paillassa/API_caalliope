@@ -101,13 +101,6 @@ export class BookService {
           status: Status.WAITING
         }
       })
-      /* return await this.bookRepository.createQueryBuilder('book')
-        .leftJoinAndSelect('book.cover', 'cover')
-        .leftJoin('book.publishing', 'publishing')
-        .where('publishing.id IS NULL')
-        .andWhere('cover.id IS NULL')
-        .select(['book.id', 'cover'])
-        .getMany() */
     } catch (error) {
       this.logger.error('Error finding books waitings', error.stack)
       throw new HttpException('Failed to retrieve books waitings', HttpStatus.INTERNAL_SERVER_ERROR)

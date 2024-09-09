@@ -4,8 +4,6 @@ import { type UpdateUserDto } from './dto/update-user.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
-import { Book } from '../book/entities/book.entity'
-import { Status } from '../admin/entities/status.enum'
 import { BookService } from '../book/book.service'
 
 @Injectable()
@@ -15,8 +13,6 @@ export class UserService {
   constructor (
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Book)
-    private readonly bookRepository: Repository<Book>,
     private readonly bookService: BookService
   ) {}
 
