@@ -18,6 +18,7 @@ export class StripeService {
         amount,
         currency // Assurez-vous que le paramètre currency est inclus ici
       })
+      console.log('Payment Intent:', paymentIntent)
       return paymentIntent
     } catch (error) {
       throw new Error(`Erreur lors de la création du Payment Intent: ${error.message}`)
@@ -30,6 +31,14 @@ export class StripeService {
     currency: string
   ): Promise<Stripe.Checkout.Session> {
     try {
+      console.log('Price:', price)
+      console.log('Email:', email)
+      if (isNaN(price) || price <= 0) {
+        throw new Error('Invalid price value. Must be a positive number.')
+      }
+      if (email === null || email === '') {
+        throw new Error('Email is required.')
+      }
       const session = await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
@@ -39,7 +48,7 @@ export class StripeService {
               product_data: {
                 name: email
               },
-              unit_amount: price
+              unit_amount: price * 100
             },
             /* customer_email: email, */
             quantity: 1
@@ -49,10 +58,11 @@ export class StripeService {
         mode: 'payment',
         customer_email: email,
         // success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        success_url: 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
+        success_url: 'http://localhost:3000/donate/success',
         // cancel_url: `${process.env.CLIENT_URL}/cancel`
-        cancel_url: 'http://localhost:3000/cancel'
+        cancel_url: 'http://localhost:3000/donate/cancel'
       })
+      console.log('Checkout Session:', session)
       return session
     } catch (error) {
       throw new Error(`Erreur lors de la création de la session de checkout: ${error.message}`)
