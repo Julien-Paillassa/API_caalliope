@@ -49,7 +49,7 @@ export class GoogleBookService implements OnModuleInit {
     private readonly formatRepository: Repository<Format>,
     @InjectRepository(Publishing)
     private readonly publishingRepository: Repository<Publishing>,
-    @InjectRepository(Cover) // Injecter le CoverRepository
+    @InjectRepository(Cover)
     private readonly coverRepository: Repository<Cover>
   ) { }
 
@@ -94,10 +94,21 @@ export class GoogleBookService implements OnModuleInit {
     }
   }
 
+  private readonly genreMapping: Record<string, string> = {
+    Mathematics: 'Education',
+    'Business & Economics': 'Education',
+    Psychology: 'Education',
+    'Technology & Engineering': 'Computers',
+    Biology: 'Education',
+    'Big data': 'Computers',
+    Medical: 'Education',
+    'Computer programming': 'Computers',
+    'Application software': 'Computers',
+    'Operations research': 'Computers'
+  }
+
   async saveBooksToDatabase (books: GoogleBook[]): Promise<void> {
-    console.log('saveBooksToDatabase')
     for (const googleBook of books) {
-      console.log('googleBook : ', googleBook.volumeInfo.categories)
       const authorName = Array.isArray(googleBook.volumeInfo.authors) && googleBook.volumeInfo.authors.length > 0
         ? googleBook.volumeInfo.authors[0]
         : 'Unknown Author'
@@ -132,7 +143,9 @@ export class GoogleBookService implements OnModuleInit {
 
       const genres: Genre[] = []
 
-      for (const genreName of genreNames) {
+      for (let genreName of genreNames) {
+        genreName = this.genreMapping[genreName] ?? genreName
+
         let genre = await this.genreRepository.findOne({ where: { genre: genreName } })
         if (genre === null || genre === undefined) {
           genre = this.genreRepository.create({ genre: genreName })
@@ -149,9 +162,8 @@ export class GoogleBookService implements OnModuleInit {
         : null
 
       if (coverUrl != null) {
-        const coverFilename = this.extractFilenameFromUrl(coverUrl)
         cover = this.coverRepository.create({
-          filename: coverFilename
+          filename: coverUrl
         })
         console.log('cover : ', cover)
         await this.coverRepository.save(cover)
@@ -199,10 +211,5 @@ export class GoogleBookService implements OnModuleInit {
       // Sauvegarder le nouveau livre dans la base de données
       await this.booksRepository.save(newBook)
     }
-  }
-
-  private extractFilenameFromUrl (url: string): string {
-    const urlParts = url.split('/')
-    return urlParts[urlParts.length - 1]
   }
 }
