@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable, type OnModuleInit } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import axios from 'axios'
@@ -10,7 +10,7 @@ import { Format } from '../format/entities/format.entity'
 import { Status } from '../admin/entities/status.enum'
 import { Cover } from '../cover/entities/cover.entity'
 
-interface GoogleBook {
+export interface GoogleBook {
   volumeInfo: {
     title: string
     authors: string[]
@@ -35,7 +35,7 @@ interface GoogleBook {
 }
 
 @Injectable()
-export class GoogleBookService {
+export class GoogleBookService implements OnModuleInit {
   private readonly googleBooksApiUrl = 'https://www.googleapis.com/books/v1/volumes'
 
   constructor (
@@ -52,6 +52,18 @@ export class GoogleBookService {
     @InjectRepository(Cover) // Injecter le CoverRepository
     private readonly coverRepository: Repository<Cover>
   ) { }
+
+  async onModuleInit (): Promise<void> {
+    const defaultQuery = 'programming'
+    try {
+      console.log(`Fetching and saving books for query: ${defaultQuery}`)
+      const books = await this.fetchBooks(defaultQuery)
+      await this.saveBooksToDatabase(books)
+      console.log('Successfully imported books during initialization.')
+    } catch (error) {
+      console.error('Failed to import books during initialization:', error)
+    }
+  }
 
   async fetchBooks (query: string): Promise<GoogleBook[]> {
     const books: GoogleBook[] = []
