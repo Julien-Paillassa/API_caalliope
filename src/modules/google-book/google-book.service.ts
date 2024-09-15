@@ -51,20 +51,29 @@ export class GoogleBookService {
     private readonly publishingRepository: Repository<Publishing>,
     @InjectRepository(Cover) // Injecter le CoverRepository
     private readonly coverRepository: Repository<Cover>
-  ) {}
+  ) { }
 
   async fetchBooks (query: string): Promise<GoogleBook[]> {
     const books: GoogleBook[] = []
     const maxResults = 40
+    const totalBooksToFetch = 100
 
     try {
+      // Première requête pour récupérer un maximum de 40 livres
       let response = await axios.get<{ items: GoogleBook[] }>(`${this.googleBooksApiUrl}?q=${query}&maxResults=${maxResults}`)
       books.push(...(response.data.items ?? []))
 
-      if (books.length < 50) {
-        const remainingResults = 50 - books.length
-        response = await axios.get<{ items: GoogleBook[] }>(`${this.googleBooksApiUrl}?q=${query}&startIndex=${maxResults}&maxResults=${remainingResults}`)
+      // Si on n'a pas encore récupéré 100 livres, faire des requêtes supplémentaires
+      while (books.length < totalBooksToFetch) {
+        const remainingResults = totalBooksToFetch - books.length
+        const startIndex = books.length
+
+        response = await axios.get<{ items: GoogleBook[] }>(`${this.googleBooksApiUrl}?q=${query}&startIndex=${startIndex}&maxResults=${Math.min(maxResults, remainingResults)}`)
         books.push(...(response.data.items ?? []))
+
+        if ((response.data.items ?? []).length === 0) {
+          break
+        }
       }
 
       return books
@@ -91,14 +100,24 @@ export class GoogleBookService {
         // Si l'auteur n'existe pas, créer un nouvel auteur
         author = this.authorsRepository.create({
           firstName: typeof firstName === 'string' && firstName.trim() !== '' ? firstName : 'Unknown',
-          lastName
+          lastName,
+          avatar: undefined,
+          email: 'Unknown Email',
+          birthDate: 'Unknown Birth Date'
         })
         console.log('author : ', author)
-        // await this.authorsRepository.save(author)
+        await this.authorsRepository.save(author)
       }
 
       // Vérifier si le genre existe déjà et le créer si nécessaire
-      const genreNames = googleBook.volumeInfo.categories ?? ['Unknown Genre']
+      const genreNames = googleBook.volumeInfo.categories
+
+      // Si les genres ne sont pas définis, passer au livre suivant
+      if (genreNames === null || genreNames === undefined) {
+        console.log(`Skipping book: ${googleBook.volumeInfo.title} due to missing genres`)
+        continue
+      }
+
       const genres: Genre[] = []
 
       for (const genreName of genreNames) {
@@ -106,12 +125,12 @@ export class GoogleBookService {
         if (genre === null || genre === undefined) {
           genre = this.genreRepository.create({ genre: genreName })
           console.log('genre : ', genre)
-          // await this.genreRepository.save(genre)
+          await this.genreRepository.save(genre)
         }
         genres.push(genre)
       }
 
-      // --- Logique pour la couverture ---
+      // Logique pour la couverture
       let cover: Cover | null = null
       const coverUrl = (googleBook.volumeInfo.imageLinks != null) && typeof googleBook.volumeInfo.imageLinks.thumbnail === 'string'
         ? googleBook.volumeInfo.imageLinks.thumbnail
@@ -123,7 +142,7 @@ export class GoogleBookService {
           filename: coverFilename
         })
         console.log('cover : ', cover)
-        // await this.coverRepository.save(cover)
+        await this.coverRepository.save(cover)
       }
 
       const formatType = googleBook.volumeInfo.printType ?? 'Unknown Format'
@@ -133,7 +152,7 @@ export class GoogleBookService {
           type: formatType,
           language: googleBook.volumeInfo.language ?? 'Unknown'
         })
-        // await this.formatRepository.save(format)
+        await this.formatRepository.save(format)
       }
       console.log('formatType : ', formatType)
 
@@ -151,7 +170,7 @@ export class GoogleBookService {
         format
       })
       console.log('publishing : ', publishing)
-      // await this.publishingRepository.save(publishing)
+      await this.publishingRepository.save(publishing)
 
       // Créer un nouveau livre
       const newBook = this.booksRepository.create({
@@ -166,7 +185,7 @@ export class GoogleBookService {
       })
       console.log('new book : ', newBook)
       // Sauvegarder le nouveau livre dans la base de données
-      // await this.booksRepository.save(newBook)
+      await this.booksRepository.save(newBook)
     }
   }
 
