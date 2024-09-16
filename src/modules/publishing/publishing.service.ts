@@ -1,22 +1,21 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
-import { type CreatePublishingDto } from './dto/create-publishing.dto'
 import { type UpdatePublishingDto } from './dto/update-publishing.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Publishing } from './entities/publishing.entity'
 import { Repository } from 'typeorm'
-import {Status} from "../admin/entities/status.enum";
-import {PublishingFactory} from "./publishing.factory";
+import { Status } from '../admin/entities/status.enum'
+import { PublishingFactory } from './publishing.factory'
 
 @Injectable()
 export class PublishingService {
   private readonly logger = new Logger(PublishingService.name)
 
-  constructor (
+  constructor(
     @InjectRepository(Publishing)
     private readonly publishingRepository: Repository<Publishing>
-  ) {}
+  ) { }
 
-  async findAll (): Promise<Publishing[]> {
+  async findAll(): Promise<Publishing[]> {
     try {
       return await this.publishingRepository.find()
     } catch (error) {
@@ -25,7 +24,7 @@ export class PublishingService {
     }
   }
 
-  async findOne (id: number): Promise<Publishing | null> {
+  async findOne(id: number): Promise<Publishing | null> {
     try {
       const publishing = await this.publishingRepository.findOneByOrFail({ id })
       return publishing
@@ -34,7 +33,7 @@ export class PublishingService {
     }
   }
 
-  async update (id: number, updatePublishingDto: UpdatePublishingDto): Promise<Publishing> {
+  async update(id: number, updatePublishingDto: UpdatePublishingDto): Promise<Publishing> {
     try {
       const existingPublishing = await this.publishingRepository.findOneBy({ id })
 
@@ -59,7 +58,7 @@ export class PublishingService {
     }
   }
 
-  async remove (id: number): Promise<Publishing> {
+  async remove(id: number): Promise<Publishing> {
     try {
       const publishing = await this.publishingRepository.findOneBy({ id })
 
@@ -86,9 +85,13 @@ export class PublishingService {
       publicationDate: createPublishingDto.publicationDate,
       book: createPublishingDto.book,
       format: createPublishingDto.format,
-      status: Status.WAITING,
-    });
+      status: Status.WAITING
+    })
 
-    return this.publishingRepository.save(publishing);
+    return await this.publishingRepository.save(publishing)
+  }
+
+  async save(publishing: Publishing): Promise<Publishing> {
+    return await this.publishingRepository.save(publishing)
   }
 }

@@ -12,10 +12,11 @@ import type { Publishing } from '../publishing/entities/publishing.entity'
 import { PublishingFactory } from '../publishing/publishing.factory'
 import { PublishingService } from '../publishing/publishing.service'
 import type { UpdateBookDto } from '../book/dto/update-book.dto'
+import { UpdatePublishingDto } from '../publishing/dto/update-publishing.dto'
 
 @Injectable()
 export class OrchestratorService {
-  constructor (
+  constructor(
     @Inject(forwardRef(() => AuthorService))
     private readonly authorService: AuthorService,
     @Inject(forwardRef(() => BookService))
@@ -26,9 +27,9 @@ export class OrchestratorService {
     private readonly publishingService: PublishingService,
     @Inject(forwardRef(() => FormatService))
     private readonly formatService: FormatService
-  ) {}
+  ) { }
 
-  async createBookEntities (createBookDto: CreateBookDto): Promise<Book> {
+  async createBookEntities(createBookDto: CreateBookDto): Promise<Book> {
     const authorObject = await this.authorService.createOrFindAuthor({ fullName: createBookDto.author })
 
     let book = await this.bookService.createBook(BookFactory.createDefaultBook({
@@ -63,7 +64,7 @@ export class OrchestratorService {
     return book
   }
 
-  async createPublishingEntities (createPublishingDto: CreatePublishingDto): Promise<Publishing> {
+  async createPublishingEntities(createPublishingDto: CreatePublishingDto): Promise<Publishing> {
     const format = await this.formatService.createOrFindFormat(FormatFactory.createDefaultFormat({
       type: createPublishingDto.format,
       language: createPublishingDto.language ?? 'No language provided yet'
@@ -73,18 +74,31 @@ export class OrchestratorService {
       label: createPublishingDto.editor,
       language: createPublishingDto.language ?? 'No language provided yet',
       isbn: createPublishingDto.isbn,
-      nbPages: parseInt(createPublishingDto.nbPages),
+      nbPages: createPublishingDto.nbPage,
       publicationDate: createPublishingDto.date,
       format
     }))
   }
 
-  async updateBookEntities (updateBookDto: UpdateBookDto): Promise<Book | null> {
+  async updateBookEntities(updateBookDto: UpdateBookDto): Promise<Book | null> {
     const book = await this.bookService.findOne(updateBookDto.id)
     const author = await this.authorService.createOrFindAuthor({ fullName: updateBookDto.author ?? '' })
     if (author != null && book != null) {
       book.author = author
       return await this.bookService.save(book)
+    }
+    return null
+  }
+
+  async updatePublishingEntities(updatePublishingDto: UpdatePublishingDto): Promise<Publishing | null> {
+    const publishing = await this.publishingService.findOne(updatePublishingDto.id)
+    const format = await this.formatService.createOrFindFormat(FormatFactory.createDefaultFormat({
+      type: updatePublishingDto.format,
+      language: updatePublishingDto.language ?? 'No language provided yet'
+    }))
+    if (format != null && publishing != null) {
+      publishing.format = format
+      return await this.publishingService.save(publishing)
     }
     return null
   }

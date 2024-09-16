@@ -20,7 +20,7 @@ export class CreatePublishingDto {
   })
   @IsOptional()
   @IsString()
-    language?: string
+  language?: string
 
   @ApiProperty({
     description: 'ISBN of the publishing',
@@ -28,15 +28,15 @@ export class CreatePublishingDto {
   })
   @IsNotEmpty()
   @IsString()
-    isbn: string
+  isbn: string
 
   @ApiProperty({
     description: 'Number of pages of the publishing',
     example: 200
   })
   @IsNotEmpty()
-  @IsString()
-    nbPages: string
+  @IsNumber()
+  nbPage: number
 
   @ApiProperty({
     description: 'Publication date of the publishing',
@@ -44,7 +44,7 @@ export class CreatePublishingDto {
   })
   @IsNotEmpty()
   @IsString()
-    date: string
+  date: string
 
   @ApiProperty({
     description: 'Format of the book',

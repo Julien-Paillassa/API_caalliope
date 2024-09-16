@@ -142,7 +142,7 @@ console.log(dbConfig)
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '30m' }
+      signOptions: { expiresIn: '200d' }
     }),
     MulterModule.register({
       dest: './uploads'
