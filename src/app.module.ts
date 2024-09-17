@@ -54,6 +54,10 @@ import { CoverService } from './modules/cover/cover.service'
 import { StripeModule } from './modules/stripe/stripe.module'
 import { StripeController } from './modules/stripe/stripe.controller'
 import { StripeService } from './modules/stripe/stripe.service'
+import { GoogleBookModule } from './modules/google-book/google-book.module'
+import { GoogleBookService } from './modules/google-book/google-book.service'
+import { GoogleBookController } from './modules/google-book/google-book.controller'
+
 import * as dotenv from 'dotenv'
 
 dotenv.config()
@@ -106,6 +110,7 @@ console.log(dbConfig)
     AvatarModule,
     CoverModule,
     StripeModule,
+    GoogleBookModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: dbConfig.host,
@@ -151,7 +156,8 @@ console.log(dbConfig)
     CommentController,
     AvatarController,
     CoverController,
-    StripeController
+    StripeController,
+    GoogleBookController
   ],
   providers: [
     AppService,
@@ -166,7 +172,8 @@ console.log(dbConfig)
     CommentService,
     AvatarService,
     CoverService,
-    StripeService
+    StripeService,
+    GoogleBookService
   ]
 })
 export class AppModule {
@@ -188,7 +195,8 @@ export class AppModule {
         { path: 'publishing', method: RequestMethod.GET },
         { path: 'publishing/:id', method: RequestMethod.GET },
         { path: 'stripe/payment-intent', method: RequestMethod.POST },
-        { path: 'stripe/create-checkout-session', method: RequestMethod.POST }
+        { path: 'stripe/create-checkout-session', method: RequestMethod.POST },
+        { path: 'google-book/import', method: RequestMethod.GET }
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL })
   }
