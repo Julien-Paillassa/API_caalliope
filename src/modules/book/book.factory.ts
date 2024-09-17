@@ -16,7 +16,6 @@ export class BookFactory {
             genre: [],
             userBook: [],
             publishing: [],
-            possess: [],
             createdAt: new Date(),
             updatedAt: new Date(),
             ...data,

@@ -75,7 +75,6 @@ export class UserController {
   async findOne (@Param('id') id: string): Promise<any> {
     try {
       const data = await this.userService.findOne(+id)
-      console.log('hey mon pote je passe ici')
       return {
         success: true,
         data,
