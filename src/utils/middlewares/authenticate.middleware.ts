@@ -1,19 +1,18 @@
-import { Injectable, type NestMiddleware, UnauthorizedException } from '@nestjs/common'
+import {Injectable, Logger, type NestMiddleware, UnauthorizedException} from '@nestjs/common'
 import { type Request, type Response, type NextFunction } from 'express'
 import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AuthenticateMiddleware implements NestMiddleware {
   constructor (private readonly jwtService: JwtService) {}
+  private readonly logger = new Logger(AuthenticateMiddleware.name)
 
   async use (req: Request, res: Response, next: NextFunction): Promise<void> {
-    const authHeader = req.headers.authorization
+    const token = req.cookies.token
 
-    if (authHeader == null) {
+    if (token == null) {
       throw new UnauthorizedException('Authorization header missing')
     }
-
-    const token = authHeader.split(' ')[1]
 
     try {
       const decoded = await this.jwtService.verifyAsync(token)

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request, UseGuards } from '@nestjs/common'
+import {Body, Controller, HttpCode, HttpStatus, Post, Get, Request, UseGuards, Res} from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { AuthGuard } from 'src/utils/guards/auth.guard'
 import { SignInDto } from './dto/sign-in.dto'
@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt'
 import { SignUpDto } from './dto/sign-up.dto'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { RefreshTokenDto } from './dto/refresh-token.dto'
+import { Response } from 'express'
 
 @ApiBearerAuth()
 @Controller('auth')
@@ -15,14 +16,11 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async signIn (@Body() signInDto: SignInDto): Promise<any> {
+  async signIn (@Res() res: Response,@Body() signInDto: SignInDto): Promise<any> {
     try {
       const token = await this.authService.signIn(signInDto)
-      return {
-        success: true,
-        message: 'User Login Successfully',
-        data: token
-      }
+      res.cookie('token', token.access_token, { path: '/', httpOnly: false, secure: false });
+      res.send({ success: true, message: 'User Login Successfully', data: token })
     } catch (error) {
       return {
         success: false,

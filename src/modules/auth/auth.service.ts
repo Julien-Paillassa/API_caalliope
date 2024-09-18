@@ -24,7 +24,6 @@ export class AuthService {
   async signIn (signInDto: SignInDto): Promise<{ access_token: string }> {
     try {
       const user = await this.userService.findOneByEmail(signInDto.email)
-      this.logger.warn(user)
       if (user == null) {
         this.logger.warn(`User not found: ${signInDto.email}`)
         throw new UnauthorizedException('Email does not exist')
