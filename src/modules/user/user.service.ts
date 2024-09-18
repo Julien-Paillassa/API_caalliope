@@ -39,17 +39,32 @@ export class UserService {
 
   async findOne (id: number): Promise<any | null> {
     try {
+      this.logger.log(`Finding user with id ${id}`)
       const user = await this.userRepository.findOneOrFail(
         {
           where: { id },
-          relations: ['avatar']
+          relations: ['avatar', 'userBook']
         })
+
+      const userWithBooks = await this.userRepository.findOneOrFail({
+        where: { id },
+        relations: ['userBook', 'userBook.book', 'userBook.book.cover']
+      });
+
+      const userBook = userWithBooks.userBook.map((userBook) => ({
+        book: {
+          id: userBook.book.id,
+          title: userBook.book.title,
+          cover: userBook.book.cover,
+        },
+        status: userBook.status
+      }));
 
       if (user.role === 'admin') {
         const bookWaiting = await this.bookService.findWaiting()
         return { ...user, bookWaiting }
       } else {
-        return user
+        return { ...user, userBook }
       }
     } catch (error) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND)

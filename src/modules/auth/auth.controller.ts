@@ -16,11 +16,15 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  async signIn (@Res() res: Response,@Body() signInDto: SignInDto): Promise<any> {
+  async signIn (@Res() res: Response, @Body() signInDto: SignInDto): Promise<any> {
     try {
       const token = await this.authService.signIn(signInDto)
-      res.cookie('token', token.access_token, { path: '/', httpOnly: false, secure: false });
-      res.send({ success: true, message: 'User Login Successfully', data: token })
+      res.cookie('token', token.access_token, { path: '/', httpOnly: true, secure: false });
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        message: 'User Login successfully',
+        data: token
+      });
     } catch (error) {
       return {
         success: false,
@@ -31,18 +35,18 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('register')
-  async signUp (@Body() signUpDto: SignUpDto): Promise<any> {
+  async signUp (@Res() res: Response, @Body() signUpDto: SignUpDto): Promise<any> {
     try {
       const salt = await bcrypt.genSalt(10)
       signUpDto.password = await bcrypt.hash(signUpDto.password, salt)
 
-      const user = await this.authService.signUp(signUpDto)
-
-      return {
+      const userData = await this.authService.signUp(signUpDto)
+      res.cookie('token', userData.access_token, { path: '/', httpOnly: true, secure: false });
+      return res.status(HttpStatus.OK).json({
         success: true,
-        message: 'User Register Successfully',
-        data: user
-      }
+        message: 'User registered successfully',
+        data: userData.user
+      });
     } catch (error) {
       return {
         success: false,

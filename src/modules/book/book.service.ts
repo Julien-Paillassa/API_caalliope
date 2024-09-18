@@ -1,9 +1,9 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
-import { type UpdateBookDto } from './dto/update-book.dto'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Book } from './entities/book.entity'
-import { Repository } from 'typeorm'
-import { Status } from '../admin/entities/status.enum'
+import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common'
+import {type UpdateBookDto} from './dto/update-book.dto'
+import {InjectRepository} from '@nestjs/typeorm'
+import {ILike, Repository} from 'typeorm';
+import {Book} from './entities/book.entity'
+import {Status} from '../admin/entities/status.enum'
 
 @Injectable()
 export class BookService {
@@ -60,6 +60,21 @@ export class BookService {
       return book
     } catch (error) {
       throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
+    }
+  }
+
+  async getBooksByGenre(genre: string) {
+    try {
+      this.logger.log(`Finding books by genre ${genre}`)
+      return await this.bookRepository.find({
+        relations: ['cover', 'publishing'],
+        where: {
+          genre: {genre: ILike(`%${genre}%`)}
+        }
+      })
+    } catch (error) {
+      this.logger.error('Error finding books by genre', error.stack)
+      throw new HttpException('Failed to retrieve books by genre', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 

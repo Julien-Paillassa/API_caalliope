@@ -195,6 +195,7 @@ export class AppModule {
         { path: 'saga/:id', method: RequestMethod.GET },
         { path: 'book', method: RequestMethod.GET },
         { path: 'book/:id', method: RequestMethod.GET },
+        { path: 'book/genre/:genre', method: RequestMethod.GET },
         { path: 'author', method: RequestMethod.GET },
         { path: 'author/:id', method: RequestMethod.GET },
         { path: 'genre', method: RequestMethod.GET },

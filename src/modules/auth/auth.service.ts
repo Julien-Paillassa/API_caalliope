@@ -54,10 +54,20 @@ export class AuthService {
     }
   }
 
-  async signUp (signUpDto: SignUpDto): Promise<User> {
+  async signUp (signUpDto: SignUpDto): Promise<{ access_token: string, user: User }> {
     try {
-      const user = this.userRepository.create(signUpDto)
-      return await this.userRepository.save(user)
+      let user = this.userRepository.create(signUpDto)
+      user = await this.userRepository.save(user);
+
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role
+      }
+
+      return { access_token: await this.jwtService.signAsync(payload), user }
     } catch (error) {
       this.logger.error('Error registering user', error.stack)
       throw new HttpException('Failed to register user', HttpStatus.INTERNAL_SERVER_ERROR)

@@ -8,8 +8,7 @@ import {
   Delete,
   Logger,
   UseInterceptors,
-  UploadedFile,
-  forwardRef, Inject
+  UploadedFile
 } from '@nestjs/common'
 import { BookService } from './book.service'
 import { CreateBookDto } from './dto/create-book.dto'
@@ -147,6 +146,32 @@ export class BookController {
         data: book
       }
     } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
+
+  @Get('genre/:genre')
+  @ApiOperation({ summary: 'Get book by genre' })
+  @ApiOkResponse({
+    description: 'Books Fetched Successfully',
+    type: [Book]
+  })
+  @ApiNotFoundResponse({ description: 'Books not found' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async getBooksByGenre (@Param('genre') genre: string): Promise<any> {
+    try {
+      this.logger.log(`Finding books by genre ${genre}`)
+      const books = await this.bookService.getBooksByGenre(genre)
+      return {
+        success: true,
+        data: books,
+        message: 'Books Fetched Successfully'
+      }
+    }
+    catch (error){
       return {
         success: false,
         message: error.message

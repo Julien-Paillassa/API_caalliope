@@ -36,13 +36,13 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
   @IsString()
     summary?: string
 
-  @ApiProperty({
-    description: 'Publication date of the book',
-    example: '1954-07-29',
-    required: false
-  })
-  @IsString()
-    publicationDate?: string
+  // @ApiProperty({
+  //   description: 'Publication date of the book',
+  //   example: '1954-07-29',
+  //   required: false
+  // })
+  // @IsString()
+  //   publicationDate?: string | undefined
 
   @ApiProperty({
     description: 'Status of the book',
@@ -52,5 +52,5 @@ export class UpdateBookDto extends PartialType(CreateBookDto) {
   })
   @IsNotEmpty()
   @IsEnum(Status)
-    status: Status
+    status?: Status
 }
