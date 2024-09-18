@@ -68,7 +68,7 @@ export class GoogleBookService implements OnModuleInit {
   async fetchBooks (query: string): Promise<GoogleBook[]> {
     const books: GoogleBook[] = []
     const maxResults = 40
-    const totalBooksToFetch = 100
+    const totalBooksToFetch = 150
 
     try {
       // Première requête pour récupérer un maximum de 40 livres
@@ -94,17 +94,30 @@ export class GoogleBookService implements OnModuleInit {
     }
   }
 
-  private readonly genreMapping: Record<string, string> = {
-    Mathematics: 'Education',
-    'Business & Economics': 'Education',
-    Psychology: 'Education',
-    'Technology & Engineering': 'Computers',
-    Biology: 'Education',
-    'Big data': 'Computers',
-    Medical: 'Education',
-    'Computer programming': 'Computers',
-    'Application software': 'Computers',
-    'Operations research': 'Computers'
+  private mapGenre (genre: string): string {
+    switch (genre) {
+      case 'Mathematics':
+      case 'Business & Economics':
+      case 'Psychology':
+      case 'Biology':
+      case 'Medical':
+      case 'Language Arts & Disciplines':
+        return 'Education'
+
+      case 'Technology & Engineering':
+      case 'Big data':
+      case 'Computer programming':
+      case 'Programming languages (Electronic computers)':
+      case 'Prolog (Computer program language)':
+      case 'Clojure (Computer program language)':
+      case 'Java (Computer program language)':
+      case 'Application software':
+      case 'Operations research':
+        return 'Computers'
+
+      default:
+        return genre
+    }
   }
 
   async saveBooksToDatabase (books: GoogleBook[]): Promise<void> {
@@ -128,7 +141,6 @@ export class GoogleBookService implements OnModuleInit {
           email: 'Unknown Email',
           birthDate: 'Unknown Birth Date'
         })
-        console.log('author : ', author)
         await this.authorsRepository.save(author)
       }
 
@@ -144,12 +156,11 @@ export class GoogleBookService implements OnModuleInit {
       const genres: Genre[] = []
 
       for (let genreName of genreNames) {
-        genreName = this.genreMapping[genreName] ?? genreName
+        genreName = this.mapGenre(genreName)
 
         let genre = await this.genreRepository.findOne({ where: { genre: genreName } })
         if (genre === null || genre === undefined) {
           genre = this.genreRepository.create({ genre: genreName })
-          console.log('genre : ', genre)
           await this.genreRepository.save(genre)
         }
         genres.push(genre)
@@ -165,7 +176,6 @@ export class GoogleBookService implements OnModuleInit {
         cover = this.coverRepository.create({
           filename: coverUrl
         })
-        console.log('cover : ', cover)
         await this.coverRepository.save(cover)
       }
 
@@ -178,7 +188,6 @@ export class GoogleBookService implements OnModuleInit {
         })
         await this.formatRepository.save(format)
       }
-      console.log('formatType : ', formatType)
 
       // Créer et sauvegarder le publishing
       const isbn = Array.isArray(googleBook.volumeInfo.industryIdentifiers) && googleBook.volumeInfo.industryIdentifiers.length > 0
@@ -193,7 +202,6 @@ export class GoogleBookService implements OnModuleInit {
         publicationDate: googleBook.volumeInfo.publishedDate ?? 'Unknown',
         format
       })
-      console.log('publishing : ', publishing)
       await this.publishingRepository.save(publishing)
 
       // Créer un nouveau livre
