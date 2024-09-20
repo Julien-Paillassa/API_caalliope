@@ -269,6 +269,7 @@ async function fixtures (): Promise<void> {
 
       const comment = commentRepository.create({
         content: faker.lorem.paragraph(),
+        rating: faker.number.int({ min: 1, max: 5 }),
         status: faker.helpers.arrayElement(['waiting', 'accepted', 'refused']) as Status,
         user: randomUser,
         book: randomBook

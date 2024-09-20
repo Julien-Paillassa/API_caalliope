@@ -15,6 +15,14 @@ export class CreateCommentDto {
     content: string
 
   @ApiProperty({
+    description: 'Rating of the comment',
+    example: 5
+  })
+  @IsNotEmpty()
+  @IsNumber()
+    rating: number
+
+  @ApiProperty({
     description: 'Id of the book',
     example: 5
   })
