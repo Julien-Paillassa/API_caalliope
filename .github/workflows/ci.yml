@@ -1,0 +1,53 @@
+name: Continuous integration
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+    branches: 
+      - dev
+  push:
+    branches:
+      - dev
+  
+jobs:  
+  api-test: 
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: database_epicourse
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      DB_SCHEMA: postgres
+      DB_USER: caaliope
+      DB_PASSWORD: caaliope_dev*2024!
+      DB_HOST: db
+
+    steps:
+      - name: "☁️ checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "🔧 setup node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: "📦 install dependencies"
+        run: npm install
+
+      #- name: "🔍 run tests"
+      #  run: npm run test:cov
+
+      - name: "🔍 lint code"
+        run: npm run lint

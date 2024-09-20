@@ -1,0 +1,7 @@
+docker-compose.prod.yml
+configs/docker/Dockerfile.prod
+configs/docker/Dockerfile.dev
+.dockerignore
+node_modules
+npm-debug.log
+dist
