@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request, UseGuards, Res } from '@nestjs/common'
+import {Body, Controller, HttpCode, HttpStatus, Post, Get, Request, UseGuards, Res} from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { AuthGuard } from 'src/utils/guards/auth.guard'
 import { SignInDto } from './dto/sign-in.dto'
@@ -19,12 +19,12 @@ export class AuthController {
   async signIn (@Res() res: Response, @Body() signInDto: SignInDto): Promise<any> {
     try {
       const token = await this.authService.signIn(signInDto)
-      res.cookie('token', token.access_token, { path: '/', httpOnly: true, secure: false })
+      res.cookie('token', token.access_token, { path: '/', httpOnly: false, secure: false });
       return res.status(HttpStatus.OK).json({
         success: true,
         message: 'User Login successfully',
         data: token
-      })
+      });
     } catch (error) {
       return {
         success: false,
@@ -41,12 +41,12 @@ export class AuthController {
       signUpDto.password = await bcrypt.hash(signUpDto.password, salt)
 
       const userData = await this.authService.signUp(signUpDto)
-      res.cookie('token', userData.access_token, { path: '/', httpOnly: true, secure: false })
+      res.cookie('token', userData.access_token, { path: '/', httpOnly: false, secure: false });
       return res.status(HttpStatus.OK).json({
         success: true,
         message: 'User registered successfully',
         data: userData.user
-      })
+      });
     } catch (error) {
       return {
         success: false,
@@ -66,6 +66,7 @@ export class AuthController {
   async refreshAccessToken (@Body() refreshTokenDto: RefreshTokenDto): Promise<any> {
     try {
       const token = await this.authService.refreshAccessToken(refreshTokenDto)
+      console.log(token, 'tooooooooken');
       return {
         success: true,
         message: 'Token Refreshed Successfully',

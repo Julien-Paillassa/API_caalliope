@@ -55,8 +55,9 @@ export class BookService {
           'genre',
           'userBook',
           'publishing',
-        ],
-      });
+          'publishing.format'
+        ]
+      })
       return book
     } catch (error) {
       throw new HttpException('Book not found', HttpStatus.NOT_FOUND)

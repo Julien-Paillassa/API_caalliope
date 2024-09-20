@@ -63,7 +63,7 @@ export class UserService {
 
       if (user.role === 'admin') {
         const bookWaiting = await this.bookService.findWaiting()
-        return { ...user, bookWaiting }
+        return { ...user, bookWaiting, userBook }
       } else {
         return { ...user, userBook }
       }
@@ -81,7 +81,7 @@ export class UserService {
     }
   }
 
-  async update (id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update (id: number, updateUserDto: Omit<UpdateUserDto, 'avatar'>): Promise<User> {
     try {
       const existingUser = await this.userRepository.findOneBy({ id })
 

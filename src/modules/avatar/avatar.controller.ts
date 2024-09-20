@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Author } from '../author/entities/author.entity'
 import { Repository } from 'typeorm'
 import { User } from '../user/entities/user.entity'
+import {OrchestratorService} from "../orchestrator/ochestrator.service";
 
 @ApiBearerAuth()
 @ApiTags('avatar')
@@ -23,8 +24,54 @@ export class AvatarController {
     private readonly authorService: AuthorService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly orchestratorService: OrchestratorService
   ) {}
+
+  @Post('upload/userAvatar')
+  @UseInterceptors(FileInterceptor('avatar'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Upload avatar for an user' })
+  @ApiResponse({ status: 201, description: 'Avatar uploaded successfully.' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @ApiForbiddenResponse({ description: 'Forbidden' })
+  @ApiBody({
+    description: 'Upload avatar data',
+    schema: {
+      type: 'object',
+      properties: {
+        avatar: {
+          type: 'string',
+          format: 'binary',
+          description: 'Avatar file'
+        },
+        userId: {
+          type: 'number',
+          example: 1,
+          description: 'ID of the user associated with the avatar'
+        }
+      },
+      required: ['avatar']
+    }
+  })
+  async uploadUserAvatar (
+      @UploadedFile() avatar: Express.Multer.File,
+      @Body() { userId }: { userId: number }
+  ): Promise<any> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      if (!avatar) {
+        throw new HttpException('Avatar file is required', HttpStatus.BAD_REQUEST)
+      }
+      return await this.orchestratorService.uploadAvatarToUser(avatar, userId)
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
