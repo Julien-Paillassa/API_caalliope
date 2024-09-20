@@ -1,38 +1,41 @@
 import { Test, type TestingModule } from '@nestjs/testing'
-import { CommentController } from './comment.controller'
 import { CommentService } from './comment.service'
+import { getRepositoryToken } from '@nestjs/typeorm'
+import { type Repository } from 'typeorm'
+import { Comment } from './entities/comment.entity'
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { Status } from '../admin/entities/status.enum'
 
-describe('CommentController', () => {
-  let controller: CommentController
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+describe('CommentService', () => {
   let service: CommentService
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let commentRepository: Repository<Comment>
 
-  // Mock the CommentService
-  const mockCommentService = {
-    addComment: jest.fn(),
-    updateComment: jest.fn(),
-    getBookComments: jest.fn()
+  // Mock repository
+  const mockCommentRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    find: jest.fn()
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [CommentController],
       providers: [
+        CommentService,
         {
-          provide: CommentService,
-          useValue: mockCommentService
+          provide: getRepositoryToken(Comment),
+          useValue: mockCommentRepository
         }
       ]
     }).compile()
 
-    controller = module.get<CommentController>(CommentController)
     service = module.get<CommentService>(CommentService)
+    commentRepository = module.get<Repository<Comment>>(getRepositoryToken(Comment))
   })
 
   it('should be defined', () => {
-    expect(controller).toBeDefined()
+    expect(service).toBeDefined()
   })
 
   describe('addComment', () => {
@@ -40,47 +43,52 @@ describe('CommentController', () => {
       const createCommentDto = { userId: 1, bookId: 1, content: 'Great book!' }
       const savedComment = { id: 1, ...createCommentDto }
 
-      mockCommentService.addComment.mockResolvedValue(savedComment)
+      mockCommentRepository.create.mockReturnValue(savedComment)
+      mockCommentRepository.save.mockResolvedValue(savedComment)
 
-      const result = await controller.addComment(createCommentDto)
+      const result = await service.addComment(createCommentDto)
       expect(result).toEqual(savedComment)
-      expect(mockCommentService.addComment).toHaveBeenCalledWith(createCommentDto)
+      expect(mockCommentRepository.create).toHaveBeenCalledWith({
+        user: { id: createCommentDto.userId },
+        book: { id: createCommentDto.bookId },
+        content: createCommentDto.content
+      })
+      expect(mockCommentRepository.save).toHaveBeenCalledWith(savedComment)
     })
 
-    it('should throw an error if adding a comment fails', async () => {
+    it('should throw an error if save fails', async () => {
       const createCommentDto = { userId: 1, bookId: 1, content: 'Great book!' }
 
-      mockCommentService.addComment.mockRejectedValue(
-        new HttpException('Failed to add comment', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
+      mockCommentRepository.save.mockRejectedValue(new Error('Save failed'))
 
-      await expect(controller.addComment(createCommentDto)).rejects.toThrow(
+      await expect(service.addComment(createCommentDto)).rejects.toThrow(
         new HttpException('Failed to add comment', HttpStatus.INTERNAL_SERVER_ERROR)
       )
+      expect(mockCommentRepository.create).toHaveBeenCalled()
     })
   })
 
   describe('updateComment', () => {
     it('should update a comment', async () => {
       const updateCommentDto = { status: Status.ACCEPTED, content: 'Updated content' }
-      const updatedComment = { id: 1, ...updateCommentDto }
+      const existingComment = { id: 1, user: { id: 1 }, book: { id: 1 }, content: 'Old content', status: Status.WAITING }
 
-      mockCommentService.updateComment.mockResolvedValue(updatedComment)
+      mockCommentRepository.findOne.mockResolvedValue(existingComment)
+      mockCommentRepository.save.mockResolvedValue({ ...existingComment, ...updateCommentDto })
 
-      const result = await controller.updateComment(1, 1, updateCommentDto)
-      expect(result).toEqual(updatedComment)
-      expect(mockCommentService.updateComment).toHaveBeenCalledWith(1, 1, updateCommentDto)
+      const result = await service.updateComment(1, 1, updateCommentDto)
+      expect(result).toEqual({ ...existingComment, ...updateCommentDto })
+      expect(mockCommentRepository.findOne).toHaveBeenCalledWith({
+        where: { user: { id: 1 }, book: { id: 1 } }
+      })
+      expect(mockCommentRepository.save).toHaveBeenCalledWith({ ...existingComment, ...updateCommentDto })
     })
 
-    it('should throw an error if updating a comment fails', async () => {
-      const updateCommentDto = { status: Status.ACCEPTED, content: 'Updated content' }
+    it('should throw an error if comment is not found', async () => {
+      mockCommentRepository.findOne.mockResolvedValue(null)
 
-      mockCommentService.updateComment.mockRejectedValue(
-        new HttpException('Failed to update comment', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
-
-      await expect(controller.updateComment(1, 1, updateCommentDto)).rejects.toThrow(
-        new HttpException('Failed to update comment', HttpStatus.INTERNAL_SERVER_ERROR)
+      await expect(service.updateComment(1, 1, { content: 'Updated content', status: Status.ACCEPTED })).rejects.toThrow(
+        new HttpException('Comment not found', HttpStatus.NOT_FOUND)
       )
     })
   })
@@ -88,19 +96,21 @@ describe('CommentController', () => {
   describe('getBookComments', () => {
     it('should return book comments', async () => {
       const bookComments = [{ id: 1, content: 'Great book!' }]
-      mockCommentService.getBookComments.mockResolvedValue(bookComments)
 
-      const result = await controller.getBookComments(1)
+      mockCommentRepository.find.mockResolvedValue(bookComments)
+
+      const result = await service.getBookComments(1)
       expect(result).toEqual(bookComments)
-      expect(mockCommentService.getBookComments).toHaveBeenCalledWith(1)
+      expect(mockCommentRepository.find).toHaveBeenCalledWith({
+        where: { book: { id: 1 } },
+        relations: ['user', 'user.avatar']
+      })
     })
 
     it('should throw an error if fetching comments fails', async () => {
-      mockCommentService.getBookComments.mockRejectedValue(
-        new HttpException('Failed to get book comments', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
+      mockCommentRepository.find.mockRejectedValue(new Error('Fetch failed'))
 
-      await expect(controller.getBookComments(1)).rejects.toThrow(
+      await expect(service.getBookComments(1)).rejects.toThrow(
         new HttpException('Failed to get book comments', HttpStatus.INTERNAL_SERVER_ERROR)
       )
     })
