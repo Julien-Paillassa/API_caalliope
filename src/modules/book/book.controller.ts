@@ -8,7 +8,8 @@ import {
   Delete,
   Logger,
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
+  Query
 } from '@nestjs/common'
 import { BookService } from './book.service'
 import { CreateBookDto } from './dto/create-book.dto'
@@ -26,10 +27,10 @@ import {
   ApiConsumes
 } from '@nestjs/swagger'
 import { Book } from './entities/book.entity'
-import {FileInterceptor} from "@nestjs/platform-express";
-import {diskStorage} from "multer";
+import { FileInterceptor } from '@nestjs/platform-express'
+import { diskStorage } from 'multer'
 import { extname } from 'path'
-import {OrchestratorService} from "../orchestrator/ochestrator.service";
+import { OrchestratorService } from '../orchestrator/ochestrator.service'
 
 @ApiBearerAuth()
 @ApiTags('book')
@@ -37,7 +38,7 @@ import {OrchestratorService} from "../orchestrator/ochestrator.service";
 export class BookController {
   private readonly logger = new Logger(BookService.name)
   constructor (private readonly bookService: BookService,
-               private readonly orchestratorService: OrchestratorService
+    private readonly orchestratorService: OrchestratorService
   ) {}
 
   @Post()
@@ -54,17 +55,16 @@ export class BookController {
     storage: diskStorage({
       destination: './uploads/covers',
       filename: (req, file, callback) => {
-
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = extname(file.originalname);
-        callback(null, `${uniqueSuffix}${ext}`);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+        const ext = extname(file.originalname)
+        callback(null, `${uniqueSuffix}${ext}`)
       }
-    }),
+    })
   }))
   async create (@UploadedFile() cover: Express.Multer.File, @Body() createBookDto: CreateBookDto): Promise<any> {
     try {
-      if (cover) {
-        createBookDto.cover = cover;
+      if (cover != null) {
+        createBookDto.cover = cover
       }
       const book = await this.orchestratorService.createBookEntities(createBookDto)
 
@@ -170,8 +170,7 @@ export class BookController {
         data: books,
         message: 'Books Fetched Successfully'
       }
-    }
-    catch (error){
+    } catch (error) {
       return {
         success: false,
         message: error.message
@@ -196,6 +195,31 @@ export class BookController {
         data: book
       }
     } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
+
+  @Get('search/by')
+  @ApiOperation({ summary: 'Search book by title or author' })
+  @ApiOkResponse({
+    description: 'Books Fetched Successfully',
+    type: [Book]
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async searchBooks (@Query('q') searchTerm: string): Promise<any> {
+    try {
+      console.log(searchTerm)
+      const books = await this.bookService.findBooksByTitleOrAuthor(searchTerm)
+      return {
+        success: true,
+        data: books,
+        message: 'Books Fetched Successfully'
+      }
+    } catch (error) {
+      this.logger.error(`Error searching books by title or author with term: ${searchTerm}`, error.stack)
       return {
         success: false,
         message: error.message
