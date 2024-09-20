@@ -1,0 +1,79 @@
+name: Continuous integration
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+    branches: 
+      - dev
+  push:
+    branches:
+      - dev
+  
+jobs:  
+  api-test: 
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: database_caaliope_dev
+          POSTGRES_USER: caaliope_dev
+          POSTGRES_PASSWORD: caaliope_dev*2024!
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      DB_SCHEMA: postgres
+      DB_USER: caalliope
+      DB_PASSWORD: caaliope_dev*2024!
+      DB_HOST: db
+
+    steps:
+      - name: "☁️ checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "🔧 setup node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: "📦 install dependencies"
+        run: npm install
+
+      #- name: "🔍 run tests"
+      #  run: npm run test:cov
+
+      - name: "🔍 lint code"
+        run: npm run lint
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
+      - name: Build and tag Docker image
+        run: |
+          docker tag paillassa33/api_caaliope_dev:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER }} --service ${{ secrets.ECS_SERVICE }} --force-new-deployment
