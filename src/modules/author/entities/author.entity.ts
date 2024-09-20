@@ -25,6 +25,10 @@ export class Author {
   @Column()
     lastName: string
 
+  @ApiProperty()
+  @Column({ nullable: true })
+  fullName: string
+
   @ApiProperty({ type: () => Avatar })
   @OneToOne(() => Avatar, avatar => avatar.author, { cascade: false, onDelete: 'SET NULL' })
     avatar: Avatar

@@ -81,6 +81,7 @@ export class UserController {
         message: 'User Fetched Successfully'
       }
     } catch (error) {
+      console.error(error)
       return {
         success: false,
         message: error.message
@@ -98,6 +99,10 @@ export class UserController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async update (@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<any> {
     try {
+      const salt = await bcrypt.genSalt(10)
+      if (updateUserDto.password) {
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password, salt)
+      }
       const user = await this.userService.update(+id, updateUserDto)
       return {
         success: true,

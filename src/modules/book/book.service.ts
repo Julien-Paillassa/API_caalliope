@@ -1,10 +1,9 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
-import { type CreateBookDto } from './dto/create-book.dto'
-import { type UpdateBookDto } from './dto/update-book.dto'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Book } from './entities/book.entity'
-import { Repository } from 'typeorm'
-import { Status } from '../admin/entities/status.enum'
+import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common'
+import {type UpdateBookDto} from './dto/update-book.dto'
+import {InjectRepository} from '@nestjs/typeorm'
+import {ILike, Repository} from 'typeorm';
+import {Book} from './entities/book.entity'
+import {Status} from '../admin/entities/status.enum'
 
 @Injectable()
 export class BookService {
@@ -15,14 +14,19 @@ export class BookService {
     private readonly bookRepository: Repository<Book>
   ) {}
 
-  async create (createBookDto: CreateBookDto): Promise<Book> {
-    try {
-      const book = this.bookRepository.create(createBookDto)
-      return await this.bookRepository.save(book)
-    } catch (error) {
-      this.logger.error('Error creating book', error.stack)
-      throw new HttpException('Failed to create book', HttpStatus.INTERNAL_SERVER_ERROR)
-    }
+  async createBook (createBookDto: Partial<Book>): Promise<Book> {
+    const book = this.bookRepository.create({
+      title: createBookDto.title,
+      summary: createBookDto.summary,
+      publicationDate: createBookDto.publicationDate,
+      author: createBookDto.author
+    })
+
+    return await this.bookRepository.save(book)
+  }
+
+  async save (book: Book) {
+    return await this.bookRepository.save(book)
   }
 
   async findAll (): Promise<Book[]> {
@@ -59,6 +63,21 @@ export class BookService {
     }
   }
 
+  async getBooksByGenre(genre: string) {
+    try {
+      this.logger.log(`Finding books by genre ${genre}`)
+      return await this.bookRepository.find({
+        relations: ['cover', 'publishing'],
+        where: {
+          genre: {genre: ILike(`%${genre}%`)}
+        }
+      })
+    } catch (error) {
+      this.logger.error('Error finding books by genre', error.stack)
+      throw new HttpException('Failed to retrieve books by genre', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
   async update (id: number, updateBookDto: UpdateBookDto): Promise<Book> {
     try {
       const existingBook = await this.bookRepository.findOneBy({ id })
@@ -67,7 +86,7 @@ export class BookService {
         throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
       }
 
-      this.bookRepository.merge(existingBook, updateBookDto)
+      this.bookRepository.merge(existingBook, updateBookDto as unknown as Book)
       return await this.bookRepository.save(existingBook)
     } catch (error) {
       this.logger.error(`Error updating book with id ${id}`, error.stack)

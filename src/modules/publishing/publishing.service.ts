@@ -1,30 +1,21 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
-import { type CreatePublishingDto } from './dto/create-publishing.dto'
 import { type UpdatePublishingDto } from './dto/update-publishing.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Publishing } from './entities/publishing.entity'
 import { Repository } from 'typeorm'
+import { Status } from '../admin/entities/status.enum'
+import { PublishingFactory } from './publishing.factory'
 
 @Injectable()
 export class PublishingService {
   private readonly logger = new Logger(PublishingService.name)
 
-  constructor (
+  constructor(
     @InjectRepository(Publishing)
     private readonly publishingRepository: Repository<Publishing>
-  ) {}
+  ) { }
 
-  async create (createPublishingDto: CreatePublishingDto): Promise<Publishing> {
-    try {
-      const publishing = this.publishingRepository.create(createPublishingDto)
-      return await this.publishingRepository.save(publishing)
-    } catch (error) {
-      this.logger.error('Error creating publishing', error.stack)
-      throw new HttpException('Failed to create publishing', HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-  }
-
-  async findAll (): Promise<Publishing[]> {
+  async findAll(): Promise<Publishing[]> {
     try {
       return await this.publishingRepository.find()
     } catch (error) {
@@ -33,7 +24,7 @@ export class PublishingService {
     }
   }
 
-  async findOne (id: number): Promise<Publishing | null> {
+  async findOne(id: number): Promise<Publishing | null> {
     try {
       const publishing = await this.publishingRepository.findOneByOrFail({ id })
       return publishing
@@ -42,7 +33,7 @@ export class PublishingService {
     }
   }
 
-  async update (id: number, updatePublishingDto: UpdatePublishingDto): Promise<Publishing> {
+  async update(id: number, updatePublishingDto: UpdatePublishingDto): Promise<Publishing> {
     try {
       const existingPublishing = await this.publishingRepository.findOneBy({ id })
 
@@ -50,7 +41,13 @@ export class PublishingService {
         throw new HttpException('Publishing not found', HttpStatus.NOT_FOUND)
       }
 
-      this.publishingRepository.merge(existingPublishing, updatePublishingDto)
+      const formatedUpdateDto = PublishingFactory.createDefaultPublishing({
+        ...updatePublishingDto,
+        format: undefined,
+        nbPages: parseInt(updatePublishingDto.nbPages || '0')
+      })
+
+      this.publishingRepository.merge(existingPublishing, formatedUpdateDto)
       return await this.publishingRepository.save(existingPublishing)
     } catch (error) {
       this.logger.error('Error updating publishing', error.stack)
@@ -61,7 +58,7 @@ export class PublishingService {
     }
   }
 
-  async remove (id: number): Promise<Publishing> {
+  async remove(id: number): Promise<Publishing> {
     try {
       const publishing = await this.publishingRepository.findOneBy({ id })
 
@@ -77,5 +74,24 @@ export class PublishingService {
       }
       throw new HttpException('Failed to remove publishing', HttpStatus.INTERNAL_SERVER_ERROR)
     }
+  }
+
+  async createPublishing(createPublishingDto: Partial<Publishing>): Promise<Publishing> {
+    const publishing = this.publishingRepository.create({
+      label: createPublishingDto.label,
+      language: createPublishingDto.language || 'No language provided yet',
+      isbn: createPublishingDto.isbn,
+      nbPages: createPublishingDto.nbPages,
+      publicationDate: createPublishingDto.publicationDate,
+      book: createPublishingDto.book,
+      format: createPublishingDto.format,
+      status: Status.WAITING
+    })
+
+    return await this.publishingRepository.save(publishing)
+  }
+
+  async save(publishing: Publishing): Promise<Publishing> {
+    return await this.publishingRepository.save(publishing)
   }
 }

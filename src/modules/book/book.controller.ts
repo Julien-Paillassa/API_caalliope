@@ -1,18 +1,47 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Logger,
+  UseInterceptors,
+  UploadedFile
+} from '@nestjs/common'
 import { BookService } from './book.service'
 import { CreateBookDto } from './dto/create-book.dto'
 import { UpdateBookDto } from './dto/update-book.dto'
-import { ApiOperation, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiForbiddenResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiTags } from '@nestjs/swagger'
+import {
+  ApiOperation,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiForbiddenResponse,
+  ApiUnauthorizedResponse,
+  ApiBearerAuth,
+  ApiTags,
+  ApiConsumes
+} from '@nestjs/swagger'
 import { Book } from './entities/book.entity'
+import {FileInterceptor} from "@nestjs/platform-express";
+import {diskStorage} from "multer";
+import { extname } from 'path'
+import {OrchestratorService} from "../orchestrator/ochestrator.service";
 
 @ApiBearerAuth()
 @ApiTags('book')
 @Controller('book')
 export class BookController {
   private readonly logger = new Logger(BookService.name)
-  constructor (private readonly bookService: BookService) {}
+  constructor (private readonly bookService: BookService,
+               private readonly orchestratorService: OrchestratorService
+  ) {}
 
   @Post()
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Create book' })
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
@@ -21,9 +50,23 @@ export class BookController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async create (@Body() createBookDto: CreateBookDto): Promise<any> {
+  @UseInterceptors(FileInterceptor('cover', {
+    storage: diskStorage({
+      destination: './uploads/covers',
+      filename: (req, file, callback) => {
+
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = extname(file.originalname);
+        callback(null, `${uniqueSuffix}${ext}`);
+      }
+    }),
+  }))
+  async create (@UploadedFile() cover: Express.Multer.File, @Body() createBookDto: CreateBookDto): Promise<any> {
     try {
-      const book = await this.bookService.create(createBookDto)
+      if (cover) {
+        createBookDto.cover = cover;
+      }
+      const book = await this.orchestratorService.createBookEntities(createBookDto)
 
       return {
         success: true,
@@ -103,6 +146,32 @@ export class BookController {
         data: book
       }
     } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
+
+  @Get('genre/:genre')
+  @ApiOperation({ summary: 'Get book by genre' })
+  @ApiOkResponse({
+    description: 'Books Fetched Successfully',
+    type: [Book]
+  })
+  @ApiNotFoundResponse({ description: 'Books not found' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async getBooksByGenre (@Param('genre') genre: string): Promise<any> {
+    try {
+      this.logger.log(`Finding books by genre ${genre}`)
+      const books = await this.bookService.getBooksByGenre(genre)
+      return {
+        success: true,
+        data: books,
+        message: 'Books Fetched Successfully'
+      }
+    }
+    catch (error){
       return {
         success: false,
         message: error.message

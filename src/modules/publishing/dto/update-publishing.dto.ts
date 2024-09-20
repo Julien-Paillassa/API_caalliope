@@ -5,6 +5,14 @@ import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 import { Status } from './../../admin/entities/status.enum'
 
 export class UpdatePublishingDto extends PartialType(CreatePublishingDto) {
+    @ApiProperty({
+    description: 'ID of the edition',
+    example: '1',
+    required: true
+  })
+  @IsNumber()
+    id: number
+
   @ApiProperty({
     description: 'Label of the publishing',
     example: 'Gallimard',
@@ -34,8 +42,8 @@ export class UpdatePublishingDto extends PartialType(CreatePublishingDto) {
     example: 250,
     required: false
   })
-  @IsNumber()
-    nbPages?: number
+  @IsString()
+    nbPages?: string
 
   @ApiProperty({
     description: 'Publication date of the publishing',

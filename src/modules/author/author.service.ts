@@ -4,6 +4,7 @@ import { type UpdateAuthorDto } from './dto/update-author.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Author } from './entities/author.entity'
 import { Repository } from 'typeorm'
+import { AuthorFactory } from './author.factory'
 
 @Injectable()
 export class AuthorService {
@@ -85,5 +86,16 @@ export class AuthorService {
       }
       throw new HttpException('Failed to remove author', HttpStatus.INTERNAL_SERVER_ERROR)
     }
+  }
+
+  async createOrFindAuthor (createAuthorDto: { fullName: string }): Promise<Author> {
+    let author = await this.authorRepository.findOne({ where: { fullName: createAuthorDto.fullName } })
+
+    if (author == null) {
+      author = this.authorRepository.create(AuthorFactory.createDefaultAuthor({ fullName: createAuthorDto.fullName }))
+      await this.authorRepository.save(author)
+    }
+
+    return author
   }
 }

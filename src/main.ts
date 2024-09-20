@@ -9,13 +9,14 @@ import { ValidationPipe } from '@nestjs/common'
 import { HttpExceptionFilter } from './utils/filters/http-exception.filter'
 import * as express from 'express'
 import { join } from 'path'
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap (): Promise<void> {
   dotenv.config({ path: '.env' })
 
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: '*',
+      origin: 'http://localhost:3000',
       credentials: true
     }
   })
@@ -37,7 +38,8 @@ async function bootstrap (): Promise<void> {
   SwaggerModule.setup('', app, document)
 
   app.use('/uploads/avatars', express.static(join(__dirname, '..', 'uploads/avatars')))
-  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')))
+  app.use('/uploads/covers', express.static(join(__dirname, '..', 'uploads/covers')))
+  app.use(cookieParser())
 
   Sentry.init({
     dsn: process.env.SENTRY_DNS,

@@ -59,6 +59,9 @@ import { GoogleBookService } from './modules/google-book/google-book.service'
 import { GoogleBookController } from './modules/google-book/google-book.controller'
 
 import * as dotenv from 'dotenv'
+import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
+import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
+import { CoreModule } from './core.module'
 
 dotenv.config()
 let dbConfig: { host?: any, username?: any, password?: any, database?: any } = {}
@@ -97,6 +100,7 @@ console.log(dbConfig)
 
 @Module({
   imports: [
+    CoreModule,
     UserModule,
     AuthModule,
     AuthorModule,
@@ -111,6 +115,7 @@ console.log(dbConfig)
     CoverModule,
     StripeModule,
     GoogleBookModule,
+    OrchestratorModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: dbConfig.host,
@@ -137,7 +142,7 @@ console.log(dbConfig)
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '30m' }
+      signOptions: { expiresIn: '200d' }
     }),
     MulterModule.register({
       dest: './uploads'
@@ -160,10 +165,12 @@ console.log(dbConfig)
     GoogleBookController
   ],
   providers: [
+    OrchestratorService,
     AppService,
     UserService,
     AuthorService,
     BookService,
+    OrchestratorService,
     FormatService,
     GenreService,
     PublishingService,
@@ -188,6 +195,7 @@ export class AppModule {
         { path: 'saga/:id', method: RequestMethod.GET },
         { path: 'book', method: RequestMethod.GET },
         { path: 'book/:id', method: RequestMethod.GET },
+        { path: 'book/genre/:genre', method: RequestMethod.GET },
         { path: 'author', method: RequestMethod.GET },
         { path: 'author/:id', method: RequestMethod.GET },
         { path: 'genre', method: RequestMethod.GET },
