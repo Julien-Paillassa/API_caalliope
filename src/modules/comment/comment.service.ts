@@ -19,8 +19,7 @@ export class CommentService {
       const comment = this.commentRepository.create({
         user: { id: createCommentDto.userId },
         book: { id: createCommentDto.bookId },
-        content: createCommentDto.content,
-        rating: createCommentDto.rating
+        content: createCommentDto.content
       })
       return await this.commentRepository.save(comment)
     } catch (error) {
@@ -41,10 +40,6 @@ export class CommentService {
 
       if (comment != null && updateCommentDto.content != null) {
         comment.content = updateCommentDto.content
-      }
-
-      if (comment != null && updateCommentDto.rating != null) {
-        comment.rating = updateCommentDto.rating
       }
 
       if (comment != null) {

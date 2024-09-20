@@ -22,10 +22,6 @@ export class Comment {
   @Column()
     content: string
 
-  @ApiProperty()
-  @Column()
-    rating: number
-
   @ApiProperty({ enum: Status, description: 'The status of the comment' })
   @Column({
     type: 'enum',
