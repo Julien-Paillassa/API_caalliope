@@ -1,10 +1,9 @@
-import {forwardRef, Module} from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { BookService } from './book.service'
 import { BookController } from './book.controller'
 import { Book } from './entities/book.entity'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import {OrchestratorModule} from "../orchestrator/orchestrator.module";
-import {CoreModule} from "../../core.module";
+import { OrchestratorModule } from '../orchestrator/orchestrator.module'
 
 @Module({
   imports: [TypeOrmModule.forFeature([Book]), forwardRef(() => OrchestratorModule)],

@@ -1,9 +1,9 @@
-import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common'
-import {type UpdateBookDto} from './dto/update-book.dto'
-import {InjectRepository} from '@nestjs/typeorm'
-import {ILike, Repository} from 'typeorm';
-import {Book} from './entities/book.entity'
-import {Status} from '../admin/entities/status.enum'
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
+import { type UpdateBookDto } from './dto/update-book.dto'
+import { InjectRepository } from '@nestjs/typeorm'
+import { ILike, Repository } from 'typeorm'
+import { Book } from './entities/book.entity'
+import { Status } from '../admin/entities/status.enum'
 
 @Injectable()
 export class BookService {
@@ -25,7 +25,7 @@ export class BookService {
     return await this.bookRepository.save(book)
   }
 
-  async save (book: Book) {
+  async save (book: Book): Promise<Book> {
     return await this.bookRepository.save(book)
   }
 
@@ -63,13 +63,13 @@ export class BookService {
     }
   }
 
-  async getBooksByGenre(genre: string) {
+  async getBooksByGenre (genre: string): Promise<Book[] | null> {
     try {
       this.logger.log(`Finding books by genre ${genre}`)
       return await this.bookRepository.find({
         relations: ['cover', 'publishing'],
         where: {
-          genre: {genre: ILike(`%${genre}%`)}
+          genre: { genre: ILike(`%${genre}%`) }
         }
       })
     } catch (error) {

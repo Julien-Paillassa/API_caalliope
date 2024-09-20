@@ -9,7 +9,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { HttpExceptionFilter } from './utils/filters/http-exception.filter'
 import * as express from 'express'
 import { join } from 'path'
-import * as cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser'
 
 async function bootstrap (): Promise<void> {
   dotenv.config({ path: '.env' })
