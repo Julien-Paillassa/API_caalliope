@@ -226,4 +226,27 @@ export class BookController {
       }
     }
   }
+
+  @Get('getAll/popular')
+  @ApiOperation({ summary: 'Get books with rating >= minRating' })
+  @ApiOkResponse({
+    description: 'Books Fetched Successfully',
+    type: [Book]
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async findBooksByRating (): Promise<any> {
+    try {
+      const books = await this.bookService.findPopularBooks(4)
+      return {
+        success: true,
+        data: books,
+        message: 'Books Fetched Successfully'
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
 }
