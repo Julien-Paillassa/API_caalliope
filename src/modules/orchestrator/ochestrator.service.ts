@@ -71,7 +71,7 @@ export class OrchestratorService {
       language: createPublishingDto.language ?? 'No language provided yet'
     }))
 
-    return this.publishingService.createPublishing(PublishingFactory.createDefaultPublishing({
+    return await this.publishingService.createPublishing(PublishingFactory.createDefaultPublishing({
       label: createPublishingDto.editor,
       language: createPublishingDto.language ?? 'No language provided yet',
       isbn: createPublishingDto.isbn,
@@ -99,7 +99,7 @@ export class OrchestratorService {
     }))
     if (format != null && publishing != null) {
       publishing.format = format
-      return this.publishingService.save(publishing)
+      return await this.publishingService.save(publishing)
     }
     return null
   }
