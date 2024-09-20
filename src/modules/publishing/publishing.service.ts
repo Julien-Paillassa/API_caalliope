@@ -26,7 +26,13 @@ export class PublishingService {
 
   async findAll (): Promise<Publishing[]> {
     try {
-      return await this.publishingRepository.find()
+      const allPublising = await this.publishingRepository.find()
+
+      if (allPublising.length === 0) {
+        throw new HttpException('No formats found', HttpStatus.NOT_FOUND)
+      }
+
+      return allPublising
     } catch (error) {
       this.logger.error('Error finding all publishing', error.stack)
       throw new HttpException('Failed to retrieve publishing', HttpStatus.INTERNAL_SERVER_ERROR)

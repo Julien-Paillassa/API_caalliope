@@ -56,40 +56,7 @@ import { StripeController } from './modules/stripe/stripe.controller'
 import { StripeService } from './modules/stripe/stripe.service'
 import * as dotenv from 'dotenv'
 
-dotenv.config()
-let dbConfig: { host?: any, username?: any, password?: any, database?: any } = {}
-
-const getDatabaseConfig = (): { host?: any, username?: any, password?: any, database?: any } => {
-  const env = process.env.NODE_ENV
-
-  if (env === 'dev') {
-    return {
-      host: process.env.DATABASE_HOST_DEV,
-      username: process.env.DATABASE_USERNAME_DEV,
-      password: process.env.DATABASE_PASSWORD_DEV,
-      database: process.env.DATABASE_NAME_DEV
-    }
-  } else if (env === 'test') {
-    return {
-      host: process.env.DATABASE_HOST_TEST,
-      username: process.env.DATABASE_USERNAME_TEST,
-      password: process.env.DATABASE_PASSWORD_TEST,
-      database: process.env.DATABASE_NAME_TEST
-    }
-  } else if (env === 'prod') {
-    return {
-      host: process.env.DATABASE_HOST_PROD,
-      username: process.env.DATABASE_USERNAME_PROD,
-      password: process.env.DATABASE_PASSWORD_PROD,
-      database: process.env.DATABASE_NAME_PROD
-    }
-  }
-
-  return {}
-}
-
-dbConfig = getDatabaseConfig()
-console.log(dbConfig)
+dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
 
 @Module({
   imports: [
@@ -108,11 +75,14 @@ console.log(dbConfig)
     StripeModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: dbConfig.host,
+      host: process.env.DATABASE_HOST,
       port: 5432,
-      username: dbConfig.username,
-      password: dbConfig.password,
-      database: dbConfig.database,
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
+      /* ssl: {
+        rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
+      }, */
       entities: [
         User,
         Saga,
@@ -132,7 +102,7 @@ console.log(dbConfig)
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '30m' }
+      signOptions: { expiresIn: '15778800s' }
     }),
     MulterModule.register({
       dest: './uploads'

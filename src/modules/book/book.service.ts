@@ -53,6 +53,9 @@ export class BookService {
           'publishing'
         ]
       })
+      if (book == null) {
+        throw new HttpException('Book not found', HttpStatus.NOT_FOUND) // Ajout d'une exception si le livre est introuvable
+      }
       return book
     } catch (error) {
       throw new HttpException('Book not found', HttpStatus.NOT_FOUND)

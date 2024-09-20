@@ -17,6 +17,7 @@ import { type Status } from './../modules/admin/entities/status.enum'
 import { type UserBookStatus } from './../modules/user-book/entities/user-book-status.enum'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import * as dotenv from 'dotenv'
 
 async function downloadImage (url: string, filepath: string): Promise<void> {
   const response = await axios({
@@ -33,16 +34,17 @@ async function downloadImage (url: string, filepath: string): Promise<void> {
     writer.on('error', reject)
   })
 }
+dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
 
 async function fixtures (): Promise<void> {
   try {
     const dataSource = new DataSource({
       type: 'postgres',
-      host: 'db_dev',
+      host: process.env.DATABASE_HOST,
       port: 5432,
-      username: 'caaliope_dev',
-      password: 'caaliope_dev*2024!',
-      database: 'database_caaliope_dev',
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [
         User,
         Saga,

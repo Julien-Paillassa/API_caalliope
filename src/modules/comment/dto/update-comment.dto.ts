@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/mapped-types'
 import { CreateCommentDto } from './create-comment.dto'
 import { ApiProperty } from '@nestjs/swagger'
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { IsEnum, IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator'
 import { Status } from './../../admin/entities/status.enum'
 
 export class UpdateCommentDto extends PartialType(CreateCommentDto) {
@@ -19,6 +19,8 @@ export class UpdateCommentDto extends PartialType(CreateCommentDto) {
     required: false
   })
   @IsNumber()
+  @Min(1)
+  @Max(5)
     rating?: number
 
   @ApiProperty({
@@ -30,4 +32,20 @@ export class UpdateCommentDto extends PartialType(CreateCommentDto) {
   @IsNotEmpty()
   @IsEnum(Status)
     status: Status
+
+  @ApiProperty({
+    description: 'User ID',
+    example: 1,
+    required: false
+  })
+  @IsNumber()
+    userId: number
+
+  @ApiProperty({
+    description: 'Book ID',
+    example: 1,
+    required: false
+  })
+  @IsNumber()
+    bookId: number
 }

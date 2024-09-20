@@ -29,10 +29,10 @@ export class CommentService {
     }
   }
 
-  async updateComment (userId: number, bookId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
+  async updateComment (updateCommentDto: UpdateCommentDto): Promise<Comment> {
     try {
       const comment = await this.commentRepository.findOne({
-        where: { user: { id: userId }, book: { id: bookId } }
+        where: { user: { id: updateCommentDto.userId }, book: { id: updateCommentDto.bookId } }
       })
 
       if (comment != null) {

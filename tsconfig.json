@@ -18,11 +18,11 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "inlineSources": true,
-    "sourceRoot": "/"
+    "sourceRoot": "/",
   },
   "include": [
     "src/**/*",
-    "test/*"
+    "test/**/*"
   ],
   "exclude": ["node_modules", "dist"],
   "watchOptions": {
