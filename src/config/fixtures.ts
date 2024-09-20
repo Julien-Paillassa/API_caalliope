@@ -164,6 +164,7 @@ async function fixtures (): Promise<void> {
         summary: faker.lorem.paragraph(),
         publicationDate: faker.date.past().toISOString(),
         status: faker.helpers.arrayElement(['waiting', 'accepted', 'refused']) as Status,
+        rating: faker.number.int({ min: 1, max: 5 }),
         author: randomAuthor,
         genre: [randomGenre]
       })
