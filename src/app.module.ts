@@ -62,7 +62,10 @@ import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
 import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
 import { CoreModule } from './core.module'
 
-dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
+// dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
+dotenv.config({ path: './.env' })
+
+console.log('DATABASE_HOST', process.env.DATABASE_HOST)
 
 @Module({
   imports: [
@@ -90,7 +93,7 @@ dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       ssl: {
-        rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
+        rejectUnauthorized: true // Pour éviter des problèmes de vérification SSL
       },
       entities: [
         User,
