@@ -93,7 +93,7 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       ssl: {
-        rejectUnauthorized: true // Pour éviter des problèmes de vérification SSL
+        rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
       },
       entities: [
         User,
