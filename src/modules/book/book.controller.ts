@@ -63,7 +63,7 @@ export class BookController {
   }))
   async create (@UploadedFile() cover: Express.Multer.File, @Body() createBookDto: CreateBookDto): Promise<any> {
     try {
-      if (cover) {
+      if (cover != null) {
         createBookDto.cover = cover
       }
       const book = await this.orchestratorService.createBookEntities(createBookDto)
