@@ -46,6 +46,10 @@ export class Book {
   })
     status: Status
 
+  @ApiProperty()
+  @Column()
+    rating: number
+
   @ApiProperty({ type: () => Cover })
   @OneToOne(() => Cover, cover => cover.book, { cascade: false, onDelete: 'SET NULL' })
     cover: Cover

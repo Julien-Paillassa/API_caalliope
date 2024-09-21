@@ -1,9 +1,9 @@
-import {HttpException, HttpStatus, Injectable, Logger} from '@nestjs/common'
-import {type UpdateBookDto} from './dto/update-book.dto'
-import {InjectRepository} from '@nestjs/typeorm'
-import {ILike, Repository} from 'typeorm';
-import {Book} from './entities/book.entity'
-import {Status} from '../admin/entities/status.enum'
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
+import { type UpdateBookDto } from './dto/update-book.dto'
+import { InjectRepository } from '@nestjs/typeorm'
+import { ILike, Repository, MoreThanOrEqual } from 'typeorm'
+import { Book } from './entities/book.entity'
+import { Status } from '../admin/entities/status.enum'
 
 @Injectable()
 export class BookService {
@@ -25,7 +25,7 @@ export class BookService {
     return await this.bookRepository.save(book)
   }
 
-  async save (book: Book) {
+  async save (book: Book): Promise<Book> {
     return await this.bookRepository.save(book)
   }
 
@@ -63,13 +63,13 @@ export class BookService {
     }
   }
 
-  async getBooksByGenre(genre: string) {
+  async getBooksByGenre (genre: string): Promise<Book[]> {
     try {
       this.logger.log(`Finding books by genre ${genre}`)
       return await this.bookRepository.find({
         relations: ['cover', 'publishing'],
         where: {
-          genre: {genre: ILike(`%${genre}%`)}
+          genre: { genre: ILike(`%${genre}%`) }
         }
       })
     } catch (error) {
@@ -123,6 +123,37 @@ export class BookService {
     } catch (error) {
       this.logger.error('Error finding books waitings', error.stack)
       throw new HttpException('Failed to retrieve books waitings', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async findBooksByTitleOrAuthor (searchTerm: string): Promise<Book[]> {
+    try {
+      console.log(searchTerm)
+      return await this.bookRepository.find({
+        relations: ['author', 'cover', 'publishing'],
+        where: [
+          { title: ILike(`%${searchTerm}%`) }, // Recherche par titre
+          { author: { firstName: ILike(`%${searchTerm}%`) } }, // Recherche par prénom de l'auteur
+          { author: { lastName: ILike(`%${searchTerm}%`) } } // Recherche par nom de l'auteur
+        ]
+      })
+    } catch (error) {
+      this.logger.error(`Error finding books by title or author: ${searchTerm}`, error.stack)
+      throw new HttpException('Failed to retrieve books by title or author', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async findPopularBooks (minRating: number): Promise<Book[]> {
+    try {
+      return await this.bookRepository.find({
+        relations: ['cover', 'author', 'publishing'],
+        where: {
+          rating: MoreThanOrEqual(minRating)
+        }
+      })
+    } catch (error) {
+      this.logger.error(`Error finding books with rating >= ${minRating}`, error.stack)
+      throw new HttpException('Failed to retrieve books by rating', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }
