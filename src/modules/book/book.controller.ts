@@ -9,7 +9,8 @@ import {
   Delete,
   Logger,
   UseInterceptors,
-  UploadedFile
+  UploadedFile,
+  Query
 } from '@nestjs/common'
 import { BookService } from './book.service'
 import { CreateBookDto } from './dto/create-book.dto'
@@ -193,6 +194,54 @@ export class BookController {
         success: true,
         message: 'Book Deleted Successfully',
         data: book
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
+
+  @Get('search/by')
+  @ApiOperation({ summary: 'Search book by title or author' })
+  @ApiOkResponse({
+    description: 'Books Fetched Successfully',
+    type: [Book]
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async searchBooks (@Query('q') searchTerm: string): Promise<any> {
+    try {
+      console.log(searchTerm)
+      const books = await this.bookService.findBooksByTitleOrAuthor(searchTerm)
+      return {
+        success: true,
+        data: books,
+        message: 'Books Fetched Successfully'
+      }
+    } catch (error) {
+      this.logger.error(`Error searching books by title or author with term: ${searchTerm}`, error.stack)
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
+
+  @Get('getAll/popular')
+  @ApiOperation({ summary: 'Get books with rating >= minRating' })
+  @ApiOkResponse({
+    description: 'Books Fetched Successfully',
+    type: [Book]
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async findBooksByRating (): Promise<any> {
+    try {
+      const books = await this.bookService.findPopularBooks(4)
+      return {
+        success: true,
+        data: books,
+        message: 'Books Fetched Successfully'
       }
     } catch (error) {
       return {

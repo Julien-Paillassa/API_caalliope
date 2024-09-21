@@ -210,6 +210,7 @@ export class GoogleBookService implements OnModuleInit {
         summary: googleBook.volumeInfo.description ?? 'No description available',
         publicationDate: googleBook.volumeInfo.publishedDate ?? 'Unknown',
         status: Status.ACCEPTED,
+        rating: Math.floor(Math.random() * 6),
         author,
         cover: cover ?? undefined,
         genre: genres,

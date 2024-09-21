@@ -11,6 +11,7 @@ export class BookFactory {
       summary: 'No summary for this book yet',
       publicationDate: new Date().toISOString().split('T')[0],
       status: Status.WAITING,
+      rating: 0,
       cover: {} as Cover,
       author: new Author(),
       comment: [],
