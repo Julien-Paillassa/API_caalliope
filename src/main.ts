@@ -4,16 +4,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as Sentry from '@sentry/node'
 import { ProfilingIntegration } from '@sentry/profiling-node'
 import { SentryFilter } from './sentry.filter'
-import * as dotenv from 'dotenv'
 import { ValidationPipe } from '@nestjs/common'
 import { HttpExceptionFilter } from './utils/filters/http-exception.filter'
 import * as express from 'express'
 import { join } from 'path'
-import * as cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser'
 
 async function bootstrap (): Promise<void> {
-  dotenv.config({ path: '.env' })
-
   const app = await NestFactory.create(AppModule, {
     cors: {
       origin: 'http://localhost:3000',
@@ -28,7 +25,7 @@ async function bootstrap (): Promise<void> {
   const config = new DocumentBuilder()
     .setTitle('Calliope API')
     .setDescription('API for Calliope')
-    .setVersion('1.0')
+    .setVersion('1.3')
     .addTag('calliope')
     .addBearerAuth()
     .build()

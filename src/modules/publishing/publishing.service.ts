@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
 import { type UpdatePublishingDto } from './dto/update-publishing.dto'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -10,12 +12,12 @@ import { PublishingFactory } from './publishing.factory'
 export class PublishingService {
   private readonly logger = new Logger(PublishingService.name)
 
-  constructor(
+  constructor (
     @InjectRepository(Publishing)
     private readonly publishingRepository: Repository<Publishing>
   ) { }
 
-  async findAll(): Promise<Publishing[]> {
+  async findAll (): Promise<Publishing[]> {
     try {
       return await this.publishingRepository.find()
     } catch (error) {
@@ -24,7 +26,7 @@ export class PublishingService {
     }
   }
 
-  async findOne(id: number): Promise<Publishing | null> {
+  async findOne (id: number): Promise<Publishing | null> {
     try {
       const publishing = await this.publishingRepository.findOneByOrFail({ id })
       return publishing
@@ -33,7 +35,7 @@ export class PublishingService {
     }
   }
 
-  async update(id: number, updatePublishingDto: UpdatePublishingDto): Promise<Publishing> {
+  async update (id: number, updatePublishingDto: UpdatePublishingDto): Promise<Publishing> {
     try {
       const existingPublishing = await this.publishingRepository.findOneBy({ id })
 
@@ -58,7 +60,7 @@ export class PublishingService {
     }
   }
 
-  async remove(id: number): Promise<Publishing> {
+  async remove (id: number): Promise<Publishing> {
     try {
       const publishing = await this.publishingRepository.findOneBy({ id })
 
@@ -76,7 +78,7 @@ export class PublishingService {
     }
   }
 
-  async createPublishing(createPublishingDto: Partial<Publishing>): Promise<Publishing> {
+  async createPublishing (createPublishingDto: Partial<Publishing>): Promise<Publishing> {
     const publishing = this.publishingRepository.create({
       label: createPublishingDto.label,
       language: createPublishingDto.language || 'No language provided yet',
@@ -91,7 +93,7 @@ export class PublishingService {
     return await this.publishingRepository.save(publishing)
   }
 
-  async save(publishing: Publishing): Promise<Publishing> {
+  async save (publishing: Publishing): Promise<Publishing> {
     return await this.publishingRepository.save(publishing)
   }
 }

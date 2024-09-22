@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-extraneous-class */
 import { type Book } from './entities/book.entity'
 import { type Cover } from '../cover/entities/cover.entity'
 import { Status } from '../admin/entities/status.enum'
 import { Author } from '../author/entities/author.entity'
 
-export const BookFactory = {
-  createDefaultBook (data?: Partial<Book>): Omit<Book, 'id'> {
+export class BookFactory {
+  static createDefaultBook (data?: Partial<Book>): Omit<Book, 'id'> {
     return {
       title: 'Default Title',
       summary: 'No summary for this book yet',

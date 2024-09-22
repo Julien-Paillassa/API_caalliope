@@ -88,14 +88,14 @@ export class FormatService {
     }
   }
 
-  async createOrFindFormat(createFormatDto: Partial<Format>): Promise<Format> {
-    let format = await this.formatRepository.findOne({ where: { type: createFormatDto?.type } });
+  async createOrFindFormat (createFormatDto: Partial<Format>): Promise<Format> {
+    let format = await this.formatRepository.findOne({ where: { type: createFormatDto?.type } })
 
-    if (!format) {
-      format = this.formatRepository.create({ type: createFormatDto.type, language: createFormatDto.language });
-      await this.formatRepository.save(format);
+    if (format == null) {
+      format = this.formatRepository.create({ type: createFormatDto.type, language: createFormatDto.language })
+      await this.formatRepository.save(format)
     }
 
-    return format;
+    return format
   }
 }

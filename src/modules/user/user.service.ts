@@ -49,16 +49,16 @@ export class UserService {
       const userWithBooks = await this.userRepository.findOneOrFail({
         where: { id },
         relations: ['userBook', 'userBook.book', 'userBook.book.cover']
-      });
+      })
 
       const userBook = userWithBooks.userBook.map((userBook) => ({
         book: {
           id: userBook.book.id,
           title: userBook.book.title,
-          cover: userBook.book.cover,
+          cover: userBook.book.cover
         },
         status: userBook.status
-      }));
+      }))
 
       if (user.role === 'admin') {
         const bookWaiting = await this.bookService.findWaiting()

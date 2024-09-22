@@ -1,96 +1,96 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional, IsNumber, IsIn, IsInt, Min, Matches } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsNotEmpty, IsString, IsOptional, IsIn, Matches } from 'class-validator'
 
 export class CreateBookDto {
   @ApiProperty({
     description: 'Title of the book',
-    example: 'The Hobbit',
+    example: 'The Hobbit'
   })
   @IsNotEmpty()
   @IsString()
-  title: string;
+    title: string
 
   @ApiProperty({
     description: 'Summary of the book',
-    example: '“The Hobbit” by J.R.R. Tolkien follows Bilbo Baggins...',
+    example: '“The Hobbit” by J.R.R. Tolkien follows Bilbo Baggins...'
   })
   @IsOptional()
   @IsString()
-  summary?: string;
+    summary?: string
 
   @ApiProperty({
     description: 'Publication date of the book',
-    example: '1937-09-21',
+    example: '1937-09-21'
   })
   @IsNotEmpty()
   @IsString()
-  date: string;
+    date: string
 
   @ApiProperty({
     description: 'ISBN of the book',
-    example: '978-3-16-148410-0',
+    example: '978-3-16-148410-0'
   })
   @IsNotEmpty()
   @IsString()
   @Matches(/^\d{10}(\d{3})?$/, { message: 'Invalid ISBN format' })
-  isbn: string;
+    isbn: string
 
   @ApiProperty({
     description: 'Author of the book',
-    example: 'J.R.R. Tolkien',
+    example: 'J.R.R. Tolkien'
   })
   @IsNotEmpty()
   @IsString()
-  author: string;
+    author: string
 
   @ApiProperty({
     description: 'Editor of the book',
-    example: 'Allen & Unwin',
+    example: 'Allen & Unwin'
   })
   @IsNotEmpty()
   @IsString()
-  editor: string;
+    editor: string
 
   @ApiProperty({
     description: 'Translator of the book (if any)',
-    example: 'John Doe',
+    example: 'John Doe'
   })
   @IsOptional()
   @IsString()
-  translator?: string;
+    translator?: string
 
   @ApiProperty({
     description: 'Number of pages in the book',
-    example: 310,
+    example: 310
   })
   @IsNotEmpty()
   @IsString()
   // @Min(1, { message: 'Number of pages must be at least 1' })
-  nbPage: string;
+    nbPage: string
 
   @ApiProperty({
     description: 'Language of the book',
-    example: 'English',
+    example: 'English'
   })
   @IsOptional()
   @IsString()
-  language?: string;
+    language?: string
 
   @ApiProperty({
     description: 'Format of the book',
     example: 'paper',
-    enum: ['paper', 'ebook', 'audio'],
+    enum: ['paper', 'ebook', 'audio']
   })
   @IsNotEmpty()
   @IsIn(['paper', 'ebook', 'audio'], { message: 'Invalid format' })
-  format: 'paper' | 'ebook' | 'audio';
+    format: 'paper' | 'ebook' | 'audio'
 
   @ApiProperty({
     description: 'Cover image of the book',
     type: 'string',
     format: 'binary',
-    required: false,
+    required: false
   })
   @IsOptional()
-  cover?: Express.Multer.File;
+    cover?: Express.Multer.File
 }

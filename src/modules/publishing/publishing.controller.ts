@@ -4,13 +4,13 @@ import { CreatePublishingDto } from './dto/create-publishing.dto'
 import { UpdatePublishingDto } from './dto/update-publishing.dto'
 import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { Publishing } from './entities/publishing.entity'
-import { OrchestratorService } from "../orchestrator/ochestrator.service";
+import { OrchestratorService } from '../orchestrator/ochestrator.service'
 
 @ApiBearerAuth()
 @ApiTags('publishing')
 @Controller('publishing')
 export class PublishingController {
-  constructor(private readonly publishingService: PublishingService,
+  constructor (private readonly publishingService: PublishingService,
     @Inject(forwardRef(() => OrchestratorService))
     private readonly orchestratorService: OrchestratorService) { }
 
@@ -23,7 +23,7 @@ export class PublishingController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async create(@Body() createPublishingDto: CreatePublishingDto): Promise<any> {
+  async create (@Body() createPublishingDto: CreatePublishingDto): Promise<any> {
     try {
       const publishing = await this.orchestratorService.createPublishingEntities(createPublishingDto)
       return {
@@ -48,7 +48,7 @@ export class PublishingController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async findAll(): Promise<any> {
+  async findAll (): Promise<any> {
     try {
       const data = await this.publishingService.findAll()
       return {
@@ -73,7 +73,7 @@ export class PublishingController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async findOne(@Param('id') id: string): Promise<any> {
+  async findOne (@Param('id') id: string): Promise<any> {
     try {
       const data = await this.publishingService.findOne(+id)
       return {
@@ -99,7 +99,7 @@ export class PublishingController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Author Not Found' })
-  async update(@Param('id') id: string, @Body() updatePublishingDto: UpdatePublishingDto): Promise<any> {
+  async update (@Param('id') id: string, @Body() updatePublishingDto: UpdatePublishingDto): Promise<any> {
     try {
       const publishing = await this.publishingService.update(+id, updatePublishingDto)
       return {
@@ -125,7 +125,7 @@ export class PublishingController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Author Not Found' })
-  async remove(@Param('id') id: string): Promise<any> {
+  async remove (@Param('id') id: string): Promise<any> {
     try {
       const publishing = await this.publishingService.remove(+id)
       return {

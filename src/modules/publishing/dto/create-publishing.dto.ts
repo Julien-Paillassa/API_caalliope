@@ -12,7 +12,7 @@ export class CreatePublishingDto {
   })
   @IsNotEmpty()
   @IsString()
-  editor: string
+    editor: string
 
   @ApiProperty({
     description: 'Language of the publishing',
@@ -20,7 +20,7 @@ export class CreatePublishingDto {
   })
   @IsOptional()
   @IsString()
-  language?: string
+    language?: string
 
   @ApiProperty({
     description: 'ISBN of the publishing',
@@ -28,7 +28,7 @@ export class CreatePublishingDto {
   })
   @IsNotEmpty()
   @IsString()
-  isbn: string
+    isbn: string
 
   @ApiProperty({
     description: 'Number of pages of the publishing',
@@ -36,7 +36,7 @@ export class CreatePublishingDto {
   })
   @IsNotEmpty()
   @IsNumber()
-  nbPage: number
+    nbPage: number
 
   @ApiProperty({
     description: 'Publication date of the publishing',
@@ -44,14 +44,14 @@ export class CreatePublishingDto {
   })
   @IsNotEmpty()
   @IsString()
-  date: string
+    date: string
 
   @ApiProperty({
     description: 'Format of the book',
     example: 'paper',
-    enum: ['paper', 'ebook', 'audio'],
+    enum: ['paper', 'ebook', 'audio']
   })
   @IsNotEmpty()
   @IsIn(['paper', 'ebook', 'audio'], { message: 'Invalid format' })
-  format: 'paper' | 'ebook' | 'audio';
+    format: 'paper' | 'ebook' | 'audio'
 }

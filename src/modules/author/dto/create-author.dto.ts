@@ -24,7 +24,7 @@ export class CreateAuthorDto {
 
   @IsNotEmpty()
   @IsString()
-  fullName: string
+    fullName: string
 
   @ApiProperty({
     description: 'Email address of the author',
