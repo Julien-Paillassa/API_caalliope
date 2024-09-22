@@ -1,30 +1,29 @@
 version: '3.9'
 
 services:
-  api_dev:
-    container_name: api_caalliope_dev
+  api_prod:
+    container_name: api_caalliope_prod
     build:
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
     ports:
       - '3001:3001'
     volumes:
       - .:/usr/src/app
-      - node_modules_dev:/usr/src/app/node_modules
+      - node_modules_prod:/usr/src/app/node_modules
       - ./src/uploads:/usr/src/app/uploads
-    command: npm run dev
     depends_on:
-      - db_dev
+      - db_prod
       - db_test
 
-  db_dev:
-    container_name: database_caalliope_dev
+  db_prod:
+    container_name: database_caalliope_prod
     image: postgres:15
     environment:
-      POSTGRES_DB: database_caalliope_dev
-      POSTGRES_USER: caalliope_dev
-      POSTGRES_PASSWORD: caalliope_dev*2024!
+      POSTGRES_DB: database_caalliope_prod
+      POSTGRES_USER: caalliope_prod
+      POSTGRES_PASSWORD: caalliope_prod*2024!
     volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     ports:
       - '5432:5432'
 
@@ -38,22 +37,22 @@ services:
     ports:
       - '5433:5432'
     depends_on:
-      - db_dev
+      - db_prod
 
   interface_db:
-    container_name: interface_db_caalliope_dev
+    container_name: interface_db_caalliope_prod
     image: dpage/pgadmin4:latest
     environment:
-      PGADMIN_DEFAULT_EMAIL: caalliope.dev@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: caalliope_dev*2024!
+      PGADMIN_DEFAULT_EMAIL: caalliope.prod@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: caalliope_prod*2024!
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'False'
       PGADMIN_DISABLE_POSTFIX: 'True'
     ports:
       - '5050:80'
     depends_on:
-      - db_dev
+      - db_prod
 
 volumes:
-  postgres_data_dev:
-  node_modules_dev:
+  postgres_data_prod:
+  node_modules_prod:
   uploads: # Volume pour les uploads

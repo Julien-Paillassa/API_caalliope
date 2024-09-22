@@ -39,12 +39,10 @@ export class CommentController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async updateComment (
-    @Body('userId') userId: number,
-      @Body('bookId') bookId: number,
-      @Body() updateCommentDto: UpdateCommentDto
+    @Body() updateCommentDto: UpdateCommentDto
   ): Promise<Comment> {
     try {
-      const data = await this.commentService.updateComment(userId, bookId, updateCommentDto)
+      const data = await this.commentService.updateComment(updateCommentDto)
       return data
     } catch (error) {
       throw new Error(error.message as string)

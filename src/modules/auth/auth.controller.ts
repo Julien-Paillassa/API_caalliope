@@ -1,6 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request, UseGuards, Res } from '@nestjs/common'
 import { AuthService } from './auth.service'
-import { AuthGuard } from 'src/utils/guards/auth.guard'
 import { SignInDto } from './dto/sign-in.dto'
 import * as bcrypt from 'bcrypt'
 import { SignUpDto } from './dto/sign-up.dto'
@@ -53,12 +52,6 @@ export class AuthController {
         message: error.message
       }
     }
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  getProfile (@Request() req): any {
-    return req.user
   }
 
   @HttpCode(HttpStatus.OK)

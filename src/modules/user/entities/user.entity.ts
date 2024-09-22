@@ -52,7 +52,7 @@ export class User {
     avatar: Avatar
 
   @ApiProperty({ type: () => UserBook })
-  @OneToMany(() => UserBook, userBook => userBook.user)
+  @OneToMany(() => UserBook, userBook => userBook.user, { onDelete: 'CASCADE' })
     userBook: UserBook[]
 
   @ApiProperty({ type: () => Comment })
