@@ -54,8 +54,14 @@ import { CoverService } from './modules/cover/cover.service'
 import { StripeModule } from './modules/stripe/stripe.module'
 import { StripeController } from './modules/stripe/stripe.controller'
 import { StripeService } from './modules/stripe/stripe.service'
+import { GoogleBookModule } from './modules/google-book/google-book.module'
+import { GoogleBookService } from './modules/google-book/google-book.service'
+import { GoogleBookController } from './modules/google-book/google-book.controller'
+import * as dotenv from 'dotenv'
+import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
+import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
+import { CoreModule } from './core.module'
 
-dotenv.config()
 let dbConfig: { host?: any, username?: any, password?: any, database?: any } = {}
 
 const getDatabaseConfig = (): { host?: any, username?: any, password?: any, database?: any } => {
@@ -89,16 +95,9 @@ const getDatabaseConfig = (): { host?: any, username?: any, password?: any, data
 
 dbConfig = getDatabaseConfig()
 console.log(dbConfig)
-import { GoogleBookModule } from './modules/google-book/google-book.module'
-import { GoogleBookService } from './modules/google-book/google-book.service'
-import { GoogleBookController } from './modules/google-book/google-book.controller'
-import * as dotenv from 'dotenv'
-import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
-import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
-import { CoreModule } from './core.module'
 
 // dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
-dotenv.config({ path: './.env' })
+dotenv.config({ path: './.env.local' })
 
 console.log('DATABASE_HOST', process.env.DATABASE_HOST)
 
