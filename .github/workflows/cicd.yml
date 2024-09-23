@@ -29,7 +29,7 @@ jobs:
         options: --health-cmd "pg_isready -d database_caalliope_test -U caalliope_test" --health-interval 10s --health-timeout 5s --health-retries 5
 
     env:
-      DATABASE_HOST: db_test
+      DATABASE_HOST: localhost
       DATABASE_USERNAME: caalliope_test
       DATABASE_PASSWORD: caalliope_test*2024!
       DATABASE_NAME: database_caalliope_test
