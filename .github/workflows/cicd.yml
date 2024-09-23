@@ -42,6 +42,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+      
+      - name: "🛠️ Check environment variables"
+        run: printenv | grep DATABASE
+
+      - name: "🛑 Wait for PostgreSQL to be ready"
+        run: |
+          until docker exec db_test pg_isready; do
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
 
       - name: "📦 install dependencies"
         run: npm install
