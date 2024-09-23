@@ -29,11 +29,10 @@ jobs:
         options: --health-cmd "pg_isready -d database_caalliope_test -U caalliope_test" --health-interval 10s --health-timeout 5s --health-retries 5
 
     env:
-      DB_SCHEMA: postgres
-      DB_USER: caalliope_test
-      DB_PASSWORD: caalliope_test*2024!
-      DB_HOST: db_test
-      DB_PORT: 5432
+      DATABASE_HOST: db_test
+      DATABASE_USERNAME: caalliope_test
+      DATABASE_PASSWORD: caalliope_test*2024!
+      DATABASE_NAME: database_caalliope_test
 
     steps:
       - name: "☁️ checkout repository"
