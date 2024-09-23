@@ -44,13 +44,6 @@ jobs:
         with:
           node-version: 18
 
-      - name: "🛑 Wait for PostgreSQL to be ready"
-        run: |
-          until docker exec db_test pg_isready; do
-            echo "Waiting for PostgreSQL..."
-            sleep 5
-          done
-
       - name: "📦 install dependencies"
         run: npm install
 
