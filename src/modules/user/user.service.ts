@@ -6,6 +6,9 @@ import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
 import { BookService } from '../book/book.service'
 import {CommentService} from "../comment/comment.service";
+import {UserBook} from "../user-book/entities/user-book.entity";
+import {Book} from "../book/entities/book.entity";
+import {Comment} from "../comment/entities/comment.entity";
 
 
 @Injectable()
@@ -40,7 +43,7 @@ export class UserService {
     }
   }
 
-  async findOne (id: number): Promise<User | null> {
+  async findOne (id: number): Promise<User & {bookWaiting?: Book[], commentsWaiting?: Comment[]}| null> {
     try {
       this.logger.log(`Finding user with id ${id}`)
       const user = await this.userRepository.findOneOrFail(
@@ -61,7 +64,7 @@ export class UserService {
           cover: userBook.book.cover
         },
         status: userBook.status
-      }))
+      })) as UserBook[]
 
       if (user.role === 'admin') {
         const bookWaiting = await this.bookService.findWaiting()
