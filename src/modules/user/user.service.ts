@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
 import { BookService } from '../book/book.service'
+import {CommentService} from "../comment/comment.service";
 
 
 @Injectable()
@@ -14,7 +15,8 @@ export class UserService {
   constructor (
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly bookService: BookService
+    private readonly bookService: BookService,
+    private readonly commentService: CommentService
   ) {}
 
   async create (createUserDto: CreateUserDto): Promise<User> {
@@ -63,7 +65,8 @@ export class UserService {
 
       if (user.role === 'admin') {
         const bookWaiting = await this.bookService.findWaiting()
-        return { ...user, bookWaiting, userBook }
+        const commentsWaiting = await this.commentService.findWaiting()
+        return { ...user, bookWaiting, userBook, commentsWaiting }
       } else {
         return { ...user, userBook }
       }

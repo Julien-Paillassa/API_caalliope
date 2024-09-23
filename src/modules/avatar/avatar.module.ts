@@ -11,11 +11,13 @@ import { Book } from '../book/entities/book.entity'
 import { BookService } from '../book/book.service'
 import {OrchestratorService} from "../orchestrator/ochestrator.service";
 import {OrchestratorModule} from "../orchestrator/orchestrator.module";
+import {CommentService} from "../comment/comment.service";
+import {CommentModule} from "../comment/comment.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Avatar, Author, User, Book]), forwardRef(() => OrchestratorModule)],
+  imports: [TypeOrmModule.forFeature([Avatar, Author, User, Book]), forwardRef(() => OrchestratorModule), CommentModule],
   controllers: [AvatarController],
-  providers: [AvatarService, AuthorService, UserService, BookService, OrchestratorService],
+  providers: [AvatarService, AuthorService, UserService, BookService, OrchestratorService, CommentService],
   exports: [TypeOrmModule, AvatarService]
 })
 export class AvatarModule {}

@@ -75,7 +75,7 @@ export class UserController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async findOne (@Param('id') id: string): Promise<any> {
     try {
-      const data = await this.userService.findOne(+id)
+      const data = await this.userService.findOne(parseInt(id))
       return {
         success: true,
         data,
