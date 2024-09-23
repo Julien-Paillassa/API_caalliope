@@ -18,21 +18,21 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
+      db_test:
         image: postgres:15
         env:
-          POSTGRES_DB: database_caaliope_dev
-          POSTGRES_USER: caaliope_dev
-          POSTGRES_PASSWORD: caaliope_dev*2024!
+          POSTGRES_DB: database_caalliope_test
+          POSTGRES_USER: caalliope_test
+          POSTGRES_PASSWORD: caalliope_test*2024!
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     env:
       DB_SCHEMA: postgres
-      DB_USER: caalliope
-      DB_PASSWORD: caaliope_dev*2024!
-      DB_HOST: db
+      DB_USER: caalliope_test
+      DB_PASSWORD: caalliope_test*2024!
+      DB_HOST: localhost
 
     steps:
       - name: "☁️ checkout repository"
@@ -46,8 +46,8 @@ jobs:
       - name: "📦 install dependencies"
         run: npm install
 
-      #- name: "🔍 run tests"
-      #  run: npm run test:cov
+      - name: "🔍 run tests"
+        run: npm run test:cov
 
       - name: "🔍 lint code"
         run: npm run lint

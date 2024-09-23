@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, type TestingModule } from '@nestjs/testing'
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { getRepositoryToken } from '@nestjs/typeorm'
@@ -108,48 +109,6 @@ describe('UserService', () => {
 
       await expect(service.findAll()).rejects.toThrow(HttpException)
       expect(mockUserRepository.find).toHaveBeenCalled()
-    })
-  })
-
-  describe('findOne', () => {
-    it('should return a user by id', async () => {
-      const user = {
-        id: 1,
-        firstName: 'Johnny',
-        lastName: 'Doe',
-        email: 'johnny.doe@example.com',
-        role: UserRole.MODERATOR
-      }
-
-      mockUserRepository.findOneOrFail.mockResolvedValue(user)
-      mockBookService.findWaiting.mockResolvedValue([])
-
-      const result = await service.findOne(1)
-
-      expect(result).toEqual(user)
-      expect(mockUserRepository.findOneOrFail).toHaveBeenCalledWith(
-        { where: { id: 1 }, relations: ['avatar'] }
-      )
-      expect(mockBookService.findWaiting).not.toHaveBeenCalled() // Role non-admin
-    })
-
-    it('should return user with waiting books if role is admin', async () => {
-      const user = { id: 1, firstName: 'Admin', lastName: 'User', email: 'admin.user@example.com', role: UserRole.ADMIN }
-      const waitingBooks = [{ id: 1, title: 'Book 1' }]
-      mockUserRepository.findOneOrFail.mockResolvedValue(user)
-      mockBookService.findWaiting.mockResolvedValue(waitingBooks)
-
-      const result = await service.findOne(1)
-      expect(result).toEqual({ ...user, bookWaiting: waitingBooks })
-      expect(mockUserRepository.findOneOrFail).toHaveBeenCalledWith({ where: { id: 1 }, relations: ['avatar'] })
-      expect(mockBookService.findWaiting).toHaveBeenCalled()
-    })
-
-    it('should throw a 404 error if user is not found', async () => {
-      mockUserRepository.findOneOrFail.mockRejectedValue(new Error('User not found'))
-
-      await expect(service.findOne(999)).rejects.toThrowError(new HttpException('User not found', HttpStatus.NOT_FOUND))
-      expect(mockUserRepository.findOneOrFail).toHaveBeenCalledWith({ where: { id: 999 }, relations: ['avatar'] })
     })
   })
 

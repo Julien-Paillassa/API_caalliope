@@ -2,9 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import {
   IsNotEmpty,
   IsString,
-  IsNumber,
-  Max,
-  Min
+  IsNumber
 } from 'class-validator'
 
 export class CreateCommentDto {

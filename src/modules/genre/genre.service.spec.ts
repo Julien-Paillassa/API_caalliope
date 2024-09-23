@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, type TestingModule } from '@nestjs/testing'
 import { GenreService } from './genre.service'
 import { getRepositoryToken } from '@nestjs/typeorm'

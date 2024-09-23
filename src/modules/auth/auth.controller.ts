@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request, UseGuards, Res } from '@nestjs/common'
+import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { SignInDto } from './dto/sign-in.dto'
 import * as bcrypt from 'bcrypt'
@@ -59,7 +59,6 @@ export class AuthController {
   async refreshAccessToken (@Body() refreshTokenDto: RefreshTokenDto): Promise<any> {
     try {
       const token = await this.authService.refreshAccessToken(refreshTokenDto)
-      console.log(token, 'tooooooooken')
       return {
         success: true,
         message: 'Token Refreshed Successfully',

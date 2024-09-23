@@ -51,8 +51,12 @@ describe('AuthService', () => {
     userRepository = module.get<Repository<User>>(getRepositoryToken(User))
   })
 
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('signUp', () => {
-    it('should successfully create a new user', async () => {
+    it('should successfully create a new user and return an access token', async () => {
       const signUpDto: SignUpDto = {
         email: 'john.doe@example.com',
         password: 'strongPassword123',
@@ -61,14 +65,43 @@ describe('AuthService', () => {
         username: 'johndoe'
       }
 
+      // Mock user creation
       const user = new User()
       user.email = signUpDto.email
+      user.firstName = signUpDto.firstName
+      user.lastName = signUpDto.lastName
+      user.username = signUpDto.username
+      user.id = 1 // Mock an ID for the user
+      user.role = UserRole.USER
 
+      // Mock repository methods
       jest.spyOn(userRepository, 'create').mockReturnValue(user)
       jest.spyOn(userRepository, 'save').mockResolvedValue(user)
 
+      // Mock jwtService signAsync
+      const accessToken = 'mockedJwtToken'
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: UserRole.USER
+      }
+      jest.spyOn(jwtService, 'signAsync').mockResolvedValue(accessToken)
+
+      // Call the signUp method
       const result = await authService.signUp(signUpDto)
-      expect(result).toBe(user)
+
+      // Expectations
+      expect(result).toEqual({
+        access_token: accessToken,
+        user
+      })
+
+      // Ensure that the expected methods were called with correct arguments
+      expect(userRepository.create).toHaveBeenCalledWith(signUpDto)
+      expect(userRepository.save).toHaveBeenCalledWith(user)
+      expect(jwtService.signAsync).toHaveBeenCalledWith(payload)
     })
   })
 

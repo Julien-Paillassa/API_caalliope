@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, type TestingModule } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { type Repository } from 'typeorm'
@@ -54,7 +55,8 @@ describe('AuthorService', () => {
         firstName: 'John',
         lastName: 'Doe',
         email: 'john.doe@gmail.com',
-        birthDate: '1970-01-01'
+        birthDate: '1970-01-01',
+        fullName: 'John Doe'
       }
 
       mockAuthorRepository.create.mockReturnValue(createAuthorDto)
@@ -72,7 +74,8 @@ describe('AuthorService', () => {
         firstName: 'John',
         lastName: 'Doe',
         email: 'john.doe@gmail.com',
-        birthDate: '1970-01-01'
+        birthDate: '1970-01-01',
+        fullName: 'John Doe'
       }
 
       mockAuthorRepository.save.mockRejectedValue(new Error('Save error'))

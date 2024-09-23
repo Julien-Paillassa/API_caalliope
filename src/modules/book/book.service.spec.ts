@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, type TestingModule } from '@nestjs/testing'
 import { BookService } from './book.service'
 import { getRepositoryToken } from '@nestjs/typeorm'
@@ -46,17 +47,17 @@ describe('BookService', () => {
 
   describe('create', () => {
     it('should successfully create a book', async () => {
-      const createBookDto: CreateBookDto = {
+      const createBookDto: Partial<Book> = {
         title: 'The Hobbit',
         summary: 'A story about a hobbit named Bilbo.',
-        publicationDate: '1937-09-21'
+        author: new Author()
       }
       const savedBook = { id: 1, ...createBookDto }
 
       mockBookRepository.create.mockReturnValue(createBookDto)
       mockBookRepository.save.mockResolvedValue(savedBook)
 
-      const result = await service.create(createBookDto)
+      const result = await service.createBook(createBookDto)
 
       expect(mockBookRepository.create).toHaveBeenCalledWith(createBookDto)
       expect(mockBookRepository.save).toHaveBeenCalledWith(createBookDto)
@@ -71,7 +72,7 @@ describe('BookService', () => {
       }
       mockBookRepository.save.mockRejectedValue(new Error())
 
-      await expect(service.create(createBookDto)).rejects.toThrow(
+      await expect(service.createBook(createBookDto)).rejects.toThrow(
         new HttpException('Failed to create book', HttpStatus.INTERNAL_SERVER_ERROR)
       )
     })
@@ -145,13 +146,14 @@ describe('BookService', () => {
         userBook: [],
         publishing: [],
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        rating: 0
       }
       const updateBookDto: UpdateBookDto = {
         title: 'New Title',
         summary: 'New Summary',
-        publicationDate: '2022-02-01',
-        status: Status.ACCEPTED
+        status: Status.ACCEPTED,
+        id: 1
       }
       const updatedBook = { ...book, ...updateBookDto }
 
@@ -176,7 +178,7 @@ describe('BookService', () => {
       const updateBookDto: UpdateBookDto = {
         title: 'New Title',
         summary: 'New Summary',
-        publicationDate: '2022-02-01',
+        id: 1,
         status: Status.ACCEPTED
       }
 

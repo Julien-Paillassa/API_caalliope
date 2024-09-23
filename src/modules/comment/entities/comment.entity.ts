@@ -11,7 +11,6 @@ import {
   ManyToOne,
   JoinColumn
 } from 'typeorm'
-import { Max, Min } from 'class-validator'
 
 @Entity()
 export class Comment {

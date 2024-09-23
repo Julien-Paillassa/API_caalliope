@@ -34,7 +34,8 @@ async function downloadImage (url: string, filepath: string): Promise<void> {
     writer.on('error', reject)
   })
 }
-dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
+// dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
+dotenv.config({ path: './.env.dev' })
 
 async function fixtures (): Promise<void> {
   try {

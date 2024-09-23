@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, type TestingModule } from '@nestjs/testing'
 import { type INestApplication, ValidationPipe } from '@nestjs/common'

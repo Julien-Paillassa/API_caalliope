@@ -15,14 +15,18 @@ export class BookService {
   ) {}
 
   async createBook (createBookDto: Partial<Book>): Promise<Book> {
-    const book = this.bookRepository.create({
-      title: createBookDto.title,
-      summary: createBookDto.summary,
-      publicationDate: createBookDto.publicationDate,
-      author: createBookDto.author
-    })
-
-    return await this.bookRepository.save(book)
+    try {
+      const book = this.bookRepository.create({
+        title: createBookDto.title,
+        summary: createBookDto.summary,
+        publicationDate: createBookDto.publicationDate,
+        author: createBookDto.author
+      })
+      return await this.bookRepository.save(book)
+    } catch (error) {
+      this.logger.error('Error creating book', error.stack)
+      throw new HttpException('Failed to create book', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   async save (book: Book): Promise<Book> {
