@@ -62,13 +62,7 @@ import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
 import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
 import { CoreModule } from './core.module'
 
-if (process.env.NODE_ENV === 'dev') {
-  // dotenv.config({ path: './.env.dev' })
-  // dotenv.config({ path: './.env' })
-  dotenv.config()
-} else if (process.env.NODE_ENV === 'prod') {
-  dotenv.config({ path: './.env' })
-}
+dotenv.config()
 
 console.log('DATABASE_HOST', process.env.DATABASE_HOST)
 
