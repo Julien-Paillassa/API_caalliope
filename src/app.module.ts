@@ -64,7 +64,8 @@ import { CoreModule } from './core.module'
 
 if (process.env.NODE_ENV === 'dev') {
   // dotenv.config({ path: './.env.dev' })
-  dotenv.config({ path: './.env' })
+  // dotenv.config({ path: './.env' })
+  dotenv.config()
 } else if (process.env.NODE_ENV === 'prod') {
   dotenv.config({ path: './.env' })
 }
