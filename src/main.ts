@@ -25,7 +25,7 @@ async function bootstrap (): Promise<void> {
   const config = new DocumentBuilder()
     .setTitle('Calliope API')
     .setDescription('API for Calliope')
-    .setVersion('1.3')
+    .setVersion('1.4')
     .addTag('calliope')
     .addBearerAuth()
     .build()
