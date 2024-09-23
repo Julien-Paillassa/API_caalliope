@@ -42,9 +42,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-      
-      - name: "🛠️ Check environment variables"
-        run: printenv | grep DATABASE
 
       - name: "🛑 Wait for PostgreSQL to be ready"
         run: |
