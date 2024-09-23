@@ -9,7 +9,7 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "dev": "NODE_ENV=dev nest start --debug 0.0.0.0:9229 --watch",
+    "dev": "nest start --debug 0.0.0.0:9229 --watch",
     "start:dev": "npm install && nodemon --watch .env.prod -L --exec ts-node src/main.ts",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
