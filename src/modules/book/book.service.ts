@@ -87,8 +87,20 @@ export class BookService {
         throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
       }
 
-      this.bookRepository.merge(existingBook, updateBookDto as unknown as Book)
-      return await this.bookRepository.save(existingBook)
+      if (updateBookDto.rating !== undefined) {
+        const totalRatings = existingBook.ratingNumber * existingBook.rating;
+        const newTotalRatings = totalRatings + updateBookDto.rating;
+        const newRatingNumber = existingBook.ratingNumber + 1;
+
+        existingBook.rating = Math.round(newTotalRatings / newRatingNumber);
+        existingBook.ratingNumber = newRatingNumber;
+
+        this.logger.log(`Updated rating for book ${id} to ${existingBook.rating}`);
+      }
+
+      const updatedBook = this.bookRepository.merge(existingBook, updateBookDto as unknown as Book)
+      this.logger.log(existingBook.rating, updatedBook.rating)
+      return await this.bookRepository.save(updatedBook)
     } catch (error) {
       this.logger.error(`Error updating book with id ${id}`, error.stack)
       if (error.status === HttpStatus.NOT_FOUND) {

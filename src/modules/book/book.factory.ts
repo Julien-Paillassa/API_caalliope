@@ -20,6 +20,7 @@ export class BookFactory {
       publishing: [],
       createdAt: new Date(),
       updatedAt: new Date(),
+      ratingNumber: 0,
       ...data
     }
   }
