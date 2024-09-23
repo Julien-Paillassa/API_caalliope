@@ -32,7 +32,7 @@ jobs:
       DB_SCHEMA: postgres
       DB_USER: caalliope_test
       DB_PASSWORD: caalliope_test*2024!
-      DB_HOST: localhost
+      DB_HOST: db_test
 
     steps:
       - name: "☁️ checkout repository"
