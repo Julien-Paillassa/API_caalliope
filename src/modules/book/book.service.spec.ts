@@ -118,7 +118,16 @@ describe('BookService', () => {
       expect(result).toEqual(book)
       expect(mockBookRepository.findOne).toHaveBeenCalledWith({
         where: { id: 1 },
-        relations: ['cover', 'author', 'comment', 'genre', 'userBook', 'publishing']
+        relations: [
+          'cover',
+          'author',
+          'comment',
+          'comment.user',
+          'comment.user.avatar',
+          'genre',
+          'userBook',
+          'publishing'
+        ]
       })
     })
 
