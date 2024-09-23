@@ -54,6 +54,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    needs: api-test
 
     env:
       DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
