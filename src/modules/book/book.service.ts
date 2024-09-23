@@ -56,6 +56,8 @@ export class BookService {
           'cover',
           'author',
           'comment',
+          'comment.user',
+          'comment.user.avatar',
           'genre',
           'userBook',
           'publishing'

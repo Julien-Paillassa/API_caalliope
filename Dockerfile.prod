@@ -3,6 +3,7 @@ FROM node:18
 
 # Créez un répertoire pour les uplaods
 RUN mkdir -p /usr/src/app/uploads/avatars
+RUN mkdir -p /usr/src/app/uploads/covers
 
 # Créez un répertoire pour l'application
 RUN mkdir -p /usr/src/app

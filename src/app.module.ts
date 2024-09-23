@@ -62,8 +62,12 @@ import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
 import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
 import { CoreModule } from './core.module'
 
-// dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
-dotenv.config({ path: './.env' })
+if (process.env.NODE_ENV === 'dev') {
+  // dotenv.config({ path: './.env.dev' })
+  dotenv.config({ path: './.env' })
+} else if (process.env.NODE_ENV === 'prod') {
+  dotenv.config({ path: './.env' })
+}
 
 console.log('DATABASE_HOST', process.env.DATABASE_HOST)
 
@@ -92,9 +96,9 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      ssl: {
+      /* ssl: {
         rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
-      },
+      }, */
       entities: [
         User,
         Saga,

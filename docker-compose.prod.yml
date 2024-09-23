@@ -27,18 +27,6 @@ services:
     ports:
       - '5432:5432'
 
-  db_test:
-    container_name: database_caalliope_test
-    image: postgres:15
-    environment:
-      POSTGRES_DB: database_caalliope_test
-      POSTGRES_USER: caalliope_test
-      POSTGRES_PASSWORD: caalliope_test*2024!
-    ports:
-      - '5433:5432'
-    depends_on:
-      - db_prod
-
   interface_db:
     container_name: interface_db_caalliope_prod
     image: dpage/pgadmin4:latest
@@ -55,4 +43,4 @@ services:
 volumes:
   postgres_data_prod:
   node_modules_prod:
-  uploads: # Volume pour les uploads
+  uploads: 
