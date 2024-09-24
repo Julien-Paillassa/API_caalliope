@@ -4,10 +4,12 @@ import { UserBook } from './entities/user-book.entity'
 import { Repository } from 'typeorm'
 import { type CreateUserBookDto } from './dto/create-user-book.dto'
 import { type UpdateUserBookDto } from './dto/update-user-book.dto'
+import { type UserBookStatus } from './entities/user-book-status.enum'
 
 @Injectable()
 export class UserBookService {
   private readonly logger = new Logger(AbortController.name)
+  private readonly USER_BOOK_STATUS: UserBookStatus
 
   constructor (
     @InjectRepository(UserBook)
@@ -30,6 +32,13 @@ export class UserBookService {
 
   async updateBookStatus (userId: number, bookId: number, updateUserBookDto: UpdateUserBookDto): Promise<UserBook> {
     try {
+      if (updateUserBookDto.status === 'notOwned') {
+        await this.userBookRepository.delete({
+          user: { id: userId },
+          book: { id: bookId }
+        })
+        return {} as UserBook
+      }
       const userBook = await this.userBookRepository.findOne({
         where: { user: { id: userId }, book: { id: bookId } }
       })

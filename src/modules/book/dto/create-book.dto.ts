@@ -93,4 +93,7 @@ export class CreateBookDto {
   })
   @IsOptional()
     cover?: Express.Multer.File
+
+  @IsOptional()
+    genre?: string
 }

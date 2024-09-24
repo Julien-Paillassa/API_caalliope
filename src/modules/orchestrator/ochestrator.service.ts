@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { AuthorService } from '../author/author.service'
 import { BookFactory } from '../book/book.factory'
@@ -14,6 +13,8 @@ import { PublishingFactory } from '../publishing/publishing.factory'
 import { PublishingService } from '../publishing/publishing.service'
 import type { UpdateBookDto } from '../book/dto/update-book.dto'
 import { type UpdatePublishingDto } from '../publishing/dto/update-publishing.dto'
+import { GenreService } from '../genre/genre.service'
+import { AvatarService } from '../avatar/avatar.service'
 
 @Injectable()
 export class OrchestratorService {
@@ -27,8 +28,16 @@ export class OrchestratorService {
     @Inject(forwardRef(() => PublishingService))
     private readonly publishingService: PublishingService,
     @Inject(forwardRef(() => FormatService))
-    private readonly formatService: FormatService
+    private readonly formatService: FormatService,
+    @Inject(forwardRef(() => GenreService))
+    private readonly genreService: GenreService,
+    @Inject(forwardRef(() => AvatarService))
+    private readonly avatarService: AvatarService
   ) { }
+
+  async uploadAvatarToUser (file: Express.Multer.File, userId: number): Promise<any> {
+    return await this.avatarService.uploadAvatar(file, userId)
+  }
 
   async createBookEntities (createBookDto: CreateBookDto): Promise<Book> {
     const authorObject = await this.authorService.createOrFindAuthor({ fullName: createBookDto.author })
@@ -54,7 +63,12 @@ export class OrchestratorService {
       format
     }))
 
+    publishing.format = format
+
     book.publishing = [publishing]
+
+    const genre = await this.genreService.createOrFindGenre({ genre: createBookDto.genre })
+    book.genre = [genre]
 
     if (createBookDto.cover != null) {
       book.cover = await this.coverService.saveCover(createBookDto.cover.filename, book)

@@ -4,6 +4,7 @@ import { type UpdateCommentDto } from './dto/update-comment.dto'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Comment } from './entities/comment.entity'
+import { Status } from '../admin/entities/status.enum'
 
 @Injectable()
 export class CommentService {
@@ -12,7 +13,8 @@ export class CommentService {
   constructor (
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>
-  ) {}
+  ) {
+  }
 
   async addComment (createCommentDto: CreateCommentDto): Promise<Comment> {
     try {
@@ -62,6 +64,53 @@ export class CommentService {
     } catch (error) {
       this.logger.error('Error getting book comments', error.stack)
       throw new HttpException('Failed to get book comments', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async findWaiting (): Promise<Comment[]> {
+    try {
+      return await this.commentRepository.createQueryBuilder('comment')
+        .leftJoinAndSelect('comment.user', 'user')
+        .leftJoinAndSelect('comment.book', 'book')
+        .select([
+          'comment.id',
+          'comment.content',
+          'comment.status',
+          'comment.userId',
+          'comment.bookId',
+          'user.username',
+          'book.title'
+        ])
+        .where('comment.status = :status', { status: Status.WAITING })
+        .getMany()
+    } catch (error) {
+      this.logger.error('Error finding comments waitings', error.stack)
+      throw new HttpException('Failed to retrieve comments waitings', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async updateCommentStatus (updateCommentStatusDto: { commentId: number, status: 'accepted' | 'rejected' }): Promise<void> {
+    try {
+      const comment = await this.commentRepository.findOne({
+        where: { id: updateCommentStatusDto.commentId }
+      })
+
+      if (comment != null) {
+        switch (updateCommentStatusDto.status) {
+          case 'accepted':
+            comment.status = Status.ACCEPTED
+            break
+          case 'rejected':
+            comment.status = Status.REFUSED
+            break
+          default:
+            throw new HttpException('Invalid status', HttpStatus.BAD_REQUEST)
+        }
+        await this.commentRepository.save(comment)
+      }
+    } catch (error) {
+      this.logger.error('Error updating comment status', error.stack)
+      throw new HttpException('Failed to update comment status', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }

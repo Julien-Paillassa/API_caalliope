@@ -2,9 +2,20 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, forwardRef }
 import { PublishingService } from './publishing.service'
 import { CreatePublishingDto } from './dto/create-publishing.dto'
 import { UpdatePublishingDto } from './dto/update-publishing.dto'
-import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger'
 import { Publishing } from './entities/publishing.entity'
 import { OrchestratorService } from '../orchestrator/ochestrator.service'
+import { Book } from '../book/entities/book.entity'
 
 @ApiBearerAuth()
 @ApiTags('publishing')
@@ -132,6 +143,29 @@ export class PublishingController {
         success: true,
         message: 'Publishing Removed Successfully',
         data: publishing
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
+
+  @Get('getAll/lastReleased')
+  @ApiOperation({ summary: 'Get books with rating >= minRating' })
+  @ApiOkResponse({
+    description: 'Books Fetched Successfully',
+    type: [Book]
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async findBooksByPublicationDate (): Promise<any> {
+    try {
+      const books = await this.publishingService.findRecentBooks()
+      return {
+        success: true,
+        data: books,
+        message: 'Books Fetched Successfully'
       }
     } catch (error) {
       return {

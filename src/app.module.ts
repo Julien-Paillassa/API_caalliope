@@ -94,9 +94,9 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      ssl: {
+      /* ssl: {
         rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
-      },
+      }, */
       entities: [
         User,
         Saga,
@@ -170,6 +170,8 @@ export class AppModule {
         { path: 'saga/:id', method: RequestMethod.GET },
         { path: 'book', method: RequestMethod.GET },
         { path: 'book/:id', method: RequestMethod.GET },
+        { path: 'book/getAll/popular', method: RequestMethod.GET },
+        { path: 'publishing/getAll/lastReleased', method: RequestMethod.GET },
         { path: 'book/genre/:genre', method: RequestMethod.GET },
         { path: 'author', method: RequestMethod.GET },
         { path: 'author/:id', method: RequestMethod.GET },

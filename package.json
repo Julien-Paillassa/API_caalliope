@@ -22,8 +22,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prepare": "husky install",
     "sonar": "node sonar-project.js",
-    "fixtures": "NODE_ENV=dev ts-node src/config/fixtures.ts",
-    "fixtures_test": "NODE_ENV=test ts-node src/config/fixtures.ts"
+    "fixtures": "ts-node src/config/fixtures.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

@@ -5,6 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
 import { BookService } from '../book/book.service'
+import { CommentService } from '../comment/comment.service'
+import { type UserBook } from '../user-book/entities/user-book.entity'
+import { type Book } from '../book/entities/book.entity'
+import { type Comment } from '../comment/entities/comment.entity'
 
 @Injectable()
 export class UserService {
@@ -13,7 +17,8 @@ export class UserService {
   constructor (
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly bookService: BookService
+    private readonly bookService: BookService,
+    private readonly commentService: CommentService
   ) {}
 
   async create (createUserDto: CreateUserDto): Promise<User> {
@@ -37,7 +42,7 @@ export class UserService {
     }
   }
 
-  async findOne (id: number): Promise<any | null> {
+  async findOne (id: number): Promise<User & { bookWaiting?: Book[], commentsWaiting?: Comment[] } | null> {
     try {
       this.logger.log(`Finding user with id ${id}`)
       const user = await this.userRepository.findOneOrFail(
@@ -58,11 +63,12 @@ export class UserService {
           cover: userBook.book.cover
         },
         status: userBook.status
-      }))
+      })) as UserBook[]
 
       if (user.role === 'admin') {
         const bookWaiting = await this.bookService.findWaiting()
-        return { ...user, bookWaiting }
+        const commentsWaiting = await this.commentService.findWaiting()
+        return { ...user, bookWaiting, userBook, commentsWaiting }
       } else {
         return { ...user, userBook }
       }
@@ -80,7 +86,7 @@ export class UserService {
     }
   }
 
-  async update (id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async update (id: number, updateUserDto: Omit<UpdateUserDto, 'avatar'>): Promise<User> {
     try {
       const existingUser = await this.userRepository.findOneBy({ id })
 

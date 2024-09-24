@@ -14,6 +14,20 @@ export class GenreService {
     private readonly genreRepository: Repository<Genre>
   ) {}
 
+  async createOrFindGenre (createGenreDto: Partial<CreateGenreDto>): Promise<Genre> {
+    try {
+      const genre = await this.genreRepository.findOneBy({ genre: createGenreDto.genre })
+      if (genre == null) {
+        const newGenre = this.genreRepository.create(createGenreDto)
+        return await this.genreRepository.save(newGenre)
+      }
+      return genre
+    } catch (error) {
+      this.logger.error('Error creating genre', error.stack)
+      throw new HttpException('Failed to create genre', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
   async create (createGenreDto: CreateGenreDto): Promise<Genre> {
     try {
       const genre = this.genreRepository.create(createGenreDto)

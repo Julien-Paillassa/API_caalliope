@@ -1,7 +1,7 @@
 import { PartialType, ApiProperty } from '@nestjs/swagger'
 import { CreateUserDto } from './create-user.dto'
 import { UserRole } from '../entities/user-role.enum'
-import { IsEmail, IsEnum, IsString } from 'class-validator'
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator'
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({
@@ -51,4 +51,12 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   })
   @IsEnum(UserRole)
     role: UserRole
+
+  @IsOptional()
+  @ApiProperty({
+    description: 'Avatar of the user',
+    example: 'https://example.com/avatar.png',
+    required: false
+  })
+    avatar?: Express.Multer.File
 }

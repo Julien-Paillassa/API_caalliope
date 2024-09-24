@@ -18,7 +18,7 @@ export class AuthController {
   async signIn (@Res() res: Response, @Body() signInDto: SignInDto): Promise<any> {
     try {
       const token = await this.authService.signIn(signInDto)
-      res.cookie('token', token.access_token, { path: '/', httpOnly: true, secure: false })
+      res.cookie('token', token.access_token, { path: '/', httpOnly: false, secure: false })
       return res.status(HttpStatus.OK).json({
         success: true,
         message: 'User Login successfully',
@@ -40,7 +40,7 @@ export class AuthController {
       signUpDto.password = await bcrypt.hash(signUpDto.password, salt)
 
       const userData = await this.authService.signUp(signUpDto)
-      res.cookie('token', userData.access_token, { path: '/', httpOnly: true, secure: false })
+      res.cookie('token', userData.access_token, { path: '/', httpOnly: false, secure: false })
       return res.status(HttpStatus.OK).json({
         success: true,
         message: 'User registered successfully',
