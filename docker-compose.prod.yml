@@ -13,7 +13,6 @@ services:
       - ./src/uploads:/usr/src/app/uploads
     depends_on:
       - db_prod
-      - db_test
 
   db_prod:
     container_name: database_caalliope_prod

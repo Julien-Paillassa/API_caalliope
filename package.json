@@ -13,7 +13,7 @@
     "start:dev": "npm install && nodemon --watch .env.prod -L --exec ts-node src/main.ts",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "prod": "NODE_ENV=prod dist/main",
+    "prod": "node dist/main",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color --config configs/linter/.eslintrc.json --fix",
     "test": "jest",
     "test:watch": "jest --watch",
