@@ -4,10 +4,10 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
 import { type UpdatePublishingDto } from './dto/update-publishing.dto'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Publishing } from './entities/publishing.entity'
-import { Repository, In} from 'typeorm'
+import { Repository, In } from 'typeorm'
 import { Status } from '../admin/entities/status.enum'
 import { PublishingFactory } from './publishing.factory'
-import {Book} from "../book/entities/book.entity";
+import { Book } from '../book/entities/book.entity'
 
 @Injectable()
 export class PublishingService {
@@ -22,7 +22,13 @@ export class PublishingService {
 
   async findAll (): Promise<Publishing[]> {
     try {
-      return await this.publishingRepository.find()
+      const allPublising = await this.publishingRepository.find()
+
+      if (allPublising.length === 0) {
+        throw new HttpException('No formats found', HttpStatus.NOT_FOUND)
+      }
+
+      return allPublising
     } catch (error) {
       this.logger.error('Error finding all publishing', error.stack)
       throw new HttpException('Failed to retrieve publishing', HttpStatus.INTERNAL_SERVER_ERROR)
@@ -100,33 +106,33 @@ export class PublishingService {
     return await this.publishingRepository.save(publishing)
   }
 
-  async findRecentBooks(): Promise<any> {
+  async findRecentBooks (): Promise<any> {
     try {
       const data = await this.publishingRepository.createQueryBuilder('publishing')
-          .leftJoinAndSelect('publishing.book', 'book')
-          .where('publishing.publicationDate LIKE :year2021', { year2021: '%2021%' })
-          .orWhere('publishing.publicationDate LIKE :year2022', { year2022: '%2022%' })
-          .orWhere('publishing.publicationDate LIKE :year2023', { year2023: '%2023%' })
-          .orWhere('publishing.publicationDate LIKE :year2024', { year2024: '%2024%' })
-          .groupBy('book.id')
-          .addGroupBy('publishing.id')
-          .orderBy('MAX(publishing.publicationDate)', 'DESC')
-          .limit(10)
-          .getMany();
+        .leftJoinAndSelect('publishing.book', 'book')
+        .where('publishing.publicationDate LIKE :year2021', { year2021: '%2021%' })
+        .orWhere('publishing.publicationDate LIKE :year2022', { year2022: '%2022%' })
+        .orWhere('publishing.publicationDate LIKE :year2023', { year2023: '%2023%' })
+        .orWhere('publishing.publicationDate LIKE :year2024', { year2024: '%2024%' })
+        .groupBy('book.id')
+        .addGroupBy('publishing.id')
+        .orderBy('MAX(publishing.publicationDate)', 'DESC')
+        .limit(10)
+        .getMany()
 
       this.logger.log(data.map(publishing => publishing.book.id), 'publishing here my friend')
 
-      const bookIds = data.map(publishing => publishing.book.id);
+      const bookIds = data.map(publishing => publishing.book.id)
 
       const books = await this.bookRepository.find({
         where: { id: In(bookIds) },
         relations: ['cover', 'author', 'comment', 'genre', 'userBook', 'publishing', 'publishing.format']
-      });
+      })
       this.logger.log(books, 'data here my friend')
       return books
     } catch (error) {
-      this.logger.error(`Error finding recent books`, error.stack);
-      throw new HttpException('Failed to retrieve recent books', HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error('Error finding recent books', error.stack)
+      throw new HttpException('Failed to retrieve recent books', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }

@@ -26,7 +26,13 @@ export class SagaService {
 
   async findAll (): Promise<Saga[]> {
     try {
-      return await this.sagaRepository.find()
+      const allSagas = await this.sagaRepository.find()
+
+      if (allSagas.length === 0) {
+        throw new HttpException('No formats found', HttpStatus.NOT_FOUND)
+      }
+
+      return allSagas
     } catch (error) {
       this.logger.error('Error finding all sagas', error.stack)
       throw new HttpException('Failed to retrieve sagas', HttpStatus.INTERNAL_SERVER_ERROR)

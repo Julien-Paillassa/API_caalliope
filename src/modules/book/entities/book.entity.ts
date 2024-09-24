@@ -52,7 +52,7 @@ export class Book {
 
   @ApiProperty()
   @Column({ default: 0 })
-  ratingNumber: number;
+    ratingNumber: number
 
   @ApiProperty({ type: () => Cover })
   @OneToOne(() => Cover, cover => cover.book, { cascade: false, onDelete: 'SET NULL' })

@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { Author } from '../author/entities/author.entity'
 import { Repository } from 'typeorm'
 import { User } from '../user/entities/user.entity'
-import {OrchestratorService} from "../orchestrator/ochestrator.service";
+import { OrchestratorService } from '../orchestrator/ochestrator.service'
 
 @ApiBearerAuth()
 @ApiTags('avatar')
@@ -56,7 +56,7 @@ export class AvatarController {
     }
   })
   async uploadUserAvatar (
-      @UploadedFile() avatar: Express.Multer.File,
+    @UploadedFile() avatar: Express.Multer.File,
       @Body() { userId }: { userId: number }
   ): Promise<any> {
     try {

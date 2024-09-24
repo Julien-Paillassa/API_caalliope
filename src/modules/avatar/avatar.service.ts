@@ -19,57 +19,55 @@ export class AvatarService {
     private readonly userRepository: Repository<User>
   ) {}
 
-  async uploadAvatar(avatar: Express.Multer.File, userId: number): Promise<any> {
+  async uploadAvatar (avatar: Express.Multer.File, userId: number): Promise<any> {
     try {
       if (avatar === undefined || avatar === null) {
-        throw new HttpException('File is required', HttpStatus.BAD_REQUEST);
+        throw new HttpException('File is required', HttpStatus.BAD_REQUEST)
       }
 
-      await fsPromises.mkdir('./uploads/avatars/', { recursive: true });
+      await fsPromises.mkdir('./uploads/avatars/', { recursive: true })
 
       const user = await this.userRepository.findOne({
         where: { id: userId },
         relations: ['avatar']
-      });
+      })
 
       if (user === null || user === undefined) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND)
       }
 
       if (user.avatar !== undefined) {
-        const oldAvatarPath = `./uploads/avatars/${user.avatar.filename}`;
+        const oldAvatarPath = `./uploads/avatars/${user.avatar.filename}`
         try {
-          await fsPromises.unlink(oldAvatarPath);
+          await fsPromises.unlink(oldAvatarPath)
         } catch (err) {
-          this.logger.warn(`Failed to delete old avatar for user ${userId}: ${err.message}`);
+          this.logger.warn(`Failed to delete old avatar for user ${userId}: ${err.message}`)
         }
       }
 
-      const filename = `${userId}_avatar${avatar.originalname.slice(avatar.originalname.lastIndexOf('.'))}`;
-      const filePath = `./uploads/avatars/${filename}`;
+      const filename = `${userId}_avatar${avatar.originalname.slice(avatar.originalname.lastIndexOf('.'))}`
+      const filePath = `./uploads/avatars/${filename}`
 
-      await fsPromises.copyFile(avatar.path, filePath);
-      await fsPromises.unlink(avatar.path);
+      await fsPromises.copyFile(avatar.path, filePath)
+      await fsPromises.unlink(avatar.path)
 
       if (user.avatar !== null || user.avatar !== undefined) {
-        user.avatar.filename = filename;
-        await this.avatarRepository.save(user.avatar);
+        user.avatar.filename = filename
+        await this.avatarRepository.save(user.avatar)
       } else {
         const newAvatar = this.avatarRepository.create({
           filename,
           user
-        });
-        await this.avatarRepository.save(newAvatar);
+        })
+        await this.avatarRepository.save(newAvatar)
       }
 
-      return { message: 'Avatar uploaded successfully', filename };
-
+      return { message: 'Avatar uploaded successfully', filename }
     } catch (error) {
-      this.logger.error('Error uploading avatar', error.stack);
-      throw new HttpException('Failed to upload avatar', HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error('Error uploading avatar', error.stack)
+      throw new HttpException('Failed to upload avatar', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
-
 
   async saveAvatar (filename: string, user?: User, author?: Author): Promise<any> {
     try {

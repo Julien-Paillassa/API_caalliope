@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, type OnModuleInit } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import axios from 'axios'
@@ -35,7 +35,7 @@ export interface GoogleBook {
 }
 
 @Injectable()
-export class GoogleBookService implements OnModuleInit {
+export class GoogleBookService {
   private readonly googleBooksApiUrl = 'https://www.googleapis.com/books/v1/volumes'
 
   constructor (
@@ -53,7 +53,7 @@ export class GoogleBookService implements OnModuleInit {
     private readonly coverRepository: Repository<Cover>
   ) { }
 
-  async onModuleInit (): Promise<void> {
+  /* async onModuleInit (): Promise<void> {
     const defaultQuery = 'programming'
     try {
       console.log(`Fetching and saving books for query: ${defaultQuery}`)
@@ -63,7 +63,7 @@ export class GoogleBookService implements OnModuleInit {
     } catch (error) {
       console.error('Failed to import books during initialization:', error)
     }
-  }
+  } */
 
   async fetchBooks (query: string): Promise<GoogleBook[]> {
     const books: GoogleBook[] = []
@@ -149,7 +149,7 @@ export class GoogleBookService implements OnModuleInit {
 
       // Si les genres ne sont pas définis, passer au livre suivant
       if (genreNames === null || genreNames === undefined) {
-        console.log(`Skipping book: ${googleBook.volumeInfo.title} due to missing genres`)
+        // console.log(`Skipping book: ${googleBook.volumeInfo.title} due to missing genres`)
         continue
       }
 
@@ -211,12 +211,13 @@ export class GoogleBookService implements OnModuleInit {
         publicationDate: googleBook.volumeInfo.publishedDate ?? 'Unknown',
         status: Status.ACCEPTED,
         rating: Math.floor(Math.random() * 6),
+        ratingNumber: Math.floor(Math.random() * 6),
         author,
         cover: cover ?? undefined,
         genre: genres,
         publishing: [publishing]
       })
-      console.log('new book : ', newBook)
+      // console.log('new book : ', newBook)
       // Sauvegarder le nouveau livre dans la base de données
       await this.booksRepository.save(newBook)
     }

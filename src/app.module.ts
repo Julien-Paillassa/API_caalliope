@@ -61,43 +61,10 @@ import * as dotenv from 'dotenv'
 import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
 import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
 import { CoreModule } from './core.module'
+import { MailModule } from './modules/mail/mail.module'
+import { MailService } from './modules/mail/mail.service'
 
-let dbConfig: { host?: any, username?: any, password?: any, database?: any } = {}
-
-const getDatabaseConfig = (): { host?: any, username?: any, password?: any, database?: any } => {
-  const env = process.env.NODE_ENV
-
-  if (env === 'dev') {
-    return {
-      host: process.env.DATABASE_HOST_DEV,
-      username: process.env.DATABASE_USERNAME_DEV,
-      password: process.env.DATABASE_PASSWORD_DEV,
-      database: process.env.DATABASE_NAME_DEV
-    }
-  } else if (env === 'test') {
-    return {
-      host: process.env.DATABASE_HOST_TEST,
-      username: process.env.DATABASE_USERNAME_TEST,
-      password: process.env.DATABASE_PASSWORD_TEST,
-      database: process.env.DATABASE_NAME_TEST
-    }
-  } else if (env === 'prod') {
-    return {
-      host: process.env.DATABASE_HOST_PROD,
-      username: process.env.DATABASE_USERNAME_PROD,
-      password: process.env.DATABASE_PASSWORD_PROD,
-      database: process.env.DATABASE_NAME_PROD
-    }
-  }
-
-  return {}
-}
-
-dbConfig = getDatabaseConfig()
-console.log(dbConfig)
-
-// dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
-dotenv.config({ path: './.env.local' })
+dotenv.config()
 
 console.log('DATABASE_HOST', process.env.DATABASE_HOST)
 
@@ -119,13 +86,17 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
     StripeModule,
     GoogleBookModule,
     OrchestratorModule,
+    MailModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: dbConfig.host,
+      host: process.env.DATABASE_HOST,
       port: 5432,
-      username: dbConfig.username,
-      password: dbConfig.password,
-      database: dbConfig.database,
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
+      ssl: {
+        rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
+      },
       entities: [
         User,
         Saga,
@@ -183,7 +154,8 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
     AvatarService,
     CoverService,
     StripeService,
-    GoogleBookService
+    GoogleBookService,
+    MailService
   ]
 })
 export class AppModule {

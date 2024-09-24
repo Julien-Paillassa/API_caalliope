@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { IsNotEmpty, IsNumber, IsPositive, IsString } from 'class-validator'
 
 export class CreateSagaDto {
   @ApiProperty({
@@ -24,5 +24,6 @@ export class CreateSagaDto {
   })
   @IsNotEmpty()
   @IsNumber()
+  @IsPositive()
     nbVolumes: number
 }

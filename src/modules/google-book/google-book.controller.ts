@@ -9,9 +9,13 @@ export class GoogleBookController {
 
   @Get('import')
   async importBooks (@Query('q') query: string): Promise<string> {
-    const books = await this.googleBookService.fetchBooks(query)
-    console.log('books')
-    await this.googleBookService.saveBooksToDatabase(books)
-    return `Successfully imported ${books.length} books.`
+    try {
+      const books = await this.googleBookService.fetchBooks(query)
+      console.log('books')
+      await this.googleBookService.saveBooksToDatabase(books)
+      return `Successfully imported ${books.length} books.`
+    } catch (error) {
+      return `Failed to import books: ${error.message}`
+    }
   }
 }

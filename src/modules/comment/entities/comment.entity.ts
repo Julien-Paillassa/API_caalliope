@@ -31,12 +31,12 @@ export class Comment {
     status: Status
 
   @ApiProperty({ type: () => User })
-  @ManyToOne(() => User, user => user.comment)
+  @ManyToOne(() => User, user => user.comment, { onDelete: 'CASCADE' })
   @JoinColumn()
     user: User
 
   @ApiProperty({ type: () => Book })
-  @ManyToOne(() => Book, book => book.comment)
+  @ManyToOne(() => Book, book => book.comment, { onDelete: 'CASCADE' })
   @JoinColumn()
     book: Book
 

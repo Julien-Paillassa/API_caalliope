@@ -15,14 +15,18 @@ export class BookService {
   ) {}
 
   async createBook (createBookDto: Partial<Book>): Promise<Book> {
-    const book = this.bookRepository.create({
-      title: createBookDto.title,
-      summary: createBookDto.summary,
-      publicationDate: createBookDto.publicationDate,
-      author: createBookDto.author
-    })
-
-    return await this.bookRepository.save(book)
+    try {
+      const book = this.bookRepository.create({
+        title: createBookDto.title,
+        summary: createBookDto.summary,
+        publicationDate: createBookDto.publicationDate,
+        author: createBookDto.author
+      })
+      return await this.bookRepository.save(book)
+    } catch (error) {
+      this.logger.error('Error creating book', error.stack)
+      throw new HttpException('Failed to create book', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   async save (book: Book): Promise<Book> {
@@ -32,12 +36,12 @@ export class BookService {
   async findAll (): Promise<Book[]> {
     try {
       return await this.bookRepository.createQueryBuilder('book')
-          .leftJoinAndSelect('book.cover', 'cover')
-          .leftJoin('book.publishing', 'publishing')
-          .where('publishing.id IS NOT NULL')
-          .andWhere('cover.id IS NOT NULL')
-          .select(['book.id', 'cover'])
-          .getMany();
+        .leftJoinAndSelect('book.cover', 'cover')
+        .leftJoin('book.publishing', 'publishing')
+        .where('publishing.id IS NOT NULL')
+        .andWhere('cover.id IS NOT NULL')
+        .select(['book.id', 'cover'])
+        .getMany()
     } catch (error) {
       this.logger.error('Error finding all books', error.stack)
       throw new HttpException('Failed to retrieve books', HttpStatus.INTERNAL_SERVER_ERROR)
@@ -52,12 +56,17 @@ export class BookService {
           'cover',
           'author',
           'comment',
+          'comment.user',
+          'comment.user.avatar',
           'genre',
           'userBook',
           'publishing',
           'publishing.format'
         ]
       })
+      if (book == null) {
+        throw new HttpException('Book not found', HttpStatus.NOT_FOUND) // Ajout d'une exception si le livre est introuvable
+      }
       return book
     } catch (error) {
       throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
@@ -88,14 +97,14 @@ export class BookService {
       }
 
       if (updateBookDto.rating !== undefined) {
-        const totalRatings = existingBook.ratingNumber * existingBook.rating;
-        const newTotalRatings = totalRatings + updateBookDto.rating;
-        const newRatingNumber = existingBook.ratingNumber + 1;
+        const totalRatings = existingBook.ratingNumber * existingBook.rating
+        const newTotalRatings = totalRatings + updateBookDto.rating
+        const newRatingNumber = existingBook.ratingNumber + 1
 
-        existingBook.rating = Math.round(newTotalRatings / newRatingNumber);
-        existingBook.ratingNumber = newRatingNumber;
+        existingBook.rating = Math.round(newTotalRatings / newRatingNumber)
+        existingBook.ratingNumber = newRatingNumber
 
-        this.logger.log(`Updated rating for book ${id} to ${existingBook.rating}`);
+        this.logger.log(`Updated rating for book ${id} to ${existingBook.rating}`)
       }
 
       const updatedBook = this.bookRepository.merge(existingBook, updateBookDto as unknown as Book)

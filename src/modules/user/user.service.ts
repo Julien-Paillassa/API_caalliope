@@ -5,11 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { User } from './entities/user.entity'
 import { Repository } from 'typeorm'
 import { BookService } from '../book/book.service'
-import {CommentService} from "../comment/comment.service";
-import {UserBook} from "../user-book/entities/user-book.entity";
-import {Book} from "../book/entities/book.entity";
-import {Comment} from "../comment/entities/comment.entity";
-
+import { CommentService } from '../comment/comment.service'
+import { type UserBook } from '../user-book/entities/user-book.entity'
+import { type Book } from '../book/entities/book.entity'
+import { type Comment } from '../comment/entities/comment.entity'
 
 @Injectable()
 export class UserService {
@@ -43,7 +42,7 @@ export class UserService {
     }
   }
 
-  async findOne (id: number): Promise<User & {bookWaiting?: Book[], commentsWaiting?: Comment[]}| null> {
+  async findOne (id: number): Promise<User & { bookWaiting?: Book[], commentsWaiting?: Comment[] } | null> {
     try {
       this.logger.log(`Finding user with id ${id}`)
       const user = await this.userRepository.findOneOrFail(

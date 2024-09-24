@@ -12,7 +12,7 @@ import { join } from 'path'
 import * as cookieParser from 'cookie-parser'
 
 async function bootstrap (): Promise<void> {
-  dotenv.config({ path: '.env' })
+  dotenv.config()
 
   const app = await NestFactory.create(AppModule, {
     cors: {
@@ -28,7 +28,7 @@ async function bootstrap (): Promise<void> {
   const config = new DocumentBuilder()
     .setTitle('Calliope API')
     .setDescription('API for Calliope')
-    .setVersion('1.3')
+    .setVersion('1.6')
     .addTag('calliope')
     .addBearerAuth()
     .build()

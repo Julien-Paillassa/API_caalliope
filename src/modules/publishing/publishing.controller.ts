@@ -15,7 +15,7 @@ import {
 } from '@nestjs/swagger'
 import { Publishing } from './entities/publishing.entity'
 import { OrchestratorService } from '../orchestrator/ochestrator.service'
-import {Book} from "../book/entities/book.entity";
+import { Book } from '../book/entities/book.entity'
 
 @ApiBearerAuth()
 @ApiTags('publishing')

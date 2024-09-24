@@ -4,15 +4,15 @@ import { type UpdateCommentDto } from './dto/update-comment.dto'
 import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Comment } from './entities/comment.entity'
-import {Status} from "../admin/entities/status.enum";
+import { Status } from '../admin/entities/status.enum'
 
 @Injectable()
 export class CommentService {
   private readonly logger = new Logger(AbortController.name)
 
-  constructor(
-      @InjectRepository(Comment)
-      private readonly commentRepository: Repository<Comment>
+  constructor (
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>
   ) {
   }
 
@@ -30,10 +30,10 @@ export class CommentService {
     }
   }
 
-  async updateComment (userId: number, bookId: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
+  async updateComment (updateCommentDto: UpdateCommentDto): Promise<Comment> {
     try {
       const comment = await this.commentRepository.findOne({
-        where: { user: { id: userId }, book: { id: bookId } }
+        where: { user: { id: updateCommentDto.userId }, book: { id: updateCommentDto.bookId } }
       })
 
       if (comment != null) {
@@ -55,10 +55,10 @@ export class CommentService {
     }
   }
 
-  async getBookComments(bookId: number): Promise<Comment[]> {
+  async getBookComments (bookId: number): Promise<Comment[]> {
     try {
       return await this.commentRepository.find({
-        where: {book: {id: bookId}},
+        where: { book: { id: bookId } },
         relations: ['user', 'user.avatar']
       })
     } catch (error) {
@@ -67,32 +67,32 @@ export class CommentService {
     }
   }
 
-  async findWaiting(): Promise<Comment[]> {
+  async findWaiting (): Promise<Comment[]> {
     try {
       return await this.commentRepository.createQueryBuilder('comment')
-          .leftJoinAndSelect('comment.user', 'user')
-          .leftJoinAndSelect('comment.book', 'book')
-          .select([
-            'comment.id',
-            'comment.content',
-            'comment.status',
-            'comment.userId',
-            'comment.bookId',
-            'user.username',
-            'book.title'
-          ])
-          .where('comment.status = :status', {status: Status.WAITING})
-          .getMany();
+        .leftJoinAndSelect('comment.user', 'user')
+        .leftJoinAndSelect('comment.book', 'book')
+        .select([
+          'comment.id',
+          'comment.content',
+          'comment.status',
+          'comment.userId',
+          'comment.bookId',
+          'user.username',
+          'book.title'
+        ])
+        .where('comment.status = :status', { status: Status.WAITING })
+        .getMany()
     } catch (error) {
       this.logger.error('Error finding comments waitings', error.stack)
       throw new HttpException('Failed to retrieve comments waitings', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
-  async updateCommentStatus(updateCommentStatusDto: { commentId: number; status: 'accepted' | 'rejected' }): Promise<void> {
+  async updateCommentStatus (updateCommentStatusDto: { commentId: number, status: 'accepted' | 'rejected' }): Promise<void> {
     try {
       const comment = await this.commentRepository.findOne({
-        where: {id: updateCommentStatusDto.commentId}
+        where: { id: updateCommentStatusDto.commentId }
       })
 
       if (comment != null) {
@@ -106,9 +106,8 @@ export class CommentService {
           default:
             throw new HttpException('Invalid status', HttpStatus.BAD_REQUEST)
         }
-      await this.commentRepository.save(comment)
+        await this.commentRepository.save(comment)
       }
-
     } catch (error) {
       this.logger.error('Error updating comment status', error.stack)
       throw new HttpException('Failed to update comment status', HttpStatus.INTERNAL_SERVER_ERROR)

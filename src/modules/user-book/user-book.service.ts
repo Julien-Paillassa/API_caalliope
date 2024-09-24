@@ -4,12 +4,12 @@ import { UserBook } from './entities/user-book.entity'
 import { Repository } from 'typeorm'
 import { type CreateUserBookDto } from './dto/create-user-book.dto'
 import { type UpdateUserBookDto } from './dto/update-user-book.dto'
-import {UserBookStatus} from "./entities/user-book-status.enum";
+import { type UserBookStatus } from './entities/user-book-status.enum'
 
 @Injectable()
 export class UserBookService {
   private readonly logger = new Logger(AbortController.name)
-  private USER_BOOK_STATUS: UserBookStatus;
+  private readonly USER_BOOK_STATUS: UserBookStatus
 
   constructor (
     @InjectRepository(UserBook)
