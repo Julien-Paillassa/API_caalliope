@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { forwardRef, Inject, Injectable } from '@nestjs/common'
 import { AuthorService } from '../author/author.service'
 import { BookFactory } from '../book/book.factory'
@@ -13,11 +12,13 @@ import type { Publishing } from '../publishing/entities/publishing.entity'
 import { PublishingFactory } from '../publishing/publishing.factory'
 import { PublishingService } from '../publishing/publishing.service'
 import type { UpdateBookDto } from '../book/dto/update-book.dto'
-import { type UpdatePublishingDto } from '../publishing/dto/update-publishing.dto'
+import { UpdatePublishingDto } from '../publishing/dto/update-publishing.dto'
+import {GenreService} from "../genre/genre.service";
+import {AvatarService} from "../avatar/avatar.service";
 
 @Injectable()
 export class OrchestratorService {
-  constructor (
+  constructor(
     @Inject(forwardRef(() => AuthorService))
     private readonly authorService: AuthorService,
     @Inject(forwardRef(() => BookService))
@@ -27,10 +28,18 @@ export class OrchestratorService {
     @Inject(forwardRef(() => PublishingService))
     private readonly publishingService: PublishingService,
     @Inject(forwardRef(() => FormatService))
-    private readonly formatService: FormatService
+    private readonly formatService: FormatService,
+    @Inject(forwardRef(() => GenreService))
+    private readonly genreService: GenreService,
+    @Inject(forwardRef(() => AvatarService))
+    private readonly avatarService: AvatarService
   ) { }
 
-  async createBookEntities (createBookDto: CreateBookDto): Promise<Book> {
+  async uploadAvatarToUser(file: Express.Multer.File, userId: number): Promise<any> {
+    return await this.avatarService.uploadAvatar(file, userId)
+  }
+
+  async createBookEntities(createBookDto: CreateBookDto): Promise<Book> {
     const authorObject = await this.authorService.createOrFindAuthor({ fullName: createBookDto.author })
 
     let book = await this.bookService.createBook(BookFactory.createDefaultBook({
@@ -54,7 +63,12 @@ export class OrchestratorService {
       format
     }))
 
+    publishing.format = format
+
     book.publishing = [publishing]
+
+    const genre = await this.genreService.createOrFindGenre({genre: createBookDto.genre})
+    book.genre = [genre]
 
     if (createBookDto.cover != null) {
       book.cover = await this.coverService.saveCover(createBookDto.cover.filename, book)
@@ -65,7 +79,7 @@ export class OrchestratorService {
     return book
   }
 
-  async createPublishingEntities (createPublishingDto: CreatePublishingDto): Promise<Publishing> {
+  async createPublishingEntities(createPublishingDto: CreatePublishingDto): Promise<Publishing> {
     const format = await this.formatService.createOrFindFormat(FormatFactory.createDefaultFormat({
       type: createPublishingDto.format,
       language: createPublishingDto.language ?? 'No language provided yet'
@@ -81,7 +95,7 @@ export class OrchestratorService {
     }))
   }
 
-  async updateBookEntities (updateBookDto: UpdateBookDto): Promise<Book | null> {
+  async updateBookEntities(updateBookDto: UpdateBookDto): Promise<Book | null> {
     const book = await this.bookService.findOne(updateBookDto.id)
     const author = await this.authorService.createOrFindAuthor({ fullName: updateBookDto.author ?? '' })
     if (author != null && book != null) {
@@ -91,7 +105,7 @@ export class OrchestratorService {
     return null
   }
 
-  async updatePublishingEntities (updatePublishingDto: UpdatePublishingDto): Promise<Publishing | null> {
+  async updatePublishingEntities(updatePublishingDto: UpdatePublishingDto): Promise<Publishing | null> {
     const publishing = await this.publishingService.findOne(updatePublishingDto.id)
     const format = await this.formatService.createOrFindFormat(FormatFactory.createDefaultFormat({
       type: updatePublishingDto.format,

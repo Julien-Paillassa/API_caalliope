@@ -3,5 +3,6 @@ export enum UserBookStatus {
   READ = 'read',
   ABANDONED = 'abandoned',
   READING = 'reading',
-  WISHLIST = 'wishlist'
+  WISHLIST = 'wishlist',
+  NOT_OWNED = 'notOwned'
 }

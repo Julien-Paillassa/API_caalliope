@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import * as Sentry from '@sentry/node'
 import { ProfilingIntegration } from '@sentry/profiling-node'
 import { SentryFilter } from './sentry.filter'
+import * as dotenv from 'dotenv'
 import { ValidationPipe } from '@nestjs/common'
 import { HttpExceptionFilter } from './utils/filters/http-exception.filter'
 import * as express from 'express'
@@ -11,6 +12,8 @@ import { join } from 'path'
 import * as cookieParser from 'cookie-parser'
 
 async function bootstrap (): Promise<void> {
+  dotenv.config({ path: '.env' })
+
   const app = await NestFactory.create(AppModule, {
     cors: {
       origin: 'http://localhost:3000',

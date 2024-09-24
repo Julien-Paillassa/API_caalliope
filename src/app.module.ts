@@ -62,8 +62,42 @@ import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
 import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
 import { CoreModule } from './core.module'
 
+let dbConfig: { host?: any, username?: any, password?: any, database?: any } = {}
+
+const getDatabaseConfig = (): { host?: any, username?: any, password?: any, database?: any } => {
+  const env = process.env.NODE_ENV
+
+  if (env === 'dev') {
+    return {
+      host: process.env.DATABASE_HOST_DEV,
+      username: process.env.DATABASE_USERNAME_DEV,
+      password: process.env.DATABASE_PASSWORD_DEV,
+      database: process.env.DATABASE_NAME_DEV
+    }
+  } else if (env === 'test') {
+    return {
+      host: process.env.DATABASE_HOST_TEST,
+      username: process.env.DATABASE_USERNAME_TEST,
+      password: process.env.DATABASE_PASSWORD_TEST,
+      database: process.env.DATABASE_NAME_TEST
+    }
+  } else if (env === 'prod') {
+    return {
+      host: process.env.DATABASE_HOST_PROD,
+      username: process.env.DATABASE_USERNAME_PROD,
+      password: process.env.DATABASE_PASSWORD_PROD,
+      database: process.env.DATABASE_NAME_PROD
+    }
+  }
+
+  return {}
+}
+
+dbConfig = getDatabaseConfig()
+console.log(dbConfig)
+
 // dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
-dotenv.config({ path: './.env' })
+dotenv.config({ path: './.env.local' })
 
 console.log('DATABASE_HOST', process.env.DATABASE_HOST)
 
@@ -87,14 +121,11 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
     OrchestratorModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DATABASE_HOST,
+      host: dbConfig.host,
       port: 5432,
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-      ssl: {
-        rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
-      },
+      username: dbConfig.username,
+      password: dbConfig.password,
+      database: dbConfig.database,
       entities: [
         User,
         Saga,
@@ -167,6 +198,8 @@ export class AppModule {
         { path: 'saga/:id', method: RequestMethod.GET },
         { path: 'book', method: RequestMethod.GET },
         { path: 'book/:id', method: RequestMethod.GET },
+        { path: 'book/getAll/popular', method: RequestMethod.GET },
+        { path: 'publishing/getAll/lastReleased', method: RequestMethod.GET },
         { path: 'book/genre/:genre', method: RequestMethod.GET },
         { path: 'author', method: RequestMethod.GET },
         { path: 'author/:id', method: RequestMethod.GET },
