@@ -69,11 +69,9 @@ describe('AuthController (e2e)', () => {
   })
 
   afterEach(async () => {
-    await userRepository.delete({})
   })
 
   afterAll(async () => {
-    await userRepository.delete({})
     await app.close()
   })
 

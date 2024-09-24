@@ -5,6 +5,8 @@ import { CoverModule } from '../cover/cover.module'
 import { BookModule } from '../book/book.module'
 import { FormatModule } from '../format/format.module'
 import { PublishingModule } from '../publishing/publishing.module'
+import { GenreModule } from '../genre/genre.module'
+import { AvatarModule } from '../avatar/avatar.module'
 
 @Module({
   providers: [OrchestratorService],
@@ -14,8 +16,9 @@ import { PublishingModule } from '../publishing/publishing.module'
     forwardRef(() => CoverModule),
     forwardRef(() => BookModule),
     forwardRef(() => FormatModule),
-    forwardRef(() => PublishingModule)
-
+    forwardRef(() => PublishingModule),
+    forwardRef(() => GenreModule),
+    forwardRef(() => AvatarModule)
   ]
 })
 export class OrchestratorModule {}

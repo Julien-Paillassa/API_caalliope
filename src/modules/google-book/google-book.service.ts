@@ -211,6 +211,7 @@ export class GoogleBookService {
         publicationDate: googleBook.volumeInfo.publishedDate ?? 'Unknown',
         status: Status.ACCEPTED,
         rating: Math.floor(Math.random() * 6),
+        ratingNumber: Math.floor(Math.random() * 6),
         author,
         cover: cover ?? undefined,
         genre: genres,

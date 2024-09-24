@@ -76,7 +76,6 @@ describe('UserController (e2e)', () => {
   })
 
   afterAll(async () => {
-    await userRepository.delete({})
     await app.close()
   })
 

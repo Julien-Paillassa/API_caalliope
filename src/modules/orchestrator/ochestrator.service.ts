@@ -36,7 +36,7 @@ export class OrchestratorService {
   ) { }
 
   async uploadAvatarToUser (file: Express.Multer.File, userId: number): Promise<any> {
-    return await this.avatarService.uploadAvatar(file, userId)
+    return this.avatarService.uploadAvatar(file, userId)
   }
 
   async createBookEntities (createBookDto: CreateBookDto): Promise<Book> {

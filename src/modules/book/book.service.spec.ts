@@ -126,7 +126,8 @@ describe('BookService', () => {
           'comment.user.avatar',
           'genre',
           'userBook',
-          'publishing'
+          'publishing',
+          'publishing.format'
         ]
       })
     })
@@ -156,7 +157,8 @@ describe('BookService', () => {
         publishing: [],
         createdAt: new Date(),
         updatedAt: new Date(),
-        rating: 0
+        rating: 0,
+        ratingNumber: 0
       }
       const updateBookDto: UpdateBookDto = {
         title: 'New Title',

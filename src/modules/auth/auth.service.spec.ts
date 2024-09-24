@@ -178,12 +178,19 @@ describe('AuthService', () => {
   describe('refreshAccessToken', () => {
     it('should return a new access token if refresh token is valid', async () => {
       const refreshTokenDto: RefreshTokenDto = { refreshToken: 'valid-refresh-token' }
-      const user = {
+      const user: User = {
         id: 1,
         email: 'john.doe@example.com',
         firstName: 'John',
         lastName: 'Doe',
-        role: 'user'
+        role: UserRole.USER,
+        password: 'hashedPassword',
+        username: 'johndoe',
+        avatar: new Avatar(),
+        userBook: [],
+        comment: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
       const decodedToken = { sub: user.id, email: user.email }
 

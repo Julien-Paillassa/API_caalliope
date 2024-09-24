@@ -9,11 +9,13 @@ import { type CreateUserDto } from './dto/create-user.dto'
 import { type UpdateUserDto } from './dto/update-user.dto'
 import { UserRole } from './entities/user-role.enum'
 import { BookService } from '../book/book.service'
+import { CommentService } from '../comment/comment.service'
 
 describe('UserService', () => {
   let service: UserService
   let userRepository: Repository<User>
   let bookService: BookService
+  let commentService: CommentService
 
   const mockUserRepository = {
     create: jest.fn(),
@@ -30,6 +32,10 @@ describe('UserService', () => {
     findWaiting: jest.fn()
   }
 
+  const mockCommentService = {
+    findCommentsByUser: jest.fn() // Vous pouvez ajouter d'autres méthodes si nécessaire
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -41,6 +47,10 @@ describe('UserService', () => {
         {
           provide: BookService,
           useValue: mockBookService
+        },
+        {
+          provide: CommentService, // Injection du CommentService
+          useValue: mockCommentService
         }
       ]
     }).compile()

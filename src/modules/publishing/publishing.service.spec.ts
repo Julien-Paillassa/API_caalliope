@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Test, type TestingModule } from '@nestjs/testing'
 import { HttpException } from '@nestjs/common'
@@ -5,10 +6,12 @@ import { getRepositoryToken } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { PublishingService } from './publishing.service'
 import { Publishing } from './entities/publishing.entity'
+import { Book } from '../book/entities/book.entity'
 
 describe('PublishingService', () => {
   let service: PublishingService
   let repository: Repository<Publishing>
+  let bookRepository: Repository<Book>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,12 +20,17 @@ describe('PublishingService', () => {
         {
           provide: getRepositoryToken(Publishing),
           useClass: Repository
+        },
+        {
+          provide: getRepositoryToken(Book),
+          useClass: Repository
         }
       ]
     }).compile()
 
     service = module.get<PublishingService>(PublishingService)
     repository = module.get<Repository<Publishing>>(getRepositoryToken(Publishing))
+    bookRepository = module.get<Repository<Book>>(getRepositoryToken(Book))
   })
 
   describe('findAll', () => {
