@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { stripeConfig } from './../../config/stripe.config'
 import Stripe from 'stripe'
+import { MailService } from '../mail/mail.service'
 
 @Injectable()
 export class StripeService {
   private readonly stripe: Stripe
 
-  constructor () {
+  constructor (private readonly mailService: MailService) {
     this.stripe = new Stripe(stripeConfig.secretKey, {
       apiVersion: '2024-06-20' // Utilise la version API Stripe que tu souhaites
     })
@@ -73,6 +74,10 @@ export class StripeService {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object
+
+        if (session.customer_email != null) {
+          await this.mailService.sendPaymentConfirmationEmail(session)
+        }
         // Traitement spécifique pour une session de checkout réussie
         console.log('Checkout Session completed:', session)
         break

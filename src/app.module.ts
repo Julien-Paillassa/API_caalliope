@@ -61,6 +61,8 @@ import * as dotenv from 'dotenv'
 import { OrchestratorModule } from './modules/orchestrator/orchestrator.module'
 import { OrchestratorService } from './modules/orchestrator/ochestrator.service'
 import { CoreModule } from './core.module'
+import { MailModule } from './modules/mail/mail.module'
+import { MailService } from './modules/mail/mail.service'
 
 dotenv.config()
 
@@ -84,6 +86,7 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
     StripeModule,
     GoogleBookModule,
     OrchestratorModule,
+    MailModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST,
@@ -151,7 +154,8 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
     AvatarService,
     CoverService,
     StripeService,
-    GoogleBookService
+    GoogleBookService,
+    MailService
   ]
 })
 export class AppModule {
