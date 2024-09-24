@@ -21,7 +21,7 @@ export class AvatarService {
 
   async uploadAvatar(avatar: Express.Multer.File, userId: number): Promise<any> {
     try {
-      if (!avatar) {
+      if (avatar === undefined || avatar === null) {
         throw new HttpException('File is required', HttpStatus.BAD_REQUEST);
       }
 
@@ -32,11 +32,11 @@ export class AvatarService {
         relations: ['avatar']
       });
 
-      if (user == null) {
+      if (user === null || user === undefined) {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
-      if (user.avatar) {
+      if (user.avatar !== undefined) {
         const oldAvatarPath = `./uploads/avatars/${user.avatar.filename}`;
         try {
           await fsPromises.unlink(oldAvatarPath);
@@ -51,7 +51,7 @@ export class AvatarService {
       await fsPromises.copyFile(avatar.path, filePath);
       await fsPromises.unlink(avatar.path);
 
-      if (user.avatar) {
+      if (user.avatar !== null || user.avatar !== undefined) {
         user.avatar.filename = filename;
         await this.avatarRepository.save(user.avatar);
       } else {
