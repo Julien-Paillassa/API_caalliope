@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
 import { type UpdateBookDto } from './dto/update-book.dto'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ILike, Repository } from 'typeorm'
+import { ILike, Repository, MoreThanOrEqual } from 'typeorm'
 import { Book } from './entities/book.entity'
 import { Status } from '../admin/entities/status.enum'
 
@@ -15,14 +15,18 @@ export class BookService {
   ) {}
 
   async createBook (createBookDto: Partial<Book>): Promise<Book> {
-    const book = this.bookRepository.create({
-      title: createBookDto.title,
-      summary: createBookDto.summary,
-      publicationDate: createBookDto.publicationDate,
-      author: createBookDto.author
-    })
-
-    return await this.bookRepository.save(book)
+    try {
+      const book = this.bookRepository.create({
+        title: createBookDto.title,
+        summary: createBookDto.summary,
+        publicationDate: createBookDto.publicationDate,
+        author: createBookDto.author
+      })
+      return await this.bookRepository.save(book)
+    } catch (error) {
+      this.logger.error('Error creating book', error.stack)
+      throw new HttpException('Failed to create book', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   async save (book: Book): Promise<Book> {
@@ -52,11 +56,17 @@ export class BookService {
           'cover',
           'author',
           'comment',
+          'comment.user',
+          'comment.user.avatar',
           'genre',
           'userBook',
-          'publishing'
+          'publishing',
+          'publishing.format'
         ]
       })
+      if (book == null) {
+        throw new HttpException('Book not found', HttpStatus.NOT_FOUND) // Ajout d'une exception si le livre est introuvable
+      }
       return book
     } catch (error) {
       throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
@@ -86,8 +96,20 @@ export class BookService {
         throw new HttpException('Book not found', HttpStatus.NOT_FOUND)
       }
 
-      this.bookRepository.merge(existingBook, updateBookDto as unknown as Book)
-      return await this.bookRepository.save(existingBook)
+      if (updateBookDto.rating !== undefined) {
+        const totalRatings = existingBook.ratingNumber * existingBook.rating
+        const newTotalRatings = totalRatings + updateBookDto.rating
+        const newRatingNumber = existingBook.ratingNumber + 1
+
+        existingBook.rating = Math.round(newTotalRatings / newRatingNumber)
+        existingBook.ratingNumber = newRatingNumber
+
+        this.logger.log(`Updated rating for book ${id} to ${existingBook.rating}`)
+      }
+
+      const updatedBook = this.bookRepository.merge(existingBook, updateBookDto as unknown as Book)
+      this.logger.log(existingBook.rating, updatedBook.rating)
+      return await this.bookRepository.save(updatedBook)
     } catch (error) {
       this.logger.error(`Error updating book with id ${id}`, error.stack)
       if (error.status === HttpStatus.NOT_FOUND) {
@@ -140,6 +162,20 @@ export class BookService {
     } catch (error) {
       this.logger.error(`Error finding books by title or author: ${searchTerm}`, error.stack)
       throw new HttpException('Failed to retrieve books by title or author', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  async findPopularBooks (minRating: number): Promise<Book[]> {
+    try {
+      return await this.bookRepository.find({
+        relations: ['cover', 'author', 'publishing'],
+        where: {
+          rating: MoreThanOrEqual(minRating)
+        }
+      })
+    } catch (error) {
+      this.logger.error(`Error finding books with rating >= ${minRating}`, error.stack)
+      throw new HttpException('Failed to retrieve books by rating', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }

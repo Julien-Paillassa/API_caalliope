@@ -99,7 +99,7 @@ export class GenreController {
   @ApiNotFoundResponse({ description: 'Genre Not Found' })
   async update (@Param('id') id: string, @Body() updateGenreDto: UpdateGenreDto): Promise<any> {
     try {
-      const genre = this.genreService.update(+id, updateGenreDto)
+      const genre = await this.genreService.update(+id, updateGenreDto)
       return {
         success: true,
         message: 'Genre Updated Successfully',

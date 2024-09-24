@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  api_prod:
+    container_name: api_caalliope_prod
+    build:
+      dockerfile: Dockerfile.prod
+    ports:
+      - '3001:3001'
+    volumes:
+      - .:/usr/src/app
+      - node_modules_prod:/usr/src/app/node_modules
+      - ./src/uploads:/usr/src/app/uploads
+    depends_on:
+      - db_prod
+
+  db_prod:
+    container_name: database_caalliope_prod
+    image: postgres:15
+    environment:
+      POSTGRES_DB: database_caalliope_prod
+      POSTGRES_USER: caalliope_prod
+      POSTGRES_PASSWORD: caalliope_prod*2024!
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  interface_db:
+    container_name: interface_db_caalliope_prod
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: caalliope.prod@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: caalliope_prod*2024!
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'False'
+      PGADMIN_DISABLE_POSTFIX: 'True'
+    ports:
+      - '5050:80'
+    depends_on:
+      - db_prod
+
+volumes:
+  postgres_data_prod:
+  node_modules_prod:
+  uploads: 

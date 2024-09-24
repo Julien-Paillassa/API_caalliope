@@ -57,7 +57,7 @@ export class AuthService {
   async signUp (signUpDto: SignUpDto): Promise<{ access_token: string, user: User }> {
     try {
       let user = this.userRepository.create(signUpDto)
-      user = await this.userRepository.save(user);
+      user = await this.userRepository.save(user)
 
       const payload = {
         sub: user.id,

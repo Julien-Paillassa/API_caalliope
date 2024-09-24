@@ -9,10 +9,10 @@ import { ValidationPipe } from '@nestjs/common'
 import { HttpExceptionFilter } from './utils/filters/http-exception.filter'
 import * as express from 'express'
 import { join } from 'path'
-import * as cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser'
 
 async function bootstrap (): Promise<void> {
-  dotenv.config({ path: '.env' })
+  dotenv.config()
 
   const app = await NestFactory.create(AppModule, {
     cors: {
@@ -28,7 +28,7 @@ async function bootstrap (): Promise<void> {
   const config = new DocumentBuilder()
     .setTitle('Calliope API')
     .setDescription('API for Calliope')
-    .setVersion('1.0')
+    .setVersion('1.7')
     .addTag('calliope')
     .addBearerAuth()
     .build()

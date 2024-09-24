@@ -1,4 +1,5 @@
-import {Injectable, Logger, type NestMiddleware, UnauthorizedException} from '@nestjs/common'
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+import { Injectable, Logger, type NestMiddleware, UnauthorizedException } from '@nestjs/common'
 import { type Request, type Response, type NextFunction } from 'express'
 import { JwtService } from '@nestjs/jwt'
 

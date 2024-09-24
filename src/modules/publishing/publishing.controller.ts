@@ -2,15 +2,26 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, forwardRef }
 import { PublishingService } from './publishing.service'
 import { CreatePublishingDto } from './dto/create-publishing.dto'
 import { UpdatePublishingDto } from './dto/update-publishing.dto'
-import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse
+} from '@nestjs/swagger'
 import { Publishing } from './entities/publishing.entity'
-import { OrchestratorService } from "../orchestrator/ochestrator.service";
+import { OrchestratorService } from '../orchestrator/ochestrator.service'
+import { Book } from '../book/entities/book.entity'
 
 @ApiBearerAuth()
 @ApiTags('publishing')
 @Controller('publishing')
 export class PublishingController {
-  constructor(private readonly publishingService: PublishingService,
+  constructor (private readonly publishingService: PublishingService,
     @Inject(forwardRef(() => OrchestratorService))
     private readonly orchestratorService: OrchestratorService) { }
 
@@ -23,7 +34,7 @@ export class PublishingController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async create(@Body() createPublishingDto: CreatePublishingDto): Promise<any> {
+  async create (@Body() createPublishingDto: CreatePublishingDto): Promise<any> {
     try {
       const publishing = await this.orchestratorService.createPublishingEntities(createPublishingDto)
       return {
@@ -48,7 +59,7 @@ export class PublishingController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async findAll(): Promise<any> {
+  async findAll (): Promise<any> {
     try {
       const data = await this.publishingService.findAll()
       return {
@@ -73,7 +84,7 @@ export class PublishingController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
-  async findOne(@Param('id') id: string): Promise<any> {
+  async findOne (@Param('id') id: string): Promise<any> {
     try {
       const data = await this.publishingService.findOne(+id)
       return {
@@ -99,7 +110,7 @@ export class PublishingController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Author Not Found' })
-  async update(@Param('id') id: string, @Body() updatePublishingDto: UpdatePublishingDto): Promise<any> {
+  async update (@Param('id') id: string, @Body() updatePublishingDto: UpdatePublishingDto): Promise<any> {
     try {
       const publishing = await this.publishingService.update(+id, updatePublishingDto)
       return {
@@ -125,13 +136,36 @@ export class PublishingController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   @ApiNotFoundResponse({ description: 'Author Not Found' })
-  async remove(@Param('id') id: string): Promise<any> {
+  async remove (@Param('id') id: string): Promise<any> {
     try {
       const publishing = await this.publishingService.remove(+id)
       return {
         success: true,
         message: 'Publishing Removed Successfully',
         data: publishing
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message
+      }
+    }
+  }
+
+  @Get('getAll/lastReleased')
+  @ApiOperation({ summary: 'Get books with rating >= minRating' })
+  @ApiOkResponse({
+    description: 'Books Fetched Successfully',
+    type: [Book]
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  async findBooksByPublicationDate (): Promise<any> {
+    try {
+      const books = await this.publishingService.findRecentBooks()
+      return {
+        success: true,
+        data: books,
+        message: 'Books Fetched Successfully'
       }
     } catch (error) {
       return {

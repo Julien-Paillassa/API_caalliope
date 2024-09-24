@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
@@ -74,7 +75,7 @@ export class UserController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async findOne (@Param('id') id: string): Promise<any> {
     try {
-      const data = await this.userService.findOne(+id)
+      const data = await this.userService.findOne(parseInt(id))
       return {
         success: true,
         data,

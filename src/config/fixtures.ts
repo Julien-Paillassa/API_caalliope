@@ -17,6 +17,7 @@ import { type Status } from './../modules/admin/entities/status.enum'
 import { type UserBookStatus } from './../modules/user-book/entities/user-book-status.enum'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
+import * as dotenv from 'dotenv'
 
 async function downloadImage (url: string, filepath: string): Promise<void> {
   const response = await axios({
@@ -33,16 +34,18 @@ async function downloadImage (url: string, filepath: string): Promise<void> {
     writer.on('error', reject)
   })
 }
+// dotenv.config({ path: `./.env.${process.env.NODE_ENV}` })
+dotenv.config({ path: './.env.dev' })
 
 async function fixtures (): Promise<void> {
   try {
     const dataSource = new DataSource({
       type: 'postgres',
-      host: 'db_dev',
+      host: process.env.DATABASE_HOST,
       port: 5432,
-      username: 'caaliope_dev',
-      password: 'caaliope_dev*2024!',
-      database: 'database_caaliope_dev',
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [
         User,
         Saga,
@@ -62,15 +65,15 @@ async function fixtures (): Promise<void> {
     await dataSource.initialize()
 
     const userRepository = dataSource.getRepository(User)
-    const authorRepository = dataSource.getRepository(Author)
+    // const authorRepository = dataSource.getRepository(Author)
     const bookRepository = dataSource.getRepository(Book)
-    const formatRepository = dataSource.getRepository(Format)
-    const genreRepository = dataSource.getRepository(Genre)
-    const publishingRepository = dataSource.getRepository(Publishing)
+    // const formatRepository = dataSource.getRepository(Format)
+    // const genreRepository = dataSource.getRepository(Genre)
+    // const publishingRepository = dataSource.getRepository(Publishing)
     const sagaRepository = dataSource.getRepository(Saga)
     const userBookRepository = dataSource.getRepository(UserBook)
     const commentRepository = dataSource.getRepository(Comment)
-    const coverRepository = dataSource.getRepository(Cover)
+    // const coverRepository = dataSource.getRepository(Cover)
     const avatarRepository = dataSource.getRepository(Avatar) // Repository pour les avatars
 
     const password = 'azerty'
@@ -126,108 +129,6 @@ async function fixtures (): Promise<void> {
       user.avatar = avatar
       await userRepository.save(user)
       console.log(`Utilisateur ${i + 1} mis à jour avec l'avatar ID: ${user.avatar.id}.`)
-    }
-
-    // Créer 50 auteurs
-    for (let i = 0; i < 50; i++) {
-      const author = authorRepository.create({
-        lastName: faker.person.lastName(),
-        firstName: faker.person.firstName(),
-        email: faker.internet.email(),
-        birthDate: faker.date.past().toISOString()
-      })
-
-      await authorRepository.save(author)
-      console.log(`Auteur ${i + 1} créé.`)
-    }
-
-    // Créer 20 genres
-    for (let i = 0; i < 20; i++) {
-      const genre = genreRepository.create({
-        genre: faker.helpers.arrayElement(['fantastic', 'sf', 'polar', 'romance', 'adventure', 'history', 'comic', 'crime', 'horror', 'biography', 'developpement', 'fantasy', 'mystery', 'science'])
-      })
-
-      await genreRepository.save(genre)
-      console.log(`Genre ${i + 1} créé.`)
-    }
-
-    // Créer 200 livres avec images de couverture
-    for (let i = 0; i < 200; i++) {
-      const authors = await authorRepository.find()
-      const genres = await genreRepository.find()
-      const randomAuthor = authors[Math.floor(Math.random() * authors.length)]
-      const randomGenre = genres[Math.floor(Math.random() * genres.length)]
-
-      // Créer le livre sans couverture au départ
-      const book = bookRepository.create({
-        title: faker.lorem.words(),
-        summary: faker.lorem.paragraph(),
-        publicationDate: faker.date.past().toISOString(),
-        status: faker.helpers.arrayElement(['waiting', 'accepted', 'refused']) as Status,
-        author: randomAuthor,
-        genre: [randomGenre]
-      })
-
-      // Sauvegarder le livre pour obtenir l'ID
-      await bookRepository.save(book)
-      console.log(`Livre ${i + 1} créé avec ID: ${book.id}.`)
-
-      const coverFilename = `cover_${i + 1}.jpg`
-      const coverPath = path.join(coversDir, coverFilename)
-
-      // Télécharger une vraie image de couverture
-      const imageUrl = `https://picsum.photos/200/300?random=${i + 1}` // URL d'image aléatoire
-      await downloadImage(imageUrl, coverPath)
-      console.log(`Image téléchargée pour le livre ${i + 1}: ${coverFilename}`)
-
-      // Créer une couverture associée au livre
-      const cover = coverRepository.create({
-        filename: coverFilename,
-        book // Associer le livre à cette couverture
-      })
-
-      // Sauvegarder la couverture
-      await coverRepository.save(cover)
-      console.log(`Couverture créée pour le livre ${i + 1} avec Cover ID: ${cover.id}.`)
-
-      // Mettre à jour le champ cover du livre avec l'entité Cover créée
-      book.cover = cover
-      await bookRepository.save(book)
-      console.log(`Livre ${i + 1} mis à jour avec la couverture ID: ${book.cover.id}.`)
-    }
-
-    // Créer 30 formats
-    for (let i = 0; i < 30; i++) {
-      const format = formatRepository.create({
-        type: faker.lorem.word(),
-        language: faker.lorem.word()
-      })
-
-      await formatRepository.save(format)
-      console.log(`Format ${i + 1} créé.`)
-    }
-
-    // Créer 50 publications
-    for (let i = 0; i < 50; i++) {
-      const books = await bookRepository.find()
-      const formats = await formatRepository.find()
-
-      const randomBook = books[Math.floor(Math.random() * books.length)]
-      const randomFormat = formats[Math.floor(Math.random() * formats.length)]
-
-      const publishing = publishingRepository.create({
-        label: faker.company.buzzVerb(),
-        language: faker.lorem.word(),
-        isbn: `978-${faker.number.int({ min: 1000000000000, max: 9999999999999 })}`,
-        nbPages: faker.number.int({ min: 100, max: 300 }),
-        publicationDate: faker.date.past().toISOString(),
-        status: faker.helpers.arrayElement(['waiting', 'accepted', 'refused']) as Status,
-        book: randomBook,
-        format: randomFormat
-      })
-
-      await publishingRepository.save(publishing)
-      console.log(`Publishing ${i + 1} créé.`)
     }
 
     // Créer 20 sagas

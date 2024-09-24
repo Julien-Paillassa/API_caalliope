@@ -1,108 +1,257 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, type TestingModule } from '@nestjs/testing'
-import { CommentController } from './comment.controller'
-import { CommentService } from './comment.service'
-import { HttpException, HttpStatus } from '@nestjs/common'
+import { type INestApplication, ValidationPipe } from '@nestjs/common'
+import * as request from 'supertest'
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm'
+import { Comment } from './entities/comment.entity'
+import { User } from '../user/entities/user.entity'
+import { Book } from '../book/entities/book.entity'
+import { CommentModule } from './comment.module'
+import { type Repository } from 'typeorm'
+import * as dotenv from 'dotenv'
+// import { type CreateCommentDto } from './dto/create-comment.dto'
+import { type UpdateCommentDto } from './dto/update-comment.dto'
+import { Author } from '../author/entities/author.entity'
+import { Avatar } from '../avatar/entities/avatar.entity'
+import { Cover } from '../cover/entities/cover.entity'
+import { Format } from '../format/entities/format.entity'
+import { Genre } from '../genre/entities/genre.entity'
+import { Publishing } from '../publishing/entities/publishing.entity'
+import { Saga } from '../saga/entities/saga.entity'
+import { UserBook } from '../user-book/entities/user-book.entity'
 import { Status } from '../admin/entities/status.enum'
+import { UserRole } from '../user/entities/user-role.enum'
+import { type CreateCommentDto } from './dto/create-comment.dto'
 
-describe('CommentController', () => {
-  let controller: CommentController
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let service: CommentService
+describe('CommentController (e2e)', () => {
+  let app: INestApplication
+  let commentRepository: Repository<Comment>
+  let userRepository: Repository<User>
+  let bookRepository: Repository<Book>
 
-  // Mock the CommentService
-  const mockCommentService = {
-    addComment: jest.fn(),
-    updateComment: jest.fn(),
-    getBookComments: jest.fn()
-  }
+  dotenv.config({ path: './.env.test' })
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [CommentController],
-      providers: [
-        {
-          provide: CommentService,
-          useValue: mockCommentService
-        }
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          type: 'postgres',
+          host: process.env.DATABASE_HOST,
+          port: 5432,
+          username: process.env.DATABASE_USERNAME,
+          password: process.env.DATABASE_PASSWORD,
+          database: process.env.DATABASE_NAME,
+          entities: [
+            User,
+            Saga,
+            Format,
+            Comment,
+            Book,
+            Author,
+            Avatar,
+            Cover,
+            Genre,
+            Publishing,
+            UserBook
+          ],
+          synchronize: true
+        }),
+        CommentModule
       ]
     }).compile()
 
-    controller = module.get<CommentController>(CommentController)
-    service = module.get<CommentService>(CommentService)
+    app = moduleFixture.createNestApplication()
+
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true
+      })
+    )
+
+    await app.init()
+
+    commentRepository = moduleFixture.get<Repository<Comment>>(getRepositoryToken(Comment))
+    userRepository = moduleFixture.get<Repository<User>>(getRepositoryToken(User))
+    bookRepository = moduleFixture.get<Repository<Book>>(getRepositoryToken(Book))
   })
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined()
+  afterEach(async () => {
+    await commentRepository.delete({})
   })
 
-  describe('addComment', () => {
-    it('should add a comment', async () => {
-      const createCommentDto = { userId: 1, bookId: 1, content: 'Great book!' }
-      const savedComment = { id: 1, ...createCommentDto }
+  afterAll(async () => {
+    await commentRepository.delete({})
+    await app.close()
+  })
 
-      mockCommentService.addComment.mockResolvedValue(savedComment)
+  describe('/comment (POST)', () => {
+    it('should successfully create a comment', async () => {
+      const user = userRepository.create({
+        lastName: 'MacCarthy',
+        firstName: 'Cormac',
+        email: 'cormac.macCarthy@gamil.com',
+        password: 'password',
+        username: 'cormac.macCarthy',
+        role: UserRole.USER
+      })
+      await userRepository.save(user)
 
-      const result = await controller.addComment(createCommentDto)
-      expect(result).toEqual(savedComment)
-      expect(mockCommentService.addComment).toHaveBeenCalledWith(createCommentDto)
+      const book = bookRepository.create({
+        title: 'The Hobbit',
+        summary: 'The Hobbit is a fantasy novel by J.R.R. Tolkien',
+        publicationDate: '1937-09-21',
+        status: Status.WAITING,
+        rating: 5
+      })
+      await bookRepository.save(book)
+
+      const createCommentDto: CreateCommentDto = {
+        userId: user.id,
+        bookId: book.id,
+        content: 'Amazing book!'
+      }
+
+      const response = await request(app.getHttpServer())
+        .post('/comment')
+        .send(createCommentDto)
+        .expect(201)
+
+      expect(response.body.user.id).toBe(user.id)
+      expect(response.body.book.id).toBe(book.id)
+      expect(response.body.content).toBe(createCommentDto.content)
     })
 
-    it('should throw an error if adding a comment fails', async () => {
-      const createCommentDto = { userId: 1, bookId: 1, content: 'Great book!' }
+    it('should return 400 if data is invalid', async () => {
+      const createCommentDto = {
+        content: '',
+        bookId: 1,
+        userId: 1
+      }
 
-      mockCommentService.addComment.mockRejectedValue(
-        new HttpException('Failed to add comment', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
+      const response = await request(app.getHttpServer())
+        .post('/comment')
+        .send(createCommentDto)
+        .expect(400)
 
-      await expect(controller.addComment(createCommentDto)).rejects.toThrow(
-        new HttpException('Failed to add comment', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
+      const errorMessages = response.body.message
+
+      expect(errorMessages).toContain('content should not be empty')
     })
   })
 
-  describe('updateComment', () => {
+  describe('/comment (PUT)', () => {
     it('should update a comment', async () => {
-      const updateCommentDto = { status: Status.ACCEPTED, content: 'Updated content' }
-      const updatedComment = { id: 1, ...updateCommentDto }
+      const user = userRepository.create({
+        lastName: 'Poe',
+        firstName: 'Tom',
+        email: 'Poe.Tom@gamil.com',
+        password: 'password',
+        username: 'Poe.Tom',
+        role: UserRole.USER
+      })
+      await userRepository.save(user)
 
-      mockCommentService.updateComment.mockResolvedValue(updatedComment)
+      const book = bookRepository.create({
+        title: 'Harry Potter',
+        summary: 'A young wizard...',
+        publicationDate: '1937-09-21',
+        status: Status.WAITING,
+        rating: 5
+      })
+      await bookRepository.save(book)
 
-      const result = await controller.updateComment(1, 1, updateCommentDto)
-      expect(result).toEqual(updatedComment)
-      expect(mockCommentService.updateComment).toHaveBeenCalledWith(1, 1, updateCommentDto)
+      const comment = commentRepository.create({
+        user: { id: user.id },
+        book: { id: book.id },
+        content: 'Good book!'
+      })
+      await commentRepository.save(comment)
+
+      const updateCommentDto: UpdateCommentDto = {
+        content: 'Updated comment content',
+        status: Status.ACCEPTED,
+        userId: user.id,
+        bookId: book.id
+      }
+
+      const response = await request(app.getHttpServer())
+        .put('/comment')
+        .send(updateCommentDto)
+        .expect(200)
+
+      expect(response.body.content).toBe(updateCommentDto.content)
     })
 
-    it('should throw an error if updating a comment fails', async () => {
-      const updateCommentDto = { status: Status.ACCEPTED, content: 'Updated content' }
+    it('should return 404 if the comment is not found', async () => {
+      const updateCommentDto: UpdateCommentDto = {
+        content: 'Updated comment content',
+        status: Status.ACCEPTED,
+        userId: 9999,
+        bookId: 9999
+      }
 
-      mockCommentService.updateComment.mockRejectedValue(
-        new HttpException('Failed to update comment', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
+      const response = await request(app.getHttpServer())
+        .put('/comment')
+        .send(updateCommentDto)
+        .expect(500)
 
-      await expect(controller.updateComment(1, 1, updateCommentDto)).rejects.toThrow(
-        new HttpException('Failed to update comment', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
+      expect(response.body.message).toBe('Internal server error')
     })
   })
 
-  describe('getBookComments', () => {
-    it('should return book comments', async () => {
-      const bookComments = [{ id: 1, content: 'Great book!' }]
-      mockCommentService.getBookComments.mockResolvedValue(bookComments)
+  describe('/comment/:bookId (GET)', () => {
+    it('should return all comments for a specific book', async () => {
+      const user = userRepository.create({
+        lastName: 'Fitzgerald',
+        firstName: 'Nick',
+        email: 'Fitzgerald.Nick@gamil.com',
+        password: 'password',
+        username: 'Fitzgerald.Nick',
+        role: UserRole.USER
+      })
 
-      const result = await controller.getBookComments(1)
-      expect(result).toEqual(bookComments)
-      expect(mockCommentService.getBookComments).toHaveBeenCalledWith(1)
+      await userRepository.save(user)
+
+      const book = bookRepository.create({
+        title: 'The Lord of the Rings',
+        summary: 'An epic fantasy novel...',
+        publicationDate: '1954-07-29',
+        status: Status.ACCEPTED,
+        rating: 4
+      })
+
+      await bookRepository.save(book)
+
+      const comment1 = commentRepository.create({
+        user: { id: user.id },
+        book: { id: book.id },
+        content: 'Great book!'
+      })
+
+      const comment2 = commentRepository.create({
+        user: { id: user.id },
+        book: { id: book.id },
+        content: 'Amazing story!'
+      })
+
+      await commentRepository.save(comment1)
+      await commentRepository.save(comment2)
+
+      const response = await request(app.getHttpServer()).get(`/comment/${book.id}`).expect(200)
+
+      const sortedComments = response.body.sort((a: any, b: any) => a.id - b.id)
+
+      expect(sortedComments.length).toBe(2)
+      expect(sortedComments[0].content).toBe('Great book!') // Rating 5
+      expect(sortedComments[1].content).toBe('Amazing story!') // Rating 4
     })
 
-    it('should throw an error if fetching comments fails', async () => {
-      mockCommentService.getBookComments.mockRejectedValue(
-        new HttpException('Failed to get book comments', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
+    it('should return an empty array if no comments are found for a book', async () => {
+      const response = await request(app.getHttpServer()).get('/comment/9999').expect(200)
 
-      await expect(controller.getBookComments(1)).rejects.toThrow(
-        new HttpException('Failed to get book comments', HttpStatus.INTERNAL_SERVER_ERROR)
-      )
+      expect(response.body.length).toBe(0)
     })
   })
 })

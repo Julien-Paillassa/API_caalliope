@@ -2,13 +2,14 @@ import { Controller, Post, Body, HttpException, HttpStatus, Logger, Headers } fr
 import { StripeService } from './stripe.service'
 import type Stripe from 'stripe'
 import { ApiTags } from '@nestjs/swagger'
+import { MailService } from '../mail/mail.service'
 
 @ApiTags('stripe')
 @Controller('stripe')
 export class StripeController {
   private readonly logger = new Logger(StripeService.name)
 
-  constructor (private readonly stripeService: StripeService) {}
+  constructor (private readonly stripeService: StripeService, private readonly mailService: MailService) {}
 
   @Post('payment-intent')
   async createPaymentIntent (
@@ -73,5 +74,11 @@ export class StripeController {
       this.logger.error('Webhook signature verification failed', error.stack)
       throw new HttpException(`Webhook Error: ${error.message}`, HttpStatus.BAD_REQUEST)
     }
+  }
+
+  @Post('send-email')
+  async sendEmail (@Body() body: any): Promise<{ message: string }> {
+    await this.mailService.sendEmail()
+    return { message: 'Email sent successfully.' }
   }
 }

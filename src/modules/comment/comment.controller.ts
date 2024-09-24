@@ -39,12 +39,10 @@ export class CommentController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiForbiddenResponse({ description: 'Forbidden' })
   async updateComment (
-    @Body('userId') userId: number,
-      @Body('bookId') bookId: number,
-      @Body() updateCommentDto: UpdateCommentDto
+    @Body() updateCommentDto: UpdateCommentDto
   ): Promise<Comment> {
     try {
-      const data = await this.commentService.updateComment(userId, bookId, updateCommentDto)
+      const data = await this.commentService.updateComment(updateCommentDto)
       return data
     } catch (error) {
       throw new Error(error.message as string)
@@ -56,6 +54,19 @@ export class CommentController {
     try {
       const data = await this.commentService.getBookComments(bookId)
       return data
+    } catch (error) {
+      throw new Error(error.message as string)
+    }
+  }
+
+  @Post('/updateStatus')
+  async updateCommentStatus (@Body() updateCommentStatusDto: { commentId: number, status: 'accepted' | 'rejected' }): Promise<any> {
+    try {
+      await this.commentService.updateCommentStatus(updateCommentStatusDto)
+      return {
+        success: true,
+        message: 'Comment Updated Successfully'
+      }
     } catch (error) {
       throw new Error(error.message as string)
     }
