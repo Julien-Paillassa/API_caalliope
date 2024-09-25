@@ -50,9 +50,9 @@ export class StripeService {
         mode: 'payment',
         customer_email: email,
         // success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        success_url: 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
+        success_url: process.env.NODE_ENV !== 'dev' ? 'https://caalliope.vercel.app/success?session_id={CHECKOUT_SESSION_ID}' : 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
         // cancel_url: `${process.env.CLIENT_URL}/cancel`
-        cancel_url: 'http://localhost:3000/cancel'
+        cancel_url: process.env.NODE_ENV !== 'dev' ? 'https://caalliope.vercel.app/cancel' : 'http://localhost:3000/cancel'
       })
       return session
     } catch (error) {

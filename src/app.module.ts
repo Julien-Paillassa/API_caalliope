@@ -186,8 +186,8 @@ export class AppModule {
         { path: 'stripe/payment-intent', method: RequestMethod.POST },
         { path: 'stripe/create-checkout-session', method: RequestMethod.POST },
         { path: 'google-book/import', method: RequestMethod.GET },
-        { path: 'uploads/covers/*', method: RequestMethod.GET},
-        { path: 'uploads/avatars/*', method: RequestMethod.GET}
+        { path: 'uploads/covers/*', method: RequestMethod.GET },
+        { path: 'uploads/avatars/*', method: RequestMethod.GET }
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL })
   }
