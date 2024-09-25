@@ -128,7 +128,6 @@ export class PublishingService {
         where: { id: In(bookIds) },
         relations: ['cover', 'author', 'comment', 'genre', 'userBook', 'publishing', 'publishing.format']
       })
-      this.logger.log(books, 'data here my friend')
       return books
     } catch (error) {
       this.logger.error('Error finding recent books', error.stack)
