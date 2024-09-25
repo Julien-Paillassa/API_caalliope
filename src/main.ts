@@ -16,7 +16,7 @@ async function bootstrap (): Promise<void> {
 
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: 'https://caalliope.vercel.app',
       credentials: true
     }
   })
