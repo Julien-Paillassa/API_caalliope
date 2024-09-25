@@ -64,7 +64,12 @@ import { CoreModule } from './core.module'
 import { MailModule } from './modules/mail/mail.module'
 import { MailService } from './modules/mail/mail.service'
 
-dotenv.config()
+console.log('NODE_ENV', process.env.NODE_ENV)
+if (process.env.NODE_ENV === 'dev') {
+  dotenv.config({ path: './.env.dev' })
+} else {
+  dotenv.config()
+}
 
 console.log('DATABASE_HOST', process.env.DATABASE_HOST)
 
@@ -94,9 +99,7 @@ console.log('DATABASE_HOST', process.env.DATABASE_HOST)
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      ssl: {
-        rejectUnauthorized: false // Pour éviter des problèmes de vérification SSL
-      },
+      ssl: process.env.NODE_ENV !== 'dev' ? { rejectUnauthorized: false } : undefined,
       entities: [
         User,
         Saga,
