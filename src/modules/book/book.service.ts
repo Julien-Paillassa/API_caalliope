@@ -20,7 +20,8 @@ export class BookService {
         title: createBookDto.title,
         summary: createBookDto.summary,
         publicationDate: createBookDto.publicationDate,
-        author: createBookDto.author
+        author: createBookDto.author,
+        rating: createBookDto.rating
       })
       return await this.bookRepository.save(book)
     } catch (error) {
