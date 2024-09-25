@@ -173,6 +173,7 @@ export class AppModule {
         { path: 'book/getAll/popular', method: RequestMethod.GET },
         { path: 'publishing/getAll/lastReleased', method: RequestMethod.GET },
         { path: 'book/genre/:genre', method: RequestMethod.GET },
+        { path: 'book/search/by', method: RequestMethod.GET },
         { path: 'author', method: RequestMethod.GET },
         { path: 'author/:id', method: RequestMethod.GET },
         { path: 'genre', method: RequestMethod.GET },
