@@ -76,7 +76,7 @@ export class StripeService {
         const session = event.data.object
 
         if (session.customer_email != null) {
-          await this.mailService.sendPaymentConfirmationEmail(session)
+          await this.mailService.sendPaymentConfirmationEmail()
         }
         // Traitement spécifique pour une session de checkout réussie
         console.log('Checkout Session completed:', session)

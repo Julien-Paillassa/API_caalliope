@@ -22,12 +22,12 @@ export class MailService {
     })
   }
 
-  async sendPaymentConfirmationEmail (session: any): Promise<void> {
+  async sendPaymentConfirmationEmail (): Promise<void> {
     const mailOptions = {
-      from: 'julien.paillassa@gmail.com', // Remplacez par votre adresse email
+      from: 'julien.paillassa@ynov.com', // Remplacez par votre adresse email
       to: 'j.paillassa@fondationccv.org',
       subject: 'Confirmation de paiement',
-      text: `Votre paiement a été reçu avec succès. Le montant payé est de ${session.amount_total / 100} ${session.currency.toUpperCase()}.`
+      text: 'Votre paiement a été reçu avec succès.'
     }
 
     await this.transporter.sendMail(mailOptions)
