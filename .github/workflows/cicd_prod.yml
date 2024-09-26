@@ -79,11 +79,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f Dockerfile.dev -t api_caaliope_prod:latest .
+          docker build -f Dockerfile.dev -t api_caaliope_dev:latest .
       
       - name: Tag Docker image
         run: |
-          docker tag api_caaliope_prod:latest paillassa33/api_caaliope_prod:latest
+          docker tag api_caaliope_dev:latest paillassa33/api_caaliope_dev:latest
 
       - name: Log in to Amazon ECR
         run: |
@@ -91,7 +91,7 @@ jobs:
 
       - name: Build and tag Docker image
         run: |
-          docker tag paillassa33/api_caaliope_prod:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
+          docker tag paillassa33/api_caaliope_dev:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
       - name: Push Docker image to ECR
         run: |
